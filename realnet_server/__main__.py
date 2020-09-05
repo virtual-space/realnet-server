@@ -1,5 +1,7 @@
+from .server import Server
+
 def main():
-    print("hello")
+    Server().run()
 
 if __name__ == "__main__":
     main()
