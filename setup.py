@@ -23,12 +23,12 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=["realnet-server"],
+    packages=["realnet_server"],
     include_package_data=True,
     install_requires=["pynecone", "requests_toolbelt", "keyring", "python-dotenv", "requests", "flask-oidc", "flask"],
     entry_points={
         "console_scripts": [
-            "realnet-server=realnet-server.__main__:main",
+            "realnet-server=realnet_server.__main__:main",
         ]
     },
 )
