@@ -37,4 +37,4 @@ class Start(Command):
         def children(identifier):
             return json.dumps(self.item.get_item(identifier).get_items_representation())
 
-        app.run('localhost', port=5000)
+        app.run('0.0.0.0', port=5000)
