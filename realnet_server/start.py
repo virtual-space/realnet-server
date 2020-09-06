@@ -1,5 +1,5 @@
 from pynecone import Command
-
+from flask import Flask
 
 class Start(Command):
 
@@ -7,4 +7,10 @@ class Start(Command):
         super().__init__("start")
 
     def run(self, args):
-        print("started")
+        app = Flask('realnet-server')
+
+        @app.route('/')
+        def hello_world():
+            return 'Welcome anonymous, <a href="/private">Log in</a>'
+
+        app.run('localhost', port=5000)
