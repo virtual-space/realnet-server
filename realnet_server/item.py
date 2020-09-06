@@ -39,6 +39,9 @@ class Item(ABC):
         }
         # if items:
         #    response['items'] = [i.get_representation() for i in items]
+        props = self.get_properties()
+        if props:
+            response['properties'] = props
         return response
 
     def get_items_representation(self):

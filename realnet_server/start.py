@@ -5,14 +5,17 @@ from flask import Flask
 
 from .items import Items
 from .folder_item import FolderItem
-
+from .process_items import ProcessItems
+from .bluetooth_items import BluetoothItems
 
 class Start(Command):
 
     def __init__(self):
         super().__init__("start")
         self.items = Items.load()
-        self.item = FolderItem("playground", "/Users/marko/playground")
+        # self.item = FolderItem("playground", "/Users/marko/playground")
+        # self.item = ProcessItems()
+        # self.item = BluetoothItems()
 
     def run(self, args):
 

@@ -25,7 +25,15 @@ setup(
     ],
     packages=["realnet_server"],
     include_package_data=True,
-    install_requires=["pynecone", "requests_toolbelt", "keyring", "python-dotenv", "requests", "flask-oidc", "flask"],
+    install_requires=["pynecone",
+                      "requests_toolbelt",
+                      "keyring",
+                      "python-dotenv",
+                      "requests",
+                      "flask-oidc",
+                      "flask",
+                      "psutil",
+                      "pybluez"],
     entry_points={
         "console_scripts": [
             "realnet-server=realnet_server.__main__:main",
