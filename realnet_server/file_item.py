@@ -8,7 +8,10 @@ class FileItem(Item):
         self.path = path
 
     def get_items(self):
-        return []
+        return None
+
+    def get_item(self):
+        return None
 
     def get_name(self):
         return self.name
@@ -19,5 +22,5 @@ class FileItem(Item):
     def get_data(self):
         pass
 
-    def get_id(self):
+    def get_identifier_string(self):
         return self.path

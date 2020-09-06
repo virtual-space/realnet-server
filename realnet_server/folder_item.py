@@ -19,10 +19,22 @@ class FolderItem(Item):
                 items.append(FileItem(filename, full_path))
         return items
 
+    def get_item(self, id):
+        for filename in os.listdir(self.path):
+            full_path = os.path.join(self.path, filename)
+            if os.path.isdir(os.path.join(self.path, filename)):
+                item = FolderItem(filename, full_path)
+                if item.get_id() == id:
+                    return item
+            else:
+                item = FileItem(filename, full_path)
+                if item.get_id() == id:
+                    return item
+
     def get_name(self):
         return self.name
 
-    def get_id(self):
+    def get_identifier_string(self):
         return self.path
 
     def get_properties(self):

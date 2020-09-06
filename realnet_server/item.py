@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+import hashlib
 
 class Item(ABC):
 
@@ -8,7 +8,11 @@ class Item(ABC):
         return []
 
     @abstractmethod
-    def get_id(self):
+    def get_item(self, id):
+        return None
+
+    @abstractmethod
+    def get_identifier_string(self):
         return None
 
     @abstractmethod
@@ -23,9 +27,24 @@ class Item(ABC):
     def get_data(self):
         return None
 
+    def get_id(self):
+        result = hashlib.md5(self.get_identifier_string().encode())
+        return result.hexdigest()
+
     def get_representation(self):
-        return {
+        # items = self.get_items()
+        response = {
             'name': self.get_name(),
-            'id': self.get_id(),
-            'items': [i.get_representation() for i in self.get_items() if i is not None]
+            'id': self.get_id()
         }
+        # if items:
+        #    response['items'] = [i.get_representation() for i in items]
+        return response
+
+    def get_items_representation(self):
+        items = self.get_items()
+
+        if items:
+            return [i.get_representation() for i in items]
+        else:
+            return []
