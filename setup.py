@@ -32,8 +32,7 @@ setup(
                       "requests",
                       "flask-oidc",
                       "flask",
-                      "psutil",
-                      "pybluez"],
+                      "psutil"],
     entry_points={
         "console_scripts": [
             "realnet-server=realnet_server.__main__:main",

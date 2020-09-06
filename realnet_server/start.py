@@ -14,7 +14,7 @@ class Start(Command):
         super().__init__("start")
         self.items = Items.load()
         # self.item = FolderItem("playground", "/Users/marko/playground")
-        # self.item = ProcessItems()
+        self.item = ProcessItems()
         # self.item = BluetoothItems()
 
     def run(self, args):

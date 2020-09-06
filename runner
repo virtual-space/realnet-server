@@ -1,2 +1,2 @@
 #!/bin/bash
-realnet-server
+realnet-server start
