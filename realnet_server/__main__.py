@@ -1,7 +1,7 @@
-from .server import Server
+from .realnet_server import RealnetServer
 
 def main():
-    Server().run()
+    RealnetServer().run()
 
 if __name__ == "__main__":
     main()

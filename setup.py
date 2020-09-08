@@ -30,7 +30,8 @@ setup(
                       "keyring",
                       "python-dotenv",
                       "requests",
-                      "flask-oidc",
+                      "flask-migrate",
+                      "flask-sqlalchemy",
                       "flask",
                       "psutil"],
     entry_points={
