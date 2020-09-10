@@ -32,6 +32,7 @@ setup(
                       "requests",
                       "flask-migrate",
                       "flask-sqlalchemy",
+                      "flask-script",
                       "flask",
                       "psutil"],
     entry_points={

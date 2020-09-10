@@ -1,5 +1,5 @@
 from pynecone import Command
-import os
+
 
 class Api(Command):
 
@@ -7,10 +7,11 @@ class Api(Command):
         super().__init__("api")
 
     def run(self, args):
+        from .app import App
         if args.action == 'start':
-            os.system('flask run')
-        else:
-            os.system('flask db upgrade')
+            App.app().run()
+        elif args.action == 'upgrade':
+            App.upgrade()
 
     def add_arguments(self, parser):
         parser.add_argument('action', choices=['start', 'upgrade'], default='start', const='start', nargs='?', help='specify what to do with the server')
