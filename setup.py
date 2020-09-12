@@ -23,9 +23,9 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=["realnet_server"],
-    include_package_data=True,
-    install_requires=["pynecone",
+    packages=["realnet_server", "migrations"],
+    package_data={'migrations': ['alembic.ini', 'README', 'versions/*']},
+    install_requires=["pynecone==0.0.18",
                       "requests_toolbelt",
                       "keyring",
                       "python-dotenv",
@@ -34,7 +34,9 @@ setup(
                       "flask-sqlalchemy",
                       "flask-script",
                       "flask",
-                      "psutil"],
+                      "psutil",
+                      "authlib",
+                      "pyyaml"],
     entry_points={
         "console_scripts": [
             "realnet-server=realnet_server.__main__:main",

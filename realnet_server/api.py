@@ -1,5 +1,6 @@
 from pynecone import Command
-
+from realnet_server import app
+from .config import Config
 
 class Api(Command):
 
@@ -7,11 +8,13 @@ class Api(Command):
         super().__init__("api")
 
     def run(self, args):
-        from .app import App
+        cfg = Config.init()
         if args.action == 'start':
-            App.app().run()
+            app.run(cfg.get_server_host(), cfg.get_server_port())
         elif args.action == 'upgrade':
-            App.upgrade()
+            with app.app_context():
+                from flask_migrate import upgrade as _upgrade
+                _upgrade()
 
     def add_arguments(self, parser):
         parser.add_argument('action', choices=['start', 'upgrade'], default='start', const='start', nargs='?', help='specify what to do with the server')

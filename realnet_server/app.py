@@ -2,6 +2,7 @@ from flask import Flask
 from flask_migrate import Migrate
 
 from .models import db
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -19,6 +20,7 @@ class App:
 
     @classmethod
     def upgrade(cls):
+        print(os.path.realpath(__file__))
         with app.app_context():
             from flask_migrate import upgrade as _upgrade
             _upgrade()
