@@ -15,9 +15,13 @@ class Api(Command):
             with app.app_context():
                 from flask_migrate import upgrade as _upgrade
                 _upgrade()
+        elif args.action == 'migrate':
+            with app.app_context():
+                from flask_migrate import migrate as _migrate
+                _migrate()
 
     def add_arguments(self, parser):
-        parser.add_argument('action', choices=['start', 'upgrade'], default='start', const='start', nargs='?', help='specify what to do with the server')
+        parser.add_argument('action', choices=['start', 'upgrade', 'migrate'], default='start', const='start', nargs='?', help='specify what to do with the server')
         parser.add_argument('--port', help='specify the port on which to run', default='8080', const='8080', nargs='?')
 
     def get_help(self):

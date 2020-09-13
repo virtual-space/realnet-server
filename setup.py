@@ -26,6 +26,7 @@ setup(
     packages=["realnet_server", "migrations"],
     package_data={'migrations': ['alembic.ini', 'README', 'versions/*']},
     install_requires=["pynecone==0.0.18",
+                      "realnet-core==0.0.2",
                       "requests_toolbelt",
                       "keyring",
                       "python-dotenv",
@@ -34,7 +35,6 @@ setup(
                       "flask-sqlalchemy",
                       "flask-script",
                       "flask",
-                      "psutil",
                       "authlib",
                       "pyyaml"],
     entry_points={
