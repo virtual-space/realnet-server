@@ -1,5 +1,6 @@
 from pynecone import Command
 from realnet_server import app
+from .models import *
 from .config import Config
 
 class Api(Command):

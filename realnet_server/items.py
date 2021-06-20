@@ -42,26 +42,12 @@ def delete_item(id):
                        data='delete_item {0}'.format(id)), 200
 
 
-@app.route('/items/<id>/data', methods=['GET'])
-def get_item(id):
+@app.route('/items/<id>/data', methods=['GET', 'PUT', 'DELETE'])
+def handle_item(id):
     return jsonify(isError=False,
                        message="Success",
                        statusCode=200,
-                       data='get_item_data {0}'.format(id)), 200
+                       data='handle_item_data {0}'.format(id)), 200
 
 
-@app.route('/items/<id>/data', methods=['PUT'])
-def put_item(id):
-    return jsonify(isError=False,
-                       message="Success",
-                       statusCode=200,
-                       data='put_item_data {0}'.format(id)), 200
-
-
-@app.route('/items/<id>/data', methods=['DELETE'])
-def delete_item(id):
-    return jsonify(isError=False,
-                       message="Success",
-                       statusCode=200,
-                       data='delete_item_data {0}'.format(id)), 200
 
