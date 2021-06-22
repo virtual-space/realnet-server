@@ -1,4 +1,4 @@
-import time
+import time, uuid
 from flask import Blueprint, request, session, url_for
 from flask import render_template, redirect, jsonify
 from werkzeug.security import gen_salt
@@ -23,16 +23,18 @@ def home():
         username = request.form.get('username')
         account = Account.query.filter_by(username=username).first()
         if not account:
-            account = Account(username=username)
+            account = Account(id=username, username=username)
             db.session.add(account)
             db.session.commit()
         session['id'] = account.id
+        print('post', session['id'])
         # if user is not just to log in, but need to head back to the auth page, then go for it
         next_page = request.args.get('next')
         if next_page:
             return redirect(next_page)
         return redirect('/')
     account = current_user()
+    print('get', account)
     if account:
         clients = App.query.filter_by(account_id=account.id).all()
     else:
@@ -56,9 +58,10 @@ def create_client():
     client_id = gen_salt(24)
     client_id_issued_at = int(time.time())
     client = App(
+        id=str(uuid.uuid4()),
         client_id=client_id,
         client_id_issued_at=client_id_issued_at,
-        user_id=user.id,
+        account_id=user.id,
     )
 
     form = request.form

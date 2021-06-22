@@ -11,17 +11,17 @@ db = SQLAlchemy()
 # https://stackoverflow.com/questions/52723239/spatialite-backend-for-geoalchemy2-in-python
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/
 
-class Authenticator(db.Model):
-    id = db.Column(db.String(36), primary_key=True)
-    data = db.Column(db.JSON)
+# class Authenticator(db.Model):
+#    id = db.Column(db.String(36), primary_key=True)
+#    data = db.Column(db.JSON)
 
 class Account(db.Model):
     id = db.Column(db.String(36), primary_key=True)
     username = db.Column(db.String(40), unique=True)
 
     data = db.Column(db.JSON)
-    authenticator_id = db.Column(db.String(36), db.ForeignKey('authenticator.id'), nullable=False)
-    authenticator = db.relationship('Authenticator')
+    # authenticator_id = db.Column(db.String(36), db.ForeignKey('authenticator.id'), nullable=False)
+    # authenticator = db.relationship('Authenticator')
 
     def check_password(self, password):
         pass
@@ -41,6 +41,8 @@ class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
 
 class App(db.Model, OAuth2ClientMixin):
     id = db.Column(db.String(36), primary_key=True)
+    account_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
+    account = db.relationship('Account')
     data = db.Column(db.JSON)
 
 class Type(db.Model):

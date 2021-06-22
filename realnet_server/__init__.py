@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 
 from .config import Config
 
-from .models import db
+from .models import db, Account, Token
 
 from realnet_core import ItemMemStore
 from .auth import config_oauth
@@ -15,7 +15,7 @@ import jinja2
 cfg = Config.init()
 
 app = Flask(__name__)
-
+app.secret_key = '!secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = cfg.get_database_url()
 
 app.jinja_loader = jinja2.ChoiceLoader([
@@ -28,6 +28,8 @@ db.init_app(app)
 config_oauth(app)
 
 migrate = Migrate(app, db)
+
+migrate.init_app(app, db)
 
 store = ItemMemStore()
 
