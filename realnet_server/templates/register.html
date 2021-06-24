@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Apply for an account on the RealNet server</title>
+    {{ bootstrap.load_css() }}
+</head>
+<body>
+  <form action="" method="post">
+      <label for="username">username:</label><br>
+      <input type="text" id="username" name="username" value="John"><br>
+      <label for="email">email:</label><br>
+      <input type="text" id="email" name="email" value="John@example.com"><br>
+      <label for="password">password:</label><br>
+      <input type="password" id="password" name="password"><br>
+      <label for="repeatpassword">repeat password:</label><br>
+      <input type="password" id="repeatpassword" name="repeatpassword"><br>
+      <button type="submit">Register</button>
+  </form>
+    <a href="/login">Login</a>
+    {{ bootstrap.load_js() }}
+</body>
+</html>

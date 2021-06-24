@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {{ bootstrap.load_css() }}
+</head>
+<body>
+  {% if account %}
+  <div class="container">
+      <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link  active" id="myaccount-tab" data-toggle="tab" href="#myaccount" role="tab" aria-controls="contact" aria-selected="false">My Account</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="accounts-tab" data-toggle="tab" href="#accounts" role="tab" aria-controls="home" aria-selected="true">Accounts</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="roles-tab" data-toggle="tab" href="#roles" role="tab" aria-controls="profile" aria-selected="false">Roles</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="clients-tab" data-toggle="tab" href="#clients" role="tab" aria-controls="profile" aria-selected="false">Clients</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="settings-tab" data-toggle="tab" href="#configuration" role="tab" aria-controls="profile" aria-selected="false">Configuration</a>
+          </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="myaccount" role="tabpanel" aria-labelledby="myaccount-tab">
+              My Account
+          </div>
+          <div class="tab-pane fade" id="accounts" role="tabpanel" aria-labelledby="accounts-tab">
+              Accounts
+          </div>
+          <div class="tab-pane fade" id="roles" role="tabpanel" aria-labelledby="roles-tab">
+              Roles
+          </div>
+          <div class="tab-pane fade" id="clients" role="tabpanel" aria-labelledby="clients-tab">
+              Clients
+          </div>
+          <div class="tab-pane fade" id="configuration" role="tabpanel" aria-labelledby="clients-tab">
+              Configuration
+          </div>
+      </div>
+  </div>
+
+
+  {% else %}
+    <a href="/login">Login</a>
+    <a href="/register">Register</a>
+  {% endif %}
+  {{ bootstrap.load_js() }}
+</body>
+</html>

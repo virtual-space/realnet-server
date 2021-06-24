@@ -36,6 +36,8 @@ setup(
                       "flask-script",
                       "flask",
                       "authlib",
+                      "loginpass",
+                      "bootstrap-flask",
                       "pyyaml"],
     entry_points={
         "console_scripts": [

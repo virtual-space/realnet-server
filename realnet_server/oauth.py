@@ -1,12 +1,76 @@
 import time, uuid
 from flask import Blueprint, request, session, url_for
-from flask import render_template, redirect, jsonify
+from flask import render_template, redirect, jsonify, abort
 from werkzeug.security import gen_salt
+from authlib.integrations.flask_client import OAuth
+from loginpass import create_flask_blueprint
+from loginpass import Twitter, GitHub, Google
 from authlib.integrations.flask_oauth2 import current_token
 from authlib.oauth2 import OAuth2Error
 from .models import db, Account, App
 from .auth import authorization, require_oauth
 from realnet_server import app
+
+oauth = OAuth(app)
+
+backends = [Twitter, GitHub, Google]
+
+
+@app.route('/login', methods=('GET', 'POST'))
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        account = Account.query.filter_by(username=username).first()
+        if not account:
+            return redirect('/login')
+        session['id'] = account.id
+        return redirect('/')
+    else:
+        return render_template('login.html')
+    # tpl = '<li><a href="/login/{}">{}</a></li>'
+    # lis = [tpl.format(b.NAME, b.NAME) for b in backends]
+    # return '<ul>{}</ul>'.format(''.join(lis))
+
+@app.route('/settings')
+def settings():
+    account = current_user()
+    return render_template('settings.html',account=account)
+
+@app.route('/register', methods=('GET', 'POST'))
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        account1 = Account.query.filter_by(username=username).first()
+        account2 = Account.query.filter_by( email=email).first()
+        if account1 or account2:
+            return render_template('register.html')
+        else:
+            account = Account(id=str(uuid.uuid4()), username=username, email=email)
+            account.set_password(password)
+            db.session.add(account)
+            db.session.commit()
+            session['id'] = account.id
+            print('post', session['id'])
+            # if user is not just to log in, but need to head back to the auth page, then go for it
+            next_page = request.args.get('next')
+            if next_page:
+                return redirect(next_page)
+            return redirect('/')
+    else:
+        return render_template('register.html')
+
+@app.route('/error')
+def error():
+    return render_template('error.html')
+
+def handle_authorize(remote, token, user_info):
+    return jsonify(user_info)
+
+
+bp = create_flask_blueprint(backends, oauth, handle_authorize)
+app.register_blueprint(bp, url_prefix='')
 
 def current_user():
     if 'id' in session:

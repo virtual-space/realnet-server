@@ -1,6 +1,7 @@
 from pynecone import Command
+import uuid
 from realnet_server import app
-from .models import db
+from .models import db, Authenticator, AuthenticatorType, Account, initialize
 from .config import Config
 
 class Api(Command):
@@ -23,6 +24,8 @@ class Api(Command):
         elif args.action == 'create':
             with app.app_context():
                 db.create_all()
+                initialize()
+
 
     def add_arguments(self, parser):
         parser.add_argument('action', choices=['start', 'upgrade', 'migrate', 'create'], default='start', const='start', nargs='?', help='specify what to do with the server')

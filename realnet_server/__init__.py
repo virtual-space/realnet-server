@@ -3,6 +3,8 @@ __version__ = "0.0.1"
 from flask import Flask
 from flask_migrate import Migrate
 
+from flask_bootstrap import Bootstrap
+
 from .config import Config
 
 from .models import db, Account, Token
@@ -17,6 +19,9 @@ cfg = Config.init()
 app = Flask(__name__)
 app.secret_key = '!secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = cfg.get_database_url()
+app.config['GOOGLE_CLIENT_ID'] = ''
+app.config['GOOGLE_CLIENT_SECRET'] = ''
+app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 
 app.jinja_loader = jinja2.ChoiceLoader([
     app.jinja_loader,
@@ -24,6 +29,8 @@ app.jinja_loader = jinja2.ChoiceLoader([
 ])
 
 db.init_app(app)
+
+bootstrap = Bootstrap(app)
 
 config_oauth(app)
 
