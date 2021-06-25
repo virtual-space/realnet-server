@@ -1,10 +1,10 @@
-from pynecone import Command
+from pynecone import Cmd
 import uuid
 from realnet_server import app
 from .models import db, Authenticator, AuthenticatorType, Account, initialize
 from .config import Config
 
-class Api(Command):
+class Api(Cmd):
 
     def __init__(self):
         super().__init__("api")

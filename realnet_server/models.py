@@ -2,6 +2,7 @@ import enum
 import uuid
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy_serializer import SerializerMixin
 
 from authlib.integrations.sqla_oauth2 import (
     OAuth2ClientMixin,
@@ -59,17 +60,6 @@ class AccountRole(db.Model):
     account_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
     role_id = db.Column(db.String(36), db.ForeignKey('role.id', ondelete='CASCADE'), nullable=False)
 
-class AclType(enum.Enum):
-    public = 1
-    group = 2
-    user = 3
-
-# Define the Acl data-model
-class Acl(db.Model):
-    id = db.Column(db.String(36), primary_key=True)
-    type = db.Column(db.Enum(AclType))
-    name = db.Column(db.String(50))
-    permission = db.Column(db.String(50))
 
 # Define the Group data-model
 class Group(db.Model):
@@ -95,38 +85,79 @@ class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
 
 class App(db.Model, OAuth2ClientMixin):
     id = db.Column(db.String(36), primary_key=True)
-    account_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
-    account = db.relationship('Account')
-    data = db.Column(db.JSON)
-
-class Type(db.Model):
-    id = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(128))
-    attributes = db.Column(db.JSON)
-    owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
-
-class Item(db.Model):
-    id = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(128))
-    attributes = db.Column(db.JSON)
-    type_id = db.Column(db.String(36), db.ForeignKey('type.id'), nullable=False)
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
+    data = db.Column(db.JSON)
 
-# Define the ItemAcl association table
-class ItemAcl(db.Model):
+class Type(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
-    item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
-    acl_id = db.Column(db.String(36), db.ForeignKey('acl.id', ondelete='CASCADE'), nullable=False)
+    name = db.Column(db.String(128))
+    attributes = db.Column(db.JSON)
+    owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
+    group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
+    module = db.Column(db.String(128))
+
+class Item(db.Model, SerializerMixin):
+    id = db.Column(db.String(36), primary_key=True)
+    name = db.Column(db.String(128))
+    attributes = db.Column(db.JSON)
+    owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
+    group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
+    type_id = db.Column(db.String(36), db.ForeignKey('type.id'), nullable=False)
+    parent_id = db.Column(db.String(36), db.ForeignKey('item.id'))
+    type = db.relationship('Type')
+    acls = db.relationship('Acl')
+    # parent = db.relationship('Item')
+
+class AclType(enum.Enum):
+    public = 1
+    group = 2
+    user = 3
+
+# Define the Acl data-model
+class Acl(db.Model):
+    id = db.Column(db.String(36), primary_key=True)
+    type = db.Column(db.Enum(AclType))
+    name = db.Column(db.String(50))
+    permission = db.Column(db.String(50))
+    item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
+
 
 def initialize():
     # db.session.add(Authenticator(id=str(uuid.uuid4()), name='realnet', type=AuthenticatorType.password))
-    admin_id = str(uuid.uuid4())
-    db.session.add(Role(id=admin_id, name='admin'))
+    # create admin account
+    admin_role_id = str(uuid.uuid4())
+    db.session.add(Role(id=admin_role_id, name='admin'))
+
     account_id = str(uuid.uuid4())
     account = Account(id=account_id, type=AccountType.person, username='admin', email='admin@realnet.io')
     account.set_password('123456')
     db.session.add(account)
-    db.session.add(AccountRole(id=str(uuid.uuid4()), account_id=account_id, role_id=admin_id))
+
+    db.session.add(AccountRole(id=str(uuid.uuid4()), account_id=account_id, role_id=admin_role_id))
+
+    group_id = str(uuid.uuid4())
+    db.session.add(Group(id=group_id, name='admin'))
+
+    # create basic types
+    person_type_id = str(uuid.uuid4())
+    db.session.add(Type(id=person_type_id, name='Person', owner_id=account_id, group_id=group_id, module='person'))
+    folder_type_id = str(uuid.uuid4())
+    db.session.add(Type(id=folder_type_id, name='Folder', owner_id=account_id, group_id=group_id, module='folder'))
+    fs_type_id = str(uuid.uuid4())
+    db.session.add(Type(id=fs_type_id, name='Filesystem', owner_id=account_id, group_id=group_id, module='filesystem'))
+
+    db.session.add(Item(id=account_id, name='Admin', owner_id=account_id, group_id=group_id, type_id=person_type_id))
+
+    home_folder_id = str(uuid.uuid4())
+    db.session.add(Item(id=home_folder_id, name='Home', owner_id=account_id, group_id=group_id, type_id=folder_type_id))
+
+    db.session.add(Item(id=str(uuid.uuid4()),
+                        name='My filesystem',
+                        owner_id=account_id,
+                        group_id=group_id,
+                        type_id=fs_type_id,
+                        parent_id=home_folder_id,
+                        attributes={'path': '.'}))
     db.session.commit()
 
