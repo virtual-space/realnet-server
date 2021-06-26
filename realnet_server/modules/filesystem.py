@@ -6,6 +6,12 @@ from flask import jsonify
 
 class Filesystem(Module):
 
+    def delete_item(self, item):
+        pass
+
+    def update_item(self, item, **kwargs):
+        pass
+
     def get_items(self, item):
         items = []
         if os.path.isdir(item.attributes['path']):

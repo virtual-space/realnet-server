@@ -100,7 +100,7 @@ def home():
     account = current_user()
     print('get', account)
     if account:
-        clients = App.query.filter_by(account_id=account.id).all()
+        clients = App.query.filter_by(owner_id=account.id).all()
     else:
         clients = []
 
@@ -125,7 +125,8 @@ def create_client():
         id=str(uuid.uuid4()),
         client_id=client_id,
         client_id_issued_at=client_id_issued_at,
-        account_id=user.id,
+        owner_id=user.id,
+        group_id=user.group_id
     )
 
     form = request.form

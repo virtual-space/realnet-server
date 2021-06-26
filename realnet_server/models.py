@@ -39,12 +39,17 @@ class Account(db.Model):
     email = db.Column(db.String(254), unique=True)
     password_hash = db.Column(db.String(128))
     data = db.Column(db.JSON)
+    group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
+    home_id = db.Column(db.String(36), db.ForeignKey('item.id'))
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def get_user_id(self):
+        return self.id
 
     def __str__(self):
         return self.username
@@ -75,7 +80,7 @@ class AccountGroup(db.Model):
 
 class Token(db.Model, OAuth2TokenMixin):
     id = db.Column(db.Integer, primary_key=True)
-    account_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
     account = db.relationship('Account')
 
 class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
@@ -129,21 +134,21 @@ def initialize():
     admin_role_id = str(uuid.uuid4())
     db.session.add(Role(id=admin_role_id, name='admin'))
 
+    group_id = str(uuid.uuid4())
+    db.session.add(Group(id=group_id, name='admin'))
+
     account_id = str(uuid.uuid4())
-    account = Account(id=account_id, type=AccountType.person, username='admin', email='admin@realnet.io')
+    account = Account(id=account_id, type=AccountType.person, username='admin', email='admin@realnet.io', group_id=group_id)
     account.set_password('123456')
     db.session.add(account)
 
     db.session.add(AccountRole(id=str(uuid.uuid4()), account_id=account_id, role_id=admin_role_id))
 
-    group_id = str(uuid.uuid4())
-    db.session.add(Group(id=group_id, name='admin'))
-
     # create basic types
     person_type_id = str(uuid.uuid4())
     db.session.add(Type(id=person_type_id, name='Person', owner_id=account_id, group_id=group_id, module='person'))
     folder_type_id = str(uuid.uuid4())
-    db.session.add(Type(id=folder_type_id, name='Folder', owner_id=account_id, group_id=group_id, module='folder'))
+    db.session.add(Type(id=folder_type_id, name='Folder', owner_id=account_id, group_id=group_id))
     fs_type_id = str(uuid.uuid4())
     db.session.add(Type(id=fs_type_id, name='Filesystem', owner_id=account_id, group_id=group_id, module='filesystem'))
 
@@ -151,6 +156,12 @@ def initialize():
 
     home_folder_id = str(uuid.uuid4())
     db.session.add(Item(id=home_folder_id, name='Home', owner_id=account_id, group_id=group_id, type_id=folder_type_id))
+    db.session.commit()
+
+    adm = db.session.query(Account).filter(Account.id == account_id).first()
+    if adm:
+        print('setting admin home folder id')
+        adm.home_id = home_folder_id
 
     db.session.add(Item(id=str(uuid.uuid4()),
                         name='My filesystem',

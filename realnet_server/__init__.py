@@ -14,6 +14,9 @@ from .auth import config_oauth
 
 import jinja2
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 cfg = Config.init()
 
 app = Flask(__name__)
