@@ -5,6 +5,18 @@ from flask import jsonify
 
 class Default(Module):
 
+    def create_item(self, parent_item=None, **kwargs):
+        pass
+
+    def get_item_data(self, item):
+        pass
+
+    def update_item_data(self, item, filename):
+        pass
+
+    def delete_item_data(self, item, filename):
+        pass
+
     def delete_item(self, item):
         db.session.delete(item)
         db.session.commit()

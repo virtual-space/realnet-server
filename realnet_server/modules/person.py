@@ -3,6 +3,18 @@ from realnet_server.models import Account
 from flask import jsonify
 
 class Person(Module):
+    def create_item(self, parent_item=None, **kwargs):
+        pass
+
+    def get_item_data(self, item):
+        pass
+
+    def update_item_data(self, item, filename):
+        pass
+
+    def delete_item_data(self, item, filename):
+        pass
+
     def get_items(self, item):
         pass
 

@@ -19,3 +19,19 @@ class Module(ABC):
     def update_item(self, item, **kwargs):
         pass
 
+    @abstractmethod
+    def create_item(self, parent_item=None, **kwargs):
+        pass
+
+    @abstractmethod
+    def get_item_data(self, item):
+        pass
+
+    @abstractmethod
+    def update_item_data(self, item, filename):
+        pass
+
+    @abstractmethod
+    def delete_item_data(self, item, filename):
+        pass
+
