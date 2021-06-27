@@ -43,16 +43,6 @@ def items():
                     if 'attributes' in input_data:
                         input_attributes = input_data['attributes']
 
-                    item = Item(id=str(uuid.uuid4()),
-                                        name=input_name,
-                                        owner_id=current_token.account.id,
-                                        group_id=current_token.account.group_id,
-                                        type_id=input_type.id,
-                                        parent_id=parent_id,
-                                        attributes=input_attributes)
-                    db.session.add(item)
-                    db.session.commit()
-
                     parent_item = None
 
                     if parent_id:
@@ -66,9 +56,13 @@ def items():
                     if input_attributes:
                         args['attributes'] = input_attributes
 
-                    module_instance.create_item(parent_item=parent_item, **args)
+                    args['owner_id'] = current_token.account.id
+                    args['group_id'] = current_token.account.group_id
+                    args['type_id'] = input_type.id
 
-                    return jsonify(item.to_dict()), 201
+                    created_item = module_instance.create_item(parent_item=parent_item, **args)
+
+                    return created_item, 201
                 else:
                     return jsonify(isError=True,
                                    message="Failure",
