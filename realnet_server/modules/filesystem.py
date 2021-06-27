@@ -12,7 +12,7 @@ class Filesystem(Module):
     def get_item_data(self, item):
         pass
 
-    def update_item_data(self, item, filename):
+    def update_item_data(self, item, storage):
         pass
 
     def delete_item_data(self, item, filename):

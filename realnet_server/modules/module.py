@@ -28,7 +28,7 @@ class Module(ABC):
         pass
 
     @abstractmethod
-    def update_item_data(self, item, filename):
+    def update_item_data(self, item, storage):
         pass
 
     @abstractmethod

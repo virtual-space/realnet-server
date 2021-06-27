@@ -16,7 +16,8 @@ class Config:
         print('*** Generating default config file ***')
 
         dict_file = {'database': {'url': 'sqlite:///{0}'.format(os.path.join(self.path, 'realnet-server.db'))},
-                      'server': {'host': '0.0.0.0', 'port': '8080'}}
+                      'server': {'host': '0.0.0.0', 'port': '8080'},
+                      'storage': {'type': 'local', 'path': './storage'}}
 
         with open(self.full_path, 'w') as file:
             yaml.dump(dict_file, file)
@@ -29,6 +30,9 @@ class Config:
 
     def get_server_port(self):
         return self.data['server']['port']
+
+    def get_storage(self):
+        return self.data['storage']
 
     @classmethod
     def init(cls, name='realnet-server.yml', path=os.getcwd()):

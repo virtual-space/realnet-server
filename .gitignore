@@ -134,3 +134,6 @@ dmypy.json
 # runtime
 realnet-server.yml
 realnet-server.db
+
+# temp
+storage/

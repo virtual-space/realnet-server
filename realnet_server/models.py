@@ -22,6 +22,7 @@ db = SQLAlchemy()
 # https://stackoverflow.com/questions/52723239/spatialite-backend-for-geoalchemy2-in-python
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/
 
+
 class Authenticator(db.Model):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(40))
@@ -29,9 +30,11 @@ class Authenticator(db.Model):
     client_id = db.Column(db.String(128))
     client_secret = db.Column(db.String(128))
 
+
 class AccountType(enum.Enum):
     person = 1
     thing = 2
+
 
 class Account(db.Model):
     id = db.Column(db.String(36), primary_key=True)
@@ -55,10 +58,12 @@ class Account(db.Model):
     def __str__(self):
         return self.username
 
+
 # Define the Role data-model
 class Role(db.Model):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(50), unique=True)
+
 
 # Define the AccountRole association table
 class AccountRole(db.Model):
@@ -72,6 +77,7 @@ class Group(db.Model):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(50), unique=True)
 
+
 # Define the AccountGroup association table
 class AccountGroup(db.Model):
     id = db.Column(db.String(36), primary_key=True)
@@ -84,16 +90,19 @@ class Token(db.Model, OAuth2TokenMixin):
     user_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
     account = db.relationship('Account')
 
+
 class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
     account = db.relationship('Account')
+
 
 class App(db.Model, OAuth2ClientMixin):
     id = db.Column(db.String(36), primary_key=True)
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
     data = db.Column(db.JSON)
+
 
 class Type(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
@@ -102,6 +111,7 @@ class Type(db.Model, SerializerMixin):
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
     module = db.Column(db.String(128))
+
 
 class Item(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
@@ -115,10 +125,12 @@ class Item(db.Model, SerializerMixin):
     acls = db.relationship('Acl')
     # parent = db.relationship('Item')
 
+
 class AclType(enum.Enum):
     public = 1
     group = 2
     user = 3
+
 
 # Define the Acl data-model
 class Acl(db.Model):
@@ -127,6 +139,24 @@ class Acl(db.Model):
     name = db.Column(db.String(50))
     permission = db.Column(db.String(50))
     item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
+
+
+class BlobType(enum.Enum):
+    local = 1
+    s3 = 2
+
+
+# Define the Acl data-model
+class Blob(db.Model):
+    id = db.Column(db.String(36), primary_key=True)
+    type = db.Column(db.Enum(BlobType))
+    data = db.Column(db.JSON)
+    content_length = db.Column(db.Integer, nullable=False)
+    content_type = db.Column(db.String(36), nullable=False)
+    filename = db.Column(db.String(250), nullable=False)
+    mime_type = db.Column(db.String(36), nullable=False)
+    item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
+
 
 
 def initialize():

@@ -1,6 +1,9 @@
 import uuid
+import os
+import shutil
 from .module import Module
-from realnet_server.models import db, Item
+from realnet_server.models import db, Item, Blob, BlobType
+from realnet_server.config import Config
 from flask import jsonify
 
 
@@ -42,10 +45,45 @@ class Default(Module):
         return jsonify(item.to_dict())
 
     def get_item_data(self, item):
-        pass
+        blob = Blob.query.filter(Blob.item_id == item.id).first()
 
-    def update_item_data(self, item, filename):
-        pass
+        if blob:
+            path1 = os.path.join(os.getcwd(), 'storage')
+            return os.path.join(path1, blob.filename)
+
+    def update_item_data(self, item, storage):
+        cfg = Config.init()
+        storage_cfg = cfg.get_storage()
+        blob = Blob.query.filter(Blob.item_id == item.id).first()
+
+        if blob:
+            # update existing
+            if blob.type == BlobType.local:
+                path = os.path.join(blob.data['path'], storage.filename)
+                storage.save(path)
+                pass
+            elif blob.type == BlobType.s3:
+                pass
+        else:
+            if storage_cfg['type'] == 'local':
+                basepath = './storage/'
+                if not os.path.isdir(basepath):
+                    os.mkdir(basepath)
+                path = os.path.join(basepath, storage.filename)
+                storage.save(path)
+                blob = Blob(id=str(uuid.uuid4()),
+                            type=BlobType.local,
+                            data={'path': basepath},
+                            content_length=os.stat(path).st_size,
+                            content_type=storage.content_type,
+                            filename=storage.filename,
+                            mime_type=storage.mimetype,
+                            item_id=item.id)
+                db.session.add(blob)
+                db.session.commit()
+            elif storage_cfg['type'] == 's3':
+                pass
+            pass
 
     def delete_item_data(self, item, filename):
         pass
