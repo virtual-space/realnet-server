@@ -18,7 +18,7 @@ class Default(Module):
         item_parent_id = None
 
         for key, value in kwargs.items():
-            print("%s == %s" % (key, value))
+            # print("%s == %s" % (key, value))
             if key == 'name':
                 item_name = value
             elif key == 'owner_id':

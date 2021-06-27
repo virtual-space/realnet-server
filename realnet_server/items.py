@@ -1,19 +1,49 @@
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from flask import request, jsonify, send_file
-from .models import db, Item, Type
+from .models import db, Item, Type, Account, AccountGroup
 from .auth import require_oauth
 import importlib
-import uuid
-import os
+import json
 from werkzeug.utils import secure_filename
+
+
+def can_account_read_item(account, item):
+    # 0. is the account in the item read or write acl?
+    account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+    if account_group:
+        return True
+    return item.owner_id == account.id
+
+
+def can_account_write_item(account, item):
+    # 0. is the account in the item write acl?
+    account_group = AccountGroup.query.filter(
+        AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+    if account_group:
+        return True
+    return item.owner_id == account.id
+
+
+def can_account_delete_item(account, item):
+    # 0. is the account in the item delete acl?
+    account_group = AccountGroup.query.filter(
+        AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+    if account_group:
+        return True
+    return item.owner_id == account.id
+
+
+def filter_readable_items(account, items_json):
+    return [i for i in json.parse(items_json) if can_account_read_item(account, i)]
+
 
 @app.route('/items', methods=['GET', 'POST'])
 @require_oauth()
 def items():
     if request.method == 'POST':
-        request.on_json_loading_failed = lambda x: print('json parsing error: ',x)
-        input_data = request.get_json(force=True,silent=False)
+        request.on_json_loading_failed = lambda x: print('json parsing error: ', x)
+        input_data = request.get_json(force=True, silent=False)
         if input_data:
             input_type = Type.query.filter(Type.name == input_data['type'].capitalize()).first()
             if input_type:
@@ -29,12 +59,25 @@ def items():
 
                 input_name = input_data['name']
                 if input_name:
-                    # print(current_token.account.group_id)
                     parent_id = None
 
                     if 'parent_id' in input_data:
                         parent_id = input_data['parent_id']
 
+                        parent = Item.query.filter(Item.id == parent_id).first()
+                        if not parent:
+                            return jsonify(isError=True,
+                                           message="Failure",
+                                           statusCode=404,
+                                           data='Parent item not found'), 404
+
+                        account = Account.query.filter(Account.id == current_token.account.id).first()
+
+                        if not can_account_write_item(account=account,item=parent):
+                            return jsonify(isError=True,
+                                           message="Failure",
+                                           statusCode=403,
+                                           data='Account not authorized to write to parent'), 403
                     if not parent_id:
                         parent_id = current_token.account.home_id
 
@@ -98,6 +141,15 @@ def single_item(id):
         module_instance = module_class()
 
         if request.method == 'PUT':
+
+            account = Account.query.filter(Account.id == current_token.account.id).first()
+
+            if not can_account_write_item(account=account, item=item):
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=403,
+                               data='Account not authorized to write to item'), 403
+
             input_data = request.get_json(force=True, silent=False)
 
             args = dict()
@@ -108,6 +160,21 @@ def single_item(id):
             if 'parent_id' in input_data:
                 args['parent_id'] = input_data['parent_id']
 
+                parent = Item.query.filter(Item.id == args['parent_id']).first()
+
+                if not parent:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=404,
+                                   data='Parent item not found'), 404
+
+                if not can_account_write_item(account=account, item=parent):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to write to parent'), 403
+
+
             if 'attributes' in input_data:
                 args['attributes'] = input_data['attributes']
 
@@ -116,12 +183,28 @@ def single_item(id):
             return jsonify(item.to_dict())
 
         elif request.method == 'DELETE':
+
+            account = Account.query.filter(Account.id == current_token.account.id).first()
+
+            if not can_account_delete_item(account=account, item=item):
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=403,
+                               data='Account not authorized to delete this item'), 403
+
             module_instance.delete_item(item)
             return jsonify(isError=False,
                            message="Success",
                            statusCode=200,
                            data='deleted item {0}'.format(id)), 200
         else:
+            account = Account.query.filter(Account.id == current_token.account.id).first()
+
+            if not can_account_read_item(account=account, item=item):
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=403,
+                               data='Account not authorized to read this item'), 403
             retrieved_item = module_instance.get_item(item)
 
         if retrieved_item:
@@ -137,13 +220,14 @@ def single_item(id):
                        statusCode=404,
                        data='get_item {0}'.format(id)), 404
 
-UPLOAD_FOLDER = '/path/to/the/uploads'
+
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/items/<id>/data', methods=['GET', 'PUT', 'POST', 'DELETE'])
 @require_oauth()
@@ -176,20 +260,43 @@ def item_data(id):
                                statusCode=400,
                                data='Bad request: file content missing from the request'), 400
 
+            account = Account.query.filter(Account.id == current_token.account.id).first()
+
+            if not can_account_write_item(account=account, item=item):
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=403,
+                               data='Account not authorized to write data into this item'), 403
+
             if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                print(filename)
-                module_instance.update_item_data(item, filename)
+                module_instance.update_item_data(item, file)
                 # file.save(os.path.join(UPLOAD_FOLDER, filename))
                 return jsonify({'url': '/items/{}/data'.format(item.id)})
 
         elif request.method == 'DELETE':
+
+            account = Account.query.filter(Account.id == current_token.account.id).first()
+
+            if not can_account_write_item(account=account, item=item):
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=403,
+                               data='Account not authorized to delete data from this item'), 403
+
             module_instance.delete_item_data(item)
             return jsonify(isError=False,
                            message="Success",
                            statusCode=200,
                            data='deleted item {0}'.format(id)), 200
         else:
+            account = Account.query.filter(Account.id == current_token.account.id).first()
+
+            if not can_account_read_item(account=account, item=item):
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=403,
+                               data='Account not authorized to read data from this item'), 403
+
             output_filename = module_instance.get_item_data(item)
 
         if output_filename:
@@ -245,20 +352,26 @@ def item_items(id):
             if input_name:
                 parent_id = id
 
+                parent = Item.query.filter(Item.id == parent_id).first()
+
+                if not parent:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=404,
+                                   data='Parent item not found'), 404
+
+                account = Account.query.filter(Account.id == current_token.account.id).first()
+
+                if not can_account_write_item(account=account, item=parent):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to write to parent'), 403
+
                 input_attributes = None
 
                 if 'attributes' in input_data:
                     input_attributes = input_data['attributes']
-
-                item = Item(id=str(uuid.uuid4()),
-                            name=input_name,
-                            owner_id=current_token.account.id,
-                            group_id=current_token.account.group_id,
-                            type_id=item.type_id,
-                            parent_id=parent_id,
-                            attributes=input_attributes)
-                db.session.add(item)
-                db.session.commit()
 
                 parent_item = Item.query.filter(Item.id == parent_id).first()
 
@@ -274,7 +387,16 @@ def item_items(id):
 
                 return jsonify(item.to_dict()), 201
         else:
-            retrieved_items = module_instance.get_items(item)
+
+            account = Account.query.filter(Account.id == current_token.account.id).first()
+
+            if not can_account_read_item(account=account, item=item):
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=403,
+                               data='Account not authorized to read this item'), 403
+
+            retrieved_items = filter_readable_items(account, module_instance.get_items(item))
             return retrieved_items
     else:
         return jsonify([])

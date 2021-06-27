@@ -17,7 +17,7 @@ class Config:
 
         dict_file = {'database': {'url': 'sqlite:///{0}'.format(os.path.join(self.path, 'realnet-server.db'))},
                       'server': {'host': '0.0.0.0', 'port': '8080'},
-                      'storage': {'type': 'local', 'path': './storage'}}
+                      'storage': {'type': 'local', 'path': os.path.join(os.getcwd(), 'storage')}}
 
         with open(self.full_path, 'w') as file:
             yaml.dump(dict_file, file)
