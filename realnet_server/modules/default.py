@@ -22,6 +22,7 @@ class Default(Module):
         db.session.commit()
 
     def update_item(self, item, **kwargs):
+        print(kwargs.items())
         for key, value in kwargs.items():
             print("%s == %s" % (key, value))
             if key == 'name':
@@ -42,6 +43,7 @@ class Default(Module):
             return jsonify({'id': retrieved_item.id,
                             'name': retrieved_item.name,
                             'attributes': retrieved_item.attributes,
-                            'type': retrieved_item.type})
+                            'type': retrieved_item.type.to_dict(),
+                            'parent_id': retrieved_item.parent_id})
 
         return None

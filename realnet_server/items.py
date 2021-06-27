@@ -38,13 +38,18 @@ def items():
                     if not parent_id:
                         parent_id = current_token.account.home_id
 
+                    input_attributes = None
+
+                    if 'attributes' in input_data:
+                        input_attributes = input_data['attributes']
+
                     item = Item(id=str(uuid.uuid4()),
                                         name=input_name,
                                         owner_id=current_token.account.id,
                                         group_id=current_token.account.group_id,
                                         type_id=input_type.id,
                                         parent_id=parent_id,
-                                        attributes=attributes)
+                                        attributes=input_attributes)
                     db.session.add(item)
                     db.session.commit()
 
@@ -55,14 +60,11 @@ def items():
 
                     args = dict()
 
-                    if 'name' in input_data:
-                        args['name'] = input_data['name']
+                    if input_name:
+                        args['name'] = input_name
 
-                    if 'parent_id' in input_data:
-                        args['parent_id'] = input_data['parent_id']
-
-                    if 'attributes' in input_data:
-                        args['attributes'] = input_data['attributes']
+                    if input_attributes:
+                        args['attributes'] = input_attributes
 
                     module_instance.create_item(parent_item=parent_item, **args)
 
@@ -87,6 +89,7 @@ def items():
 
 
 @app.route('/items/<id>', methods=['GET', 'PUT', 'DELETE'])
+@require_oauth()
 def single_item(id):
     # 1. get the type
     item = Item.query.filter(Item.id == id).first()
@@ -97,7 +100,7 @@ def single_item(id):
             module_name = 'default'
 
         module = importlib.import_module('realnet_server.modules.{}'.format(module_name))
-        module_class = getattr(module, item.type.module.capitalize())
+        module_class = getattr(module, module_name.capitalize())
         module_instance = module_class()
 
         if request.method == 'PUT':
@@ -149,6 +152,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/items/<id>/data', methods=['GET', 'PUT', 'POST', 'DELETE'])
+@require_oauth()
 def item_data(id):
     item = Item.query.filter(Item.id == id).first()
     if item:
@@ -158,7 +162,7 @@ def item_data(id):
             module_name = 'default'
 
         module = importlib.import_module('realnet_server.modules.{}'.format(module_name))
-        module_class = getattr(module, item.type.module.capitalize())
+        module_class = getattr(module, module_name.capitalize())
         module_instance = module_class()
 
         if request.method == 'PUT' or request.method == 'POST':
@@ -179,8 +183,9 @@ def item_data(id):
                                data='Bad request: file content missing from the request'), 400
 
             if file and allowed_file(file.filename):
-                # filename = secure_filename(file.filename)
-                module_instance.update_item_data(item, file.filename)
+                filename = secure_filename(file.filename)
+                print(filename)
+                module_instance.update_item_data(item, filename)
                 # file.save(os.path.join(UPLOAD_FOLDER, filename))
                 return jsonify({'url': '/items/{}/data'.format(item.id)})
 
@@ -208,6 +213,7 @@ def item_data(id):
 
 
 @app.route('/items/<id>/acls', methods=['GET', 'POST'])
+@require_oauth()
 def item_acls(id):
     return jsonify(isError=False,
                        message="Success",
@@ -216,6 +222,7 @@ def item_acls(id):
 
 
 @app.route('/items/<id>/acls/<aclid>', methods=['GET', 'PUT', 'DELETE'])
+@require_oauth()
 def item_acl(id, aclid):
     return jsonify(isError=False,
                        message="Success",
@@ -224,19 +231,59 @@ def item_acl(id, aclid):
 
 
 @app.route('/items/<id>/items', methods=['GET', 'POST'])
+@require_oauth()
 def item_items(id):
-    # 1. get the type
     item = Item.query.filter(Item.id == id).first()
     if item:
-        # 2. see if type has a module
-        if item.type.module:
-            module = importlib.import_module('realnet_server.modules.{}'.format(item.type.module))
-            module_class = getattr(module, item.type.module.capitalize())
-            module_instance = module_class()
+        module_name = item.type.module
+
+        if not module_name:
+            module_name = 'default'
+
+        module = importlib.import_module('realnet_server.modules.{}'.format(module_name))
+        module_class = getattr(module, module_name.capitalize())
+        module_instance = module_class()
+
+        if request.method == 'POST':
+            input_data = request.get_json(force=True, silent=False)
+
+            input_name = input_data['name']
+            if input_name:
+                parent_id = id
+
+                input_attributes = None
+
+                if 'attributes' in input_data:
+                    input_attributes = input_data['attributes']
+
+                item = Item(id=str(uuid.uuid4()),
+                            name=input_name,
+                            owner_id=current_token.account.id,
+                            group_id=current_token.account.group_id,
+                            type_id=item.type_id,
+                            parent_id=parent_id,
+                            attributes=input_attributes)
+                db.session.add(item)
+                db.session.commit()
+
+                parent_item = Item.query.filter(Item.id == parent_id).first()
+
+                args = dict()
+
+                if input_name:
+                    args['name'] = input_name
+
+                if input_attributes:
+                    args['attributes'] = input_attributes
+
+                module_instance.create_item(parent_item=parent_item, **args)
+
+                return jsonify(item.to_dict()), 201
+        else:
             retrieved_items = module_instance.get_items(item)
             return retrieved_items
-        else:
-            return jsonify([])
+    else:
+        return jsonify([])
 
     return jsonify(isError=True,
                    message="Failure",

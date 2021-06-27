@@ -1,7 +1,8 @@
 import enum
 import uuid
+import time
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash, gen_salt
 from sqlalchemy_serializer import SerializerMixin
 
 from authlib.integrations.sqla_oauth2 import (
@@ -170,5 +171,34 @@ def initialize():
                         type_id=fs_type_id,
                         parent_id=home_folder_id,
                         attributes={'path': '.'}))
+    db.session.commit()
+
+    client_id = gen_salt(24)
+    client_id_issued_at = int(time.time())
+    client = App(
+        id=str(uuid.uuid4()),
+        client_id=client_id,
+        client_id_issued_at=client_id_issued_at,
+        owner_id=account_id,
+        group_id=group_id
+    )
+
+    client_metadata = {
+        'client_name': 'realnet',
+        'client_uri': 'http://localhost:8080',
+        'grant_types': ['authorization_code', 'password'],
+        'redirect_uris': [],
+        'response_types': ['code'],
+        'scope': '',
+        'token_endpoint_auth_method': 'client_secret_basic'
+    }
+    client.set_client_metadata(client_metadata)
+
+    if client_metadata['token_endpoint_auth_method'] == 'none':
+        client.client_secret = ''
+    else:
+        client.client_secret = gen_salt(48)
+
+    db.session.add(client)
     db.session.commit()
 
