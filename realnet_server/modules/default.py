@@ -51,6 +51,8 @@ class Default(Module):
             path1 = os.path.join(os.getcwd(), 'storage')
             return os.path.join(path1, blob.filename)
 
+        return None
+
     def update_item_data(self, item, storage):
         cfg = Config.init()
         storage_cfg = cfg.get_storage()
@@ -61,7 +63,11 @@ class Default(Module):
             if blob.type == BlobType.local:
                 path = os.path.join(blob.data['path'], storage.filename)
                 storage.save(path)
-                pass
+                blob.content_length = os.stat(path).st_size
+                blob.content_type = storage.content_type
+                blob.filename = storage.filename
+                blob.mime_type = storage.mimetype
+                db.session.commit()
             elif blob.type == BlobType.s3:
                 pass
         else:
@@ -85,8 +91,13 @@ class Default(Module):
                 pass
             pass
 
-    def delete_item_data(self, item, filename):
-        pass
+    def delete_item_data(self, item):
+        blob = Blob.query.filter(Blob.item_id == item.id).first()
+        if blob:
+            path1 = os.path.join(os.getcwd(), 'storage')
+            os.remove(os.path.join(path1, blob.filename))
+            db.session.delete(blob)
+            db.session.commit()
 
     def delete_item(self, item):
         db.session.delete(item)

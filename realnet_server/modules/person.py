@@ -12,7 +12,7 @@ class Person(Module):
     def update_item_data(self, item, storage):
         pass
 
-    def delete_item_data(self, item, filename):
+    def delete_item_data(self, item):
         pass
 
     def get_items(self, item):

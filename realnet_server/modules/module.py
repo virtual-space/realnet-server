@@ -32,6 +32,6 @@ class Module(ABC):
         pass
 
     @abstractmethod
-    def delete_item_data(self, item, filename):
+    def delete_item_data(self, item):
         pass
 

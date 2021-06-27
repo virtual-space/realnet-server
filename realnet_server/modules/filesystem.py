@@ -15,7 +15,7 @@ class Filesystem(Module):
     def update_item_data(self, item, storage):
         pass
 
-    def delete_item_data(self, item, filename):
+    def delete_item_data(self, item):
         pass
 
     def delete_item(self, item):
