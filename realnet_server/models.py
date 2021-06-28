@@ -133,7 +133,7 @@ class AclType(enum.Enum):
 
 
 # Define the Acl data-model
-class Acl(db.Model):
+class Acl(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     type = db.Column(db.Enum(AclType))
     name = db.Column(db.String(50))

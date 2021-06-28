@@ -1,32 +1,56 @@
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from flask import request, jsonify, send_file
-from .models import db, Item, Type, Account, AccountGroup
+from .models import db, Item, Type, Account, AccountGroup, Acl, AclType
 from .auth import require_oauth
 import importlib
 import json
-from werkzeug.utils import secure_filename
+import uuid
 
 
 def can_account_read_item(account, item):
-    # 0. is the account in the item read or write acl?
+    if [acl for acl in item.acls if acl.type == AclType.public]:
+        return True
+
+    if [acl for acl in item.acls if acl.type == AclType.user and acl.name == account.username and ('r' in acl.permission or 'w' in acl.permission)]:
+        return True
+
+    account_groups = set([ag.name for ag in AccountGroup.query.filter(AccountGroup.account_id == account.id)])
+
+    if [acl for acl in item.acls if acl.type == AclType.group and acl.name in account_groups and ('r' in acl.permission or 'w' in acl.permission)]:
+        return True
+
     account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+
     if account_group:
         return True
-    return item.owner_id == account.id
+
+    if item.owner_id == account.id:
+        return True
 
 
 def can_account_write_item(account, item):
-    # 0. is the account in the item write acl?
+    if [acl for acl in item.acls if
+        acl.type == AclType.user and acl.name == account.username and 'w' in acl.permission]:
+        return True
+
+    account_groups = set([ag.name for ag in AccountGroup.query.filter(AccountGroup.account_id == account.id)])
+
+    if [acl for acl in item.acls if
+        acl.type == AclType.group and acl.name in account_groups and 'w' in acl.permission]:
+        return True
+
     account_group = AccountGroup.query.filter(
         AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+
     if account_group:
         return True
-    return item.owner_id == account.id
+
+    if item.owner_id == account.id:
+        return True
 
 
 def can_account_delete_item(account, item):
-    # 0. is the account in the item delete acl?
     account_group = AccountGroup.query.filter(
         AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
     if account_group:
@@ -316,19 +340,98 @@ def item_data(id):
 @app.route('/items/<id>/acls', methods=['GET', 'POST'])
 @require_oauth()
 def item_acls(id):
-    return jsonify(isError=False,
-                       message="Success",
-                       statusCode=200,
-                       data='handle_item_data {0}'.format(id)), 200
+    item = Item.query.filter(Item.id == id).first()
+    if item:
+        if item.owner_id == current_token.account.id or item.group_id == current_token.account.group_id:
+            if request.method == 'POST':
+                input_data = request.get_json(force=True, silent=False)
+
+                type = None
+                name = None
+                permission = None
+
+                if 'name' in input_data:
+                    name = input_data['name']
+
+                if 'type' in input_data:
+                    type = input_data['type']
+
+                if 'permission' in input_data:
+                    permission = input_data['permission']
+
+                if type == None or name == None or permission == None:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=400,
+                                   data='Bad request, name, type or permission missing'), 400
+
+                acl = Acl(id=str(uuid.uuid4()), type=AclType[type], name=name, permission=permission, item_id=item.id)
+                db.session.add(acl)
+                db.session.commit()
+                return jsonify(acl.to_dict()), 201
+            else:
+                jsonify([a.to_dict() for a in Acl.query.filter(Acl.item_id == item.id)])
+        else:
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=403,
+                           data='Account not authorized to read/modify acls from this item'), 403
+    else:
+        return jsonify(isError=True,
+                       message="Failure",
+                       statusCode=404,
+                       data='Item {0} not found'.format(id)), 404
 
 
 @app.route('/items/<id>/acls/<aclid>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def item_acl(id, aclid):
-    return jsonify(isError=False,
-                       message="Success",
-                       statusCode=200,
-                       data='handle_item_data {0}'.format(id)), 200
+    item = Item.query.filter(Item.id == id).first()
+    if item:
+        if item.owner_id == current_token.account.id or item.group_id == current_token.account.group_id:
+            acl = Acl.query.filter(Acl.id == aclid and Acl.item_id == id).first()
+            if acl:
+                if request.method == 'GET':
+                    return jsonify(acl.to_dict()), 200
+                elif request.method == 'DELETE':
+                    db.session.delete(item)
+                    db.session.commit()
+                    return jsonify(isError=False,
+                                   message="Success",
+                                   statusCode=200,
+                                   data='deleted acl {0}'.format(aclid)), 200
+                elif request.method == 'PUT':
+                    input_data = request.get_json(force=True, silent=False)
+
+                    if 'name' in input_data:
+                        acl.name = input_data['name']
+
+                    if 'type' in input_data:
+                        acl.type = AclType[input_data['type']]
+
+                    if 'permission' in input_data:
+                        acl.permission = input_data['permission']
+
+                    db.session.commit()
+
+                    return jsonify(acl.to_dict()), 200
+                else:
+                    jsonify([a.to_dict() for a in Acl.query.filter(Acl.item_id == item.id)])
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=404,
+                               data='ACl {0} not found'.format(aclid)), 404
+        else:
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=403,
+                           data='Account not authorized to read/modify acls from this item'), 403
+    else:
+        return jsonify(isError=True,
+                       message="Failure",
+                       statusCode=404,
+                       data='Item {0} not found'.format(id)), 404
 
 
 @app.route('/items/<id>/items', methods=['GET', 'POST'])
