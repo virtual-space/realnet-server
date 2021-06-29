@@ -185,7 +185,7 @@ def initialize():
     message_type_id = str(uuid.uuid4())
     db.session.add(Type(id=message_type_id, name='Message', owner_id=account_id, group_id=group_id))
     function_type_id = str(uuid.uuid4())
-    db.session.add(Type(id=function_type_id, name='Function', owner_id=account_id, group_id=group_id, module='function'))
+    db.session.add(Type(id=function_type_id, name='Function', owner_id=account_id, group_id=group_id))
 
     fs_type_id = str(uuid.uuid4())
     db.session.add(Type(id=fs_type_id, name='Filesystem', owner_id=account_id, group_id=group_id, module='filesystem'))

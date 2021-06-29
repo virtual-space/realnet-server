@@ -1,10 +1,9 @@
 import uuid
 import os
-import shutil
+import json
 from .module import Module
 from realnet_server.models import db, Item, Blob, BlobType
 from realnet_server.config import Config
-from flask import jsonify
 
 
 class Default(Module):
@@ -42,7 +41,7 @@ class Default(Module):
                     attributes=item_attributes)
         db.session.add(item)
         db.session.commit()
-        return jsonify(item.to_dict())
+        return json.dumps(item.to_dict())
 
     def get_item_data(self, item):
         blob = Blob.query.filter(Blob.item_id == item.id).first()
@@ -117,12 +116,12 @@ class Default(Module):
         db.session.commit()
 
     def get_items(self, item):
-        return jsonify([i.to_dict() for i in Item.query.filter(Item.parent_id == item.id)])
+        return json.dumps([i.to_dict() for i in Item.query.filter(Item.parent_id == item.id)])
 
     def get_item(self, item):
         retrieved_item = Item.query.filter(Item.id == item.id).first()
         if retrieved_item:
-            return jsonify({'id': retrieved_item.id,
+            return json.dumps({'id': retrieved_item.id,
                             'name': retrieved_item.name,
                             'attributes': retrieved_item.attributes,
                             'type': retrieved_item.type.to_dict(),
