@@ -135,7 +135,7 @@ class Item(db.Model, SerializerMixin):
     # parent = db.relationship('Item')
 
 
-class Function(db.Model):
+class Function(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(128))
     code = db.Column(db.Text)
@@ -143,7 +143,7 @@ class Function(db.Model):
     item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
 
 
-class Topic(db.Model):
+class Topic(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(128))
     data = db.Column(db.JSON)
