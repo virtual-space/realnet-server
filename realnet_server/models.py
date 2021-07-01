@@ -2,6 +2,7 @@ import enum
 import uuid
 import time
 from flask_sqlalchemy import SQLAlchemy
+from geoalchemy2 import Geometry
 from werkzeug.security import generate_password_hash, check_password_hash, gen_salt
 from sqlalchemy_serializer import SerializerMixin
 
@@ -45,6 +46,7 @@ class Account(db.Model):
     data = db.Column(db.JSON)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
     home_id = db.Column(db.String(36), db.ForeignKey('item.id'))
+    parent_id = db.Column(db.String(36), db.ForeignKey('account.id'))
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -113,6 +115,11 @@ class Type(db.Model, SerializerMixin):
     module = db.Column(db.String(128))
 
 
+class VisibilityType(enum.Enum):
+    visible = 1
+    hidden = 2
+    restricted = 3
+
 class Item(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(128))
@@ -121,10 +128,32 @@ class Item(db.Model, SerializerMixin):
     group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
     type_id = db.Column(db.String(36), db.ForeignKey('type.id'), nullable=False)
     parent_id = db.Column(db.String(36), db.ForeignKey('item.id'))
+    geometry = db.Column(Geometry(geometry_type='GEOMETRY', srid=4326))
+    visibility = db.Column(db.Enum(AccountType))
     type = db.relationship('Type')
     acls = db.relationship('Acl')
     # parent = db.relationship('Item')
 
+
+class Function(db.Model):
+    id = db.Column(db.String(36), primary_key=True)
+    name = db.Column(db.String(128))
+    code = db.Column(db.Text)
+    data = db.Column(db.JSON)
+    item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
+
+
+class Topic(db.Model):
+    id = db.Column(db.String(36), primary_key=True)
+    name = db.Column(db.String(128))
+    data = db.Column(db.JSON)
+    item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
+
+
+class Message(db.Model):
+    id = db.Column(db.String(36), primary_key=True)
+    data = db.Column(db.JSON)
+    topic_id = db.Column(db.String(36), db.ForeignKey('topic.id'), nullable=False)
 
 class AclType(enum.Enum):
     public = 1
@@ -158,7 +187,6 @@ class Blob(db.Model):
     item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
 
 
-
 def initialize():
     # db.session.add(Authenticator(id=str(uuid.uuid4()), name='realnet', type=AuthenticatorType.password))
     # create admin account
@@ -167,6 +195,8 @@ def initialize():
 
     group_id = str(uuid.uuid4())
     db.session.add(Group(id=group_id, name='admin'))
+
+    db.session.commit()
 
     account_id = str(uuid.uuid4())
     account = Account(id=account_id, type=AccountType.person, username='admin', email='admin@realnet.io', group_id=group_id)
@@ -180,16 +210,9 @@ def initialize():
     db.session.add(Type(id=person_type_id, name='Person', owner_id=account_id, group_id=group_id, module='person'))
     folder_type_id = str(uuid.uuid4())
     db.session.add(Type(id=folder_type_id, name='Folder', owner_id=account_id, group_id=group_id))
-    topic_type_id = str(uuid.uuid4())
-    db.session.add(Type(id=topic_type_id, name='Topic', owner_id=account_id, group_id=group_id))
-    message_type_id = str(uuid.uuid4())
-    db.session.add(Type(id=message_type_id, name='Message', owner_id=account_id, group_id=group_id))
-    function_type_id = str(uuid.uuid4())
-    db.session.add(Type(id=function_type_id, name='Function', owner_id=account_id, group_id=group_id))
 
     fs_type_id = str(uuid.uuid4())
     db.session.add(Type(id=fs_type_id, name='Filesystem', owner_id=account_id, group_id=group_id, module='filesystem'))
-
 
     db.session.add(Item(id=account_id, name='Admin', owner_id=account_id, group_id=group_id, type_id=person_type_id))
 

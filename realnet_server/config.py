@@ -1,6 +1,11 @@
 import yaml
 import os
 
+DB_USER = 'backend'
+DB_HOST = 'localhost'
+DB_PASS = 'k0kic3'
+DB_PORT = '5432'
+DB_NAME = 'realnet'
 
 class Config:
     def __init__(self, name, path):
@@ -15,7 +20,9 @@ class Config:
     def generate(self):
         print('*** Generating default config file ***')
 
-        dict_file = {'database': {'url': 'sqlite:///{0}'.format(os.path.join(self.path, 'realnet-server.db'))},
+        dict_file = {
+                     # 'database': {'url': 'sqlite:///{0}'.format(os.path.join(self.path, 'realnet-server.db'))},
+                     'database': {'url': 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME)},
                       'server': {'host': '0.0.0.0', 'port': '8080'},
                       'storage': {'type': 'local', 'path': os.path.join(os.getcwd(), 'storage')}}
 

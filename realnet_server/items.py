@@ -435,6 +435,198 @@ def item_acl(id, aclid):
                        data='Item {0} not found'.format(id)), 404
 
 
+@app.route('/items/<id>/functions', methods=['GET', 'POST'])
+@require_oauth()
+def item_functions(id):
+    item = Item.query.filter(Item.id == id).first()
+    if item:
+        if item.owner_id == current_token.account.id or item.group_id == current_token.account.group_id:
+            if request.method == 'POST':
+                input_data = request.get_json(force=True, silent=False)
+
+                type = None
+                name = None
+                permission = None
+
+                if 'name' in input_data:
+                    name = input_data['name']
+
+                if 'type' in input_data:
+                    type = input_data['type']
+
+                if 'permission' in input_data:
+                    permission = input_data['permission']
+
+                if type == None or name == None or permission == None:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=400,
+                                   data='Bad request, name, type or permission missing'), 400
+
+                acl = Acl(id=str(uuid.uuid4()), type=AclType[type], name=name, permission=permission, item_id=item.id)
+                db.session.add(acl)
+                db.session.commit()
+                return jsonify(acl.to_dict()), 201
+            else:
+                jsonify([a.to_dict() for a in Acl.query.filter(Acl.item_id == item.id)])
+        else:
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=403,
+                           data='Account not authorized to read/modify acls from this item'), 403
+    else:
+        return jsonify(isError=True,
+                       message="Failure",
+                       statusCode=404,
+                       data='Item {0} not found'.format(id)), 404
+
+
+@app.route('/items/<id>/functions/<name>', methods=['GET', 'PUT', 'DELETE'])
+@require_oauth()
+def item_function(id, name):
+    item = Item.query.filter(Item.id == id).first()
+    if item:
+        if item.owner_id == current_token.account.id or item.group_id == current_token.account.group_id:
+            acl = Acl.query.filter(Acl.id == aclid and Acl.item_id == id).first()
+            if acl:
+                if request.method == 'GET':
+                    return jsonify(acl.to_dict()), 200
+                elif request.method == 'DELETE':
+                    db.session.delete(item)
+                    db.session.commit()
+                    return jsonify(isError=False,
+                                   message="Success",
+                                   statusCode=200,
+                                   data='deleted acl {0}'.format(aclid)), 200
+                elif request.method == 'PUT':
+                    input_data = request.get_json(force=True, silent=False)
+
+                    if 'name' in input_data:
+                        acl.name = input_data['name']
+
+                    if 'type' in input_data:
+                        acl.type = AclType[input_data['type']]
+
+                    if 'permission' in input_data:
+                        acl.permission = input_data['permission']
+
+                    db.session.commit()
+
+                    return jsonify(acl.to_dict()), 200
+                else:
+                    jsonify([a.to_dict() for a in Acl.query.filter(Acl.item_id == item.id)])
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=404,
+                               data='ACl {0} not found'.format(aclid)), 404
+        else:
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=403,
+                           data='Account not authorized to read/modify acls from this item'), 403
+    else:
+        return jsonify(isError=True,
+                       message="Failure",
+                       statusCode=404,
+                       data='Item {0} not found'.format(id)), 404
+
+@app.route('/items/<id>/topics', methods=['GET', 'POST'])
+@require_oauth()
+def item_topics(id):
+    item = Item.query.filter(Item.id == id).first()
+    if item:
+        if item.owner_id == current_token.account.id or item.group_id == current_token.account.group_id:
+            if request.method == 'POST':
+                input_data = request.get_json(force=True, silent=False)
+
+                type = None
+                name = None
+                permission = None
+
+                if 'name' in input_data:
+                    name = input_data['name']
+
+                if 'type' in input_data:
+                    type = input_data['type']
+
+                if 'permission' in input_data:
+                    permission = input_data['permission']
+
+                if type == None or name == None or permission == None:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=400,
+                                   data='Bad request, name, type or permission missing'), 400
+
+                acl = Acl(id=str(uuid.uuid4()), type=AclType[type], name=name, permission=permission, item_id=item.id)
+                db.session.add(acl)
+                db.session.commit()
+                return jsonify(acl.to_dict()), 201
+            else:
+                jsonify([a.to_dict() for a in Acl.query.filter(Acl.item_id == item.id)])
+        else:
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=403,
+                           data='Account not authorized to read/modify acls from this item'), 403
+    else:
+        return jsonify(isError=True,
+                       message="Failure",
+                       statusCode=404,
+                       data='Item {0} not found'.format(id)), 404
+
+
+@app.route('/items/<id>/topics/<name>', methods=['GET', 'PUT', 'DELETE'])
+@require_oauth()
+def item_topic(id, name):
+    item = Item.query.filter(Item.id == id).first()
+    if item:
+        if item.owner_id == current_token.account.id or item.group_id == current_token.account.group_id:
+            acl = Acl.query.filter(Acl.id == aclid and Acl.item_id == id).first()
+            if acl:
+                if request.method == 'GET':
+                    return jsonify(acl.to_dict()), 200
+                elif request.method == 'DELETE':
+                    db.session.delete(item)
+                    db.session.commit()
+                    return jsonify(isError=False,
+                                   message="Success",
+                                   statusCode=200,
+                                   data='deleted acl {0}'.format(aclid)), 200
+                elif request.method == 'PUT':
+                    input_data = request.get_json(force=True, silent=False)
+
+                    if 'name' in input_data:
+                        acl.name = input_data['name']
+
+                    if 'type' in input_data:
+                        acl.type = AclType[input_data['type']]
+
+                    if 'permission' in input_data:
+                        acl.permission = input_data['permission']
+
+                    db.session.commit()
+
+                    return jsonify(acl.to_dict()), 200
+                else:
+                    jsonify([a.to_dict() for a in Acl.query.filter(Acl.item_id == item.id)])
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=404,
+                               data='ACl {0} not found'.format(aclid)), 404
+        else:
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=403,
+                           data='Account not authorized to read/modify acls from this item'), 403
+    else:
+        return jsonify(isError=True,
+                       message="Failure",
+                       statusCode=404,
+                       data='Item {0} not found'.format(id)), 404
+
 @app.route('/items/<id>/items', methods=['GET', 'POST'])
 @require_oauth()
 def item_items(id):
@@ -508,6 +700,4 @@ def item_items(id):
                    message="Failure",
                    statusCode=404,
                    data='get_item {0}'.format(id)), 404
-
-
 

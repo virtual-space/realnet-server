@@ -33,6 +33,8 @@ setup(
                       "flask-migrate",
                       "flask-sqlalchemy",
                       "sqlalchemy-serializer",
+                      "GeoAlchemy2",
+                      "psycopg2-binary",
                       "flask-script",
                       "flask",
                       "authlib",
