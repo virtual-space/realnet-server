@@ -453,6 +453,14 @@ def item_functions(id):
                                    statusCode=403,
                                    data='Account not authorized to write to item'), 403
 
+                func = Function.query.filter(Function.item_id == item.id and Function.name == input_name).first()
+
+                if func:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=400,
+                                   data='A function with the same name already exists'), 400
+
                 input_code = input_json['code']
 
                 input_data = None
@@ -462,7 +470,6 @@ def item_functions(id):
                 func = Function(id=str(uuid.uuid4()),name=input_name,code=input_code,data=input_data)
                 db.session.add(func)
                 db.session.commit()
-
 
                 return jsonify(func.to_dict()), 201
         else:
@@ -496,65 +503,71 @@ def item_function(id, name):
             pass
         elif request.method == 'PUT':
 
-            if 'file' not in request.files:
+            func = Function.query.filter(Function.item_id == item.id and Function.name == name).first()
+
+            if func:
+                input_json = request.get_json(force=True, silent=False)
+
+                if not can_account_write_item(account=current_token.account, item=item):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to write to item'), 403
+
+                if 'code' in input_json:
+                    func.code = input_json['code']
+
+                if 'data' in input_json:
+                    func.data = input_json['data']
+
+                db.session.commit()
+
+                return jsonify(func.to_dict()), 200
+            else:
                 return jsonify(isError=True,
                                message="Failure",
-                               statusCode=400,
-                               data='Bad request: file missing from the request'), 400
-
-            file = request.files['file']
-            # If the user does not select a file, the browser submits an
-            # empty file without a filename.
-            if file.filename == '':
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=400,
-                               data='Bad request: file content missing from the request'), 400
-
-            account = Account.query.filter(Account.id == current_token.account.id).first()
-
-            if not can_account_write_item(account=account, item=item):
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=403,
-                               data='Account not authorized to write data into this item'), 403
-
-            if file and allowed_file(file.filename):
-                # file.save(os.path.join(UPLOAD_FOLDER, filename))
-                return jsonify({'url': '/items/{}/data'.format(item.id)})
+                               statusCode=404,
+                               data='function {0} not found'.format(name)), 404
 
         elif request.method == 'DELETE':
 
-            account = Account.query.filter(Account.id == current_token.account.id).first()
+            func = Function.query.filter(Function.item_id == item.id and Function.name == name).first()
 
-            if not can_account_write_item(account=account, item=item):
+            if func:
+                if not can_account_write_item(account=current_token.account, item=item):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to write to item'), 403
+
+                db.session.delete(func)
+                db.session.commit()
+
+                return jsonify(isError=False,
+                               message="Success",
+                               statusCode=200,
+                               data='deleted function {0}'.format(name)), 200
+            else:
                 return jsonify(isError=True,
                                message="Failure",
-                               statusCode=403,
-                               data='Account not authorized to delete data from this item'), 403
-
-            return jsonify(isError=False,
-                           message="Success",
-                           statusCode=200,
-                           data='deleted item {0}'.format(id)), 200
+                               statusCode=404,
+                               data='function {0} not found'.format(name)), 404
         else:
-            account = Account.query.filter(Account.id == current_token.account.id).first()
+            func = Function.query.filter(Function.item_id == item.id and Function.name == name).first()
 
-            if not can_account_read_item(account=account, item=item):
+            if func:
+                if not can_account_read_item(account=current_token.account, item=item):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to read this item'), 403
+
+                return jsonify(func.to_dict()), 200
+            else:
                 return jsonify(isError=True,
                                message="Failure",
-                               statusCode=403,
-                               data='Account not authorized to read data from this item'), 403
-
-            output_filename = ''
-
-        if output_filename:
-            return send_file(output_filename, as_attachment=True)
-        else:
-            return jsonify(isError=True,
-                           message="Failure",
-                           statusCode=500,
-                           data='get_item {0}'.format(id)), 500
+                               statusCode=404,
+                               data='function {0} not found'.format(name)), 404
 
     return jsonify(isError=True,
                    message="Failure",
@@ -579,20 +592,26 @@ def item_topics(id):
                                    statusCode=403,
                                    data='Account not authorized to write to item'), 403
 
+                topic = Topic.query.filter(Topic.item_id == item.id and Topic.name == input_name).first()
+
+                if topic:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=400,
+                                   data='A function with the same name already exists'), 400
+
                 input_data = None
                 if 'data' in input_json:
                     input_data = input_json['data']
 
-                topic = Topic(id=str(uuid.uuid4()), name=input_name,  data=input_data)
+                topic = Topic(id=str(uuid.uuid4()), name=input_name, data=input_data)
                 db.session.add(topic)
                 db.session.commit()
 
                 return jsonify(topic.to_dict()), 201
         else:
 
-            account = Account.query.filter(Account.id == current_token.account.id).first()
-
-            if not can_account_read_item(account=account, item=item):
+            if not can_account_read_item(account=current_token.account, item=item):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=403,
@@ -614,50 +633,76 @@ def item_topics(id):
 def item_topic(id, name):
     item = Item.query.filter(Item.id == id).first()
     if item:
-        if item.owner_id == current_token.account.id or item.group_id == current_token.account.group_id:
-            acl = Acl.query.filter(Acl.id == aclid and Acl.item_id == id).first()
-            if acl:
-                if request.method == 'GET':
-                    return jsonify(acl.to_dict()), 200
-                elif request.method == 'DELETE':
-                    db.session.delete(item)
-                    db.session.commit()
-                    return jsonify(isError=False,
-                                   message="Success",
-                                   statusCode=200,
-                                   data='deleted acl {0}'.format(aclid)), 200
-                elif request.method == 'PUT':
-                    input_data = request.get_json(force=True, silent=False)
+        if request.method == 'PUT':
 
-                    if 'name' in input_data:
-                        acl.name = input_data['name']
+            topic = Topic.query.filter(Topic.item_id == item.id and Topic.name == name).first()
 
-                    if 'type' in input_data:
-                        acl.type = AclType[input_data['type']]
+            if topic:
+                input_json = request.get_json(force=True, silent=False)
 
-                    if 'permission' in input_data:
-                        acl.permission = input_data['permission']
+                if not can_account_write_item(account=current_token.account, item=item):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to write to item'), 403
 
-                    db.session.commit()
+                if 'data' in input_json:
+                    topic.data = input_json['data']
 
-                    return jsonify(acl.to_dict()), 200
-                else:
-                    jsonify([a.to_dict() for a in Acl.query.filter(Acl.item_id == item.id)])
+                db.session.commit()
+
+                return jsonify(topic.to_dict()), 200
             else:
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=404,
-                               data='ACl {0} not found'.format(aclid)), 404
+                               data='topic {0} not found'.format(name)), 404
+
+        elif request.method == 'DELETE':
+
+            topic = Topic.query.filter(Topic.item_id == item.id and Topic.name == name).first()
+
+            if topic:
+                if not can_account_write_item(account=current_token.account, item=item):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to write to item'), 403
+
+                db.session.delete(topic)
+                db.session.commit()
+
+                return jsonify(isError=False,
+                               message="Success",
+                               statusCode=200,
+                               data='deleted topic {0}'.format(name)), 200
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=404,
+                               data='function {0} not found'.format(name)), 404
         else:
-            return jsonify(isError=True,
-                           message="Failure",
-                           statusCode=403,
-                           data='Account not authorized to read/modify acls from this item'), 403
-    else:
-        return jsonify(isError=True,
-                       message="Failure",
-                       statusCode=404,
-                       data='Item {0} not found'.format(id)), 404
+            topic = Topic.query.filter(Topic.item_id == item.id and Topic.name == name).first()
+
+            if topic:
+                if not can_account_read_item(account=current_token.account, item=item):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to read this item'), 403
+
+                return jsonify(topic.to_dict()), 200
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=404,
+                               data='topic {0} not found'.format(name)), 404
+
+    return jsonify(isError=True,
+                   message="Failure",
+                   statusCode=404,
+                   data='get_item {0}'.format(id)), 404
+
 
 @app.route('/items/<id>/items', methods=['GET', 'POST'])
 @require_oauth()
