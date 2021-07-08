@@ -1,11 +1,53 @@
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from flask import request, jsonify, send_file
-from .models import db, Item, Type, Account, AccountGroup, Acl, AclType, Function, Topic
+from .models import db, Item, Type, Account, AccountGroup, Acl, AclType, Function, Topic, Message
 from .auth import require_oauth
 import importlib
 import json
 import uuid
+
+
+def can_account_execute_item(account, item):
+    if [acl for acl in item.acls if acl.type == AclType.public]:
+        return True
+
+    if [acl for acl in item.acls if acl.type == AclType.user and acl.name == account.username and 'e' in acl.permission]:
+        return True
+
+    account_groups = set([ag.name for ag in AccountGroup.query.filter(AccountGroup.account_id == account.id)])
+
+    if [acl for acl in item.acls if acl.type == AclType.group and acl.name in account_groups and 'e' in acl.permission]:
+        return True
+
+    account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+
+    if account_group:
+        return True
+
+    if item.owner_id == account.id:
+        return True
+
+
+def can_account_message_item(account, item):
+    if [acl for acl in item.acls if acl.type == AclType.public]:
+        return True
+
+    if [acl for acl in item.acls if acl.type == AclType.user and acl.name == account.username and 'm' in acl.permission]:
+        return True
+
+    account_groups = set([ag.name for ag in AccountGroup.query.filter(AccountGroup.account_id == account.id)])
+
+    if [acl for acl in item.acls if acl.type == AclType.group and acl.name in account_groups and 'm' in acl.permission]:
+        return True
+
+    account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+
+    if account_group:
+        return True
+
+    if item.owner_id == account.id:
+        return True
 
 
 def can_account_read_item(account, item):
@@ -500,6 +542,12 @@ def item_function(id, name):
     if item:
         if request.method == 'POST':
             # function invocation
+            if not can_account_execute_item(account=current_token.account, item=item):
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=403,
+                               data='Account not authorized to execute this item'), 403
+
             func = Function.query.filter(Function.item_id == item.id and Function.name == name).first()
 
             if func:
@@ -649,7 +697,31 @@ def item_topics(id):
 def item_topic(id, name):
     item = Item.query.filter(Item.id == id).first()
     if item:
-        if request.method == 'PUT':
+        if request.method == 'POST':
+
+            if not can_account_message_item(account=current_token.account, item=item):
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=403,
+                               data='Account not authorized to message this item'), 403
+
+            topic = Topic.query.filter(Topic.item_id == item.id and Topic.name == name).first()
+
+            if topic:
+                input_json = request.get_json(force=True, silent=False)
+
+                msg = Message(id=str(uuid.uuid4()), data=input_json, topic_id=topic.id)
+
+                db.session.add(msg)
+                db.session.commit()
+
+                return jsonify(msg.to_dict()), 200
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=404,
+                               data='topic {0} not found'.format(name)), 404
+        elif request.method == 'PUT':
 
             topic = Topic.query.filter(Topic.item_id == item.id and Topic.name == name).first()
 
@@ -706,8 +778,10 @@ def item_topic(id, name):
                                    message="Failure",
                                    statusCode=403,
                                    data='Account not authorized to read this item'), 403
-
-                return jsonify(topic.to_dict()), 200
+                # TODO: sort and paginate messages
+                # TODO: add timestamps
+                retrieved_msgs = [t.to_dict() for t in Message.query.filter(Message.topic_id == topic.id)]
+                return jsonify(retrieved_msgs)
             else:
                 return jsonify(isError=True,
                                message="Failure",
