@@ -500,7 +500,23 @@ def item_function(id, name):
     if item:
         if request.method == 'POST':
             # function invocation
-            pass
+            func = Function.query.filter(Function.item_id == item.id and Function.name == name).first()
+
+            if func:
+                arguments = request.get_json(force=True, silent=False)
+                result = dict()
+                data = func.data
+                safe_list = ['arguments', 'result', 'item', 'request', 'data']
+                safe_dict = dict([(k, locals().get(k, None)) for k in safe_list])
+                eval(func.code, {"__builtins__": None}, safe_dict)
+
+                return jsonify(result.to_dict()), 200
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=404,
+                               data='function {0} not found'.format(name)), 404
+
         elif request.method == 'PUT':
 
             func = Function.query.filter(Function.item_id == item.id and Function.name == name).first()
