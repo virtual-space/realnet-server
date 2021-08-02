@@ -158,8 +158,15 @@ def items():
                     if 'location' in input_data:
                         input_location = input_data['location']
 
+                    input_visibility = None
+
                     if 'visibility' in input_data:
                         input_visibility = input_data['visibility']
+
+                    input_tags = None
+
+                    if 'tags' in input_data:
+                        input_tags = input_data['tags']
 
                     parent_item = None
 
@@ -179,6 +186,9 @@ def items():
 
                     if input_visibility:
                         args['visibility'] = input_visibility
+
+                    if input_tags:
+                        args['tags'] = input_tags
 
                     args['owner_id'] = current_token.account.id
                     args['group_id'] = current_token.account.group_id
@@ -264,6 +274,9 @@ def single_item(id):
 
             if 'visibility' in input_data:
                 args['visibility'] = input_data['visibility']
+
+            if 'tags' in input_data:
+                args['tags'] = input_data['tags']
 
             module_instance.update_item(item, **args)
 
