@@ -149,6 +149,11 @@ class Topic(db.Model, SerializerMixin):
     data = db.Column(db.JSON)
     item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
 
+class TopicFunction(db.Model, SerializerMixin):
+    id = db.Column(db.String(36), primary_key=True)
+    topic_id = db.Column(db.String(36), db.ForeignKey('topic.id'), nullable=False)
+    function_id = db.Column(db.String(36), db.ForeignKey('function.id'), nullable=False)
+
 
 class Message(db.Model):
     id = db.Column(db.String(36), primary_key=True)

@@ -36,7 +36,7 @@ setup(
                       "GeoAlchemy2",
                       "psycopg2-binary",
                       "flask-script",
-                      "flask",
+                      "flask==1.1.2",
                       "authlib",
                       "loginpass",
                       "bootstrap-flask",
