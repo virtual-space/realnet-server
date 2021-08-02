@@ -128,7 +128,7 @@ class Item(db.Model, SerializerMixin):
     group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
     type_id = db.Column(db.String(36), db.ForeignKey('type.id'), nullable=False)
     parent_id = db.Column(db.String(36), db.ForeignKey('item.id'))
-    geometry = db.Column(Geometry(geometry_type='GEOMETRY', srid=4326))
+    location = db.Column(Geometry(geometry_type='GEOMETRY', srid=4326))
     visibility = db.Column(db.Enum(AccountType))
     type = db.relationship('Type')
     acls = db.relationship('Acl')
