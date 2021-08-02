@@ -692,7 +692,7 @@ def item_topics(id):
                    data='get_item {0}'.format(id)), 404
 
 
-@app.route('/items/<id>/topics/<name>', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/items/<id>/topics/<name>', methods=['GET', 'PUT', 'POST', 'DELETE'])
 @require_oauth()
 def item_topic(id, name):
     item = Item.query.filter(Item.id == id).first()
@@ -712,10 +712,24 @@ def item_topic(id, name):
 
                 msg = Message(id=str(uuid.uuid4()), data=input_json, topic_id=topic.id)
 
-                # TODO call functions
-                
                 db.session.add(msg)
                 db.session.commit()
+
+                # TODO call functions
+                topic = Topic.query.filter(Topic.item_id == id and Topic.name == name).first()
+
+                func_ids = {tf.function_id for tf in
+                                       TopicFunction.query.filter(TopicFunction.topic_id == topic.id)}
+
+                funcs = [f for f in Function.query.filter(Function.id in func_ids)]
+
+                for func in funcs:
+                    arguments = msg
+                    result = dict()
+                    data = func.data
+                    safe_list = ['arguments', 'result', 'item', 'topic']
+                    safe_dict = dict([(k, locals().get(k, None)) for k in safe_list])
+                    eval(func.code, {"__builtins__": None}, safe_dict)
 
                 return jsonify(msg.to_dict()), 200
             else:
@@ -833,11 +847,11 @@ def item_topic_functions(id, name):
                 topic = Topic.query.filter(Topic.item_id == id and Topic.name == name).first()
 
                 if topic:
-                    if not can_account_read_item(account=current_token.account, item=item):
+                    if not can_account_write_item(account=current_token.account, item=item):
                         return jsonify(isError=True,
                                        message="Failure",
                                        statusCode=403,
-                                       data='Account not authorized to read this item'), 403
+                                       data='Account not authorized to write to this item'), 403
                     db.session.add(func)
                     topic_func = TopicFunction(id=str(uuid.uuid4()), topic_id=1, function_id=func_id)
                     db.session.add(topic_func)
@@ -850,17 +864,22 @@ def item_topic_functions(id, name):
                                    statusCode=404,
                                    data='topic {0} not found'.format(name)), 404
         else:
+            topic = Topic.query.filter(Topic.item_id == id and Topic.name == name).first()
 
-            account = Account.query.filter(Account.id == current_token.account.id).first()
+            if topic:
+                if not can_account_read_item(account=current_token.account, item=item):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to read this item'), 403
 
-            if not can_account_read_item(account=account, item=item):
+                retrieved_funcs = [f.to_dict() for f in TopicFunction.query.filter(TopicFunction.topic_id == topic.id)]
+                return jsonify(retrieved_funcs)
+            else:
                 return jsonify(isError=True,
                                message="Failure",
-                               statusCode=403,
-                               data='Account not authorized to read this item'), 403
-
-            retrieved_funcs = [f.to_dict() for f in Function.query.filter(Function.item_id == item.id)]
-            return jsonify(retrieved_funcs)
+                               statusCode=404,
+                               data='topic {0} not found'.format(name)), 404
     else:
         return jsonify([])
 
@@ -870,104 +889,113 @@ def item_topic_functions(id, name):
                    data='get_item {0}'.format(id)), 404
 
 
-@app.route('/items/<id>/topics/<topic_name>/functions/<func_name>', methods=['GET', 'PUT', 'POST', 'DELETE'])
+@app.route('/items/<id>/topics/<topic_name>/functions/<func_name>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def topic_function(id, topic_name, func_name):
     # TODO
     item = Item.query.filter(Item.id == id).first()
     if item:
-        if request.method == 'POST':
-            # function invocation
-            if not can_account_execute_item(account=current_token.account, item=item):
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=403,
-                               data='Account not authorized to execute this item'), 403
+        topic = Topic.query.filter(Topic.item_id == id and Topic.name == topic_name).first()
 
-            func = Function.query.filter(Function.item_id == item.id and Function.name == func_name).first()
-
-            if func:
-                arguments = request.get_json(force=True, silent=False)
-                result = dict()
-                data = func.data
-                safe_list = ['arguments', 'result', 'item', 'request', 'data']
-                safe_dict = dict([(k, locals().get(k, None)) for k in safe_list])
-                eval(func.code, {"__builtins__": None}, safe_dict)
-
-                return jsonify(result.to_dict()), 200
-            else:
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=404,
-                               data='function {0} not found'.format(func_name)), 404
-
-        elif request.method == 'PUT':
-
-            func = Function.query.filter(Function.item_id == item.id and Function.name == func_name).first()
-
-            if func:
-                input_json = request.get_json(force=True, silent=False)
-
+        if topic:
+            if request.method == 'PUT':
                 if not can_account_write_item(account=current_token.account, item=item):
                     return jsonify(isError=True,
                                    message="Failure",
                                    statusCode=403,
-                                   data='Account not authorized to write to item'), 403
+                                   data='Account not authorized to write to this item'), 403
 
-                if 'code' in input_json:
-                    func.code = input_json['code']
+                topic_funcs = TopicFunction.query.filter(TopicFunction.topic_id == topic.id)
 
-                if 'data' in input_json:
-                    func.data = input_json['data']
+                topic_func = next(iter([f for f in topic_funcs if f.name == func_name]), None)
 
-                db.session.commit()
+                if topic_func:
+                    func = Function.query.filter(Function.id == topic_func.function_id).first()
+                    if func:
+                        input_json = request.get_json(force=True, silent=False)
 
-                return jsonify(func.to_dict()), 200
-            else:
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=404,
-                               data='function {0} not found'.format(func_name)), 404
+                        if 'code' in input_json:
+                            func.code = input_json['code']
 
-        elif request.method == 'DELETE':
+                        if 'data' in input_json:
+                            func.data = input_json['data']
 
-            func = Function.query.filter(Function.item_id == item.id and Function.name == func_name).first()
+                        db.session.commit()
 
-            if func:
+                        return jsonify(func.to_dict()), 200
+                    else:
+                        return jsonify(isError=True,
+                                       message="Failure",
+                                       statusCode=404,
+                                       data='function {0} not found'.format(func_name)), 404
+                else:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=404,
+                                   data='topic function {0} not found'.format(func_name)), 404
+
+            elif request.method == 'DELETE':
                 if not can_account_write_item(account=current_token.account, item=item):
                     return jsonify(isError=True,
                                    message="Failure",
                                    statusCode=403,
-                                   data='Account not authorized to write to item'), 403
+                                   data='Account not authorized to write to this item'), 403
 
-                db.session.delete(func)
-                db.session.commit()
+                topic_funcs = TopicFunction.query.filter(TopicFunction.topic_id == topic.id)
 
-                return jsonify(isError=False,
-                               message="Success",
-                               statusCode=200,
-                               data='deleted function {0}'.format(func_name)), 200
+                topic_func = next(iter([f for f in topic_funcs if f.name == func_name]), None)
+
+                if topic_func:
+                    func = Function.query.filter(Function.id == topic_func.function_id).first()
+                    if func:
+                        db.session.delete(topic_func)
+                        db.session.delete(func)
+                        db.session.commit()
+
+                        return jsonify(isError=False,
+                                       message="Success",
+                                       statusCode=200,
+                                       data='deleted function {0}'.format(func_name)), 200
+                    else:
+                        return jsonify(isError=True,
+                                       message="Failure",
+                                       statusCode=404,
+                                       data='function {0} not found'.format(func_name)), 404
+                else:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=404,
+                                   data='topic function {0} not found'.format(func_name)), 404
             else:
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=404,
-                               data='function {0} not found'.format(func_name)), 404
-        else:
-            func = Function.query.filter(Function.item_id == item.id and Function.name == func_name).first()
-
-            if func:
                 if not can_account_read_item(account=current_token.account, item=item):
                     return jsonify(isError=True,
                                    message="Failure",
                                    statusCode=403,
-                                   data='Account not authorized to read this item'), 403
+                                   data='Account not authorized to write to this item'), 403
 
-                return jsonify(func.to_dict()), 200
-            else:
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=404,
-                               data='function {0} not found'.format(func_name)), 404
+                topic_funcs = TopicFunction.query.filter(TopicFunction.topic_id == topic.id)
+
+                topic_func = next(iter([f for f in topic_funcs if f.name == func_name]), None)
+
+                if topic_func:
+                    func = Function.query.filter(Function.id == topic_func.function_id).first()
+                    if func:
+                        return jsonify(func.to_dict()), 200
+                    else:
+                        return jsonify(isError=True,
+                                       message="Failure",
+                                       statusCode=404,
+                                       data='function {0} not found'.format(func_name)), 404
+                else:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=404,
+                                   data='topic function {0} not found'.format(func_name)), 404
+        else:
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=404,
+                           data='topic {0} not found'.format(topic_name)), 404
 
     return jsonify(isError=True,
                    message="Failure",
