@@ -715,7 +715,6 @@ def item_topic(id, name):
                 db.session.add(msg)
                 db.session.commit()
 
-                # TODO call functions
                 topic = Topic.query.filter(Topic.item_id == id and Topic.name == name).first()
 
                 func_ids = {tf.function_id for tf in
