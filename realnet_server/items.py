@@ -1,11 +1,12 @@
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from flask import request, jsonify, send_file
-from .models import db, Item, Type, Account, AccountGroup, Acl, AclType, Function, Topic, Message, TopicFunction
+from .models import db, Item, Type, Account, AccountGroup, Acl, AclType, Function, Topic, Message, TopicFunction, VisibilityType
 from .auth import require_oauth
 import importlib
 import json
 import uuid
+from sqlalchemy.sql import func, and_, or_, not_
 
 
 def can_account_execute_item(account, item):
@@ -213,7 +214,51 @@ def items():
                                statusCode=400,
                                data='Bad request'), 400
     else:
-        return jsonify([i.to_dict() for i in Item.query.filter(Item.parent_id == None)]), 200
+        conditions = []
+
+        parent_id = request.args.get('parent_id')
+
+        conditions.append(Item.parent_id == parent_id)
+
+        name = request.args.get('name')
+
+        if name:
+            conditions.append(Item.name.ilike('{}%'.format(name)))
+
+        type_names = request.args.getlist('type')
+
+        if type_names:
+            type_ids = {ti.id for ti in Type.query.filter(Type.name in {t for t in type_names}).all()}
+            conditions.append(Item.type_id in type_ids)
+
+        keys = request.args.getlist('key')
+
+        values = request.args.getlist('value')
+
+        for kv in zip(keys,values):
+            conditions.append(Item.attributes[kv[0]].astext == kv[1])
+
+        lat = request.args.get('lat')
+
+        lng = request.args.get('lng')
+
+        if lat and lng:
+            range = request.args.get('range', 100.00)
+            conditions.append(func.ST_DWithin(Item.location, 'SRID=4326;POINT({} {})'.format(lat, lng), range))
+
+        visibility = request.args.get('visibility')
+
+        if visibility:
+            conditions.append(Item.visibility == VisibilityType[visibility])
+
+        tags = request.args.getlist('tags')
+
+        if tags:
+            conditions.append(Item.tags.contains(tags))
+
+        account = Account.query.filter(Account.id == current_token.account.id).first()
+
+        return jsonify([i.to_dict() for i in Item.query.filter(* conditions) if can_account_read_item(account, i)]), 200
 
 
 @app.route('/items/<id>', methods=['GET', 'PUT', 'DELETE'])
