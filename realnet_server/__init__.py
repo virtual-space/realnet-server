@@ -9,7 +9,6 @@ from .config import Config
 
 from .models import db, Account, Token
 
-from realnet_core import ItemMemStore
 from .auth import config_oauth
 
 import jinja2
@@ -40,8 +39,6 @@ config_oauth(app)
 migrate = Migrate(app, db)
 
 migrate.init_app(app, db)
-
-store = ItemMemStore()
 
 import realnet_server.oauth
 import realnet_server.items
