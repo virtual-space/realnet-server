@@ -102,8 +102,8 @@ def can_account_delete_item(account, item):
 
 
 def filter_readable_items(account, items_json):
-    # print(items_json)
-    return [i for i in json.loads(items_json) if can_account_read_item(account, Item(**i))]
+    print(items_json)
+    return [i for i in json.loads(items_json) if can_account_read_item(account, Item(**i))] if items_json else []
 
 
 @app.route('/items', methods=['GET', 'POST'])
@@ -1145,7 +1145,7 @@ def item_items(id):
                                message="Failure",
                                statusCode=403,
                                data='Account not authorized to read this item'), 403
-            retrieved_items = filter_readable_items(account, module_instance.get_items(item))
+            retrieved_items = filter_readable_items(account, module_instance.get_items(item.to_dict()))
             return jsonify(retrieved_items)
     else:
         return jsonify([])
