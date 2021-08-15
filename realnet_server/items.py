@@ -21,7 +21,7 @@ def can_account_execute_item(account, item):
     if [acl for acl in item.acls if acl.type == AclType.group and acl.name in account_groups and 'e' in acl.permission]:
         return True
 
-    account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+    account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id, AccountGroup.account_id == account.id).first()
 
     if account_group:
         return True
@@ -42,7 +42,7 @@ def can_account_message_item(account, item):
     if [acl for acl in item.acls if acl.type == AclType.group and acl.name in account_groups and 'm' in acl.permission]:
         return True
 
-    account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+    account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id, AccountGroup.account_id == account.id).first()
 
     if account_group:
         return True
@@ -63,7 +63,7 @@ def can_account_read_item(account, item):
     if [acl for acl in item.acls if acl.type == AclType.group and acl.name in account_groups and ('r' in acl.permission or 'w' in acl.permission)]:
         return True
 
-    account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+    account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id, AccountGroup.account_id == account.id).first()
 
     if account_group:
         return True
@@ -83,8 +83,7 @@ def can_account_write_item(account, item):
         acl.type == AclType.group and acl.name in account_groups and 'w' in acl.permission]:
         return True
 
-    account_group = AccountGroup.query.filter(
-        AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+    account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id, AccountGroup.account_id == account.id).first()
 
     if account_group:
         return True
@@ -95,14 +94,13 @@ def can_account_write_item(account, item):
 
 def can_account_delete_item(account, item):
     account_group = AccountGroup.query.filter(
-        AccountGroup.group_id == item.group_id and AccountGroup.account_id == account.id).first()
+        AccountGroup.group_id == item.group_id, AccountGroup.account_id == account.id).first()
     if account_group:
         return True
     return item.owner_id == account.id
 
 
 def filter_readable_items(account, items_json):
-    print(items_json)
     return [i for i in json.loads(items_json) if can_account_read_item(account, Item(**i))] if items_json else []
 
 

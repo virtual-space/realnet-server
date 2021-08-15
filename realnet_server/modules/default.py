@@ -119,7 +119,7 @@ class Default(Module):
         return json.dumps([i.to_dict() for i in Item.query.filter(Item.parent_id == item['id'])])
 
     def get_item(self, item):
-        retrieved_item = Item.query.filter(Item.id == item['id']).first()
+        retrieved_item = Item.query.filter(Item.id == item.id).first()
         if retrieved_item:
             return json.dumps({'id': retrieved_item.id,
                             'name': retrieved_item.name,
