@@ -364,7 +364,7 @@ def single_item(id):
                        data='get_item {0}'.format(id)), 404
 
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'md'}
 
 
 def allowed_file(filename):
@@ -415,6 +415,11 @@ def item_data(id):
                 module_instance.update_item_data(item, file)
                 # file.save(os.path.join(UPLOAD_FOLDER, filename))
                 return jsonify({'url': '/items/{}/data'.format(item.id)})
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=400,
+                               data='Unsupported file type'), 400
 
         elif request.method == 'DELETE':
 

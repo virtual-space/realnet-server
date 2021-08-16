@@ -4,6 +4,7 @@ import json
 from .module import Module
 from realnet_server.models import db, Item, Blob, BlobType
 from realnet_server.config import Config
+import mimetypes
 
 
 class Default(Module):
@@ -57,15 +58,19 @@ class Default(Module):
         storage_cfg = cfg.get_storage()
         blob = Blob.query.filter(Blob.item_id == item.id).first()
 
+        content_type = storage.content_type
+        if storage.filename and content_type is None:
+            content_type = mimetypes.guess_type(storage.filename)[0] or 'application/octet-stream'
+
         if blob:
             # update existing
             if blob.type == BlobType.local:
                 path = os.path.join(blob.data['path'], storage.filename)
                 storage.save(path)
                 blob.content_length = os.stat(path).st_size
-                blob.content_type = storage.content_type
+                blob.content_type = content_type
                 blob.filename = storage.filename
-                blob.mime_type = storage.mimetype
+                blob.mime_type = content_type
                 db.session.commit()
             elif blob.type == BlobType.s3:
                 pass
@@ -80,9 +85,9 @@ class Default(Module):
                             type=BlobType.local,
                             data={'path': basepath},
                             content_length=os.stat(path).st_size,
-                            content_type=storage.content_type,
+                            content_type=content_type,
                             filename=storage.filename,
-                            mime_type=storage.mimetype,
+                            mime_type=content_type,
                             item_id=item.id)
                 db.session.add(blob)
                 db.session.commit()
