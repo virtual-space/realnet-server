@@ -590,7 +590,11 @@ def item_functions(id):
                 if 'data' in input_json:
                     input_data = input_json['data']
 
-                func = Function(id=str(uuid.uuid4()),name=input_name,code=input_code,data=input_data)
+                func = Function(id=str(uuid.uuid4()),
+                                name=input_name,
+                                code=input_code,
+                                data=input_data,
+                                item_id=item.id)
                 db.session.add(func)
                 db.session.commit()
 
@@ -637,9 +641,9 @@ def item_function(id, name):
                 data = func.data
                 safe_list = ['arguments', 'result', 'item', 'request', 'data']
                 safe_dict = dict([(k, locals().get(k, None)) for k in safe_list])
-                eval(func.code, {"__builtins__": None}, safe_dict)
+                eval(func.code, None, safe_dict)
 
-                return jsonify(result.to_dict()), 200
+                return jsonify(result), 200
             else:
                 return jsonify(isError=True,
                                message="Failure",
