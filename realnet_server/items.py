@@ -753,7 +753,7 @@ def item_topics(id):
                 if 'data' in input_json:
                     input_data = input_json['data']
 
-                topic = Topic(id=str(uuid.uuid4()), name=input_name, data=input_data)
+                topic = Topic(id=str(uuid.uuid4()), name=input_name, data=input_data, item_id=item.id)
                 db.session.add(topic)
                 db.session.commit()
 

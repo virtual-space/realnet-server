@@ -156,7 +156,7 @@ class TopicFunction(db.Model, SerializerMixin):
     function_id = db.Column(db.String(36), db.ForeignKey('function.id'), nullable=False)
 
 
-class Message(db.Model):
+class Message(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     data = db.Column(db.JSON)
     topic_id = db.Column(db.String(36), db.ForeignKey('topic.id'), nullable=False)
