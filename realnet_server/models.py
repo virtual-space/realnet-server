@@ -154,6 +154,7 @@ class TopicFunction(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     topic_id = db.Column(db.String(36), db.ForeignKey('topic.id'), nullable=False)
     function_id = db.Column(db.String(36), db.ForeignKey('function.id'), nullable=False)
+    function = db.relationship('Function')
 
 
 class Message(db.Model, SerializerMixin):

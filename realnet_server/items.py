@@ -800,12 +800,9 @@ def item_topic(id, name):
                 db.session.add(msg)
                 db.session.commit()
 
-                topic = Topic.query.filter(Topic.item_id == id and Topic.name == name).first()
+                topic = Topic.query.filter(Topic.item_id == id, Topic.name == name).first()
 
-                func_ids = {tf.function_id for tf in
-                                       TopicFunction.query.filter(TopicFunction.topic_id == topic.id)}
-
-                funcs = [f for f in Function.query.filter(Function.id in func_ids)]
+                funcs = [tf.function for tf in TopicFunction.query.filter(TopicFunction.topic_id == topic.id)]
 
                 for func in funcs:
                     arguments = msg
@@ -813,7 +810,7 @@ def item_topic(id, name):
                     data = func.data
                     safe_list = ['arguments', 'result', 'item', 'topic']
                     safe_dict = dict([(k, locals().get(k, None)) for k in safe_list])
-                    eval(func.code, {"__builtins__": None}, safe_dict)
+                    eval(func.code, None, safe_dict)
 
                 return jsonify(msg.to_dict()), 200
             else:
@@ -893,9 +890,9 @@ def item_topic(id, name):
                    statusCode=404,
                    data='get_item {0}'.format(id)), 404
 
-@app.route('/items/<id>/topics/<name>/functions', methods=['GET', 'POST'])
+@app.route('/items/<id>/topics/<topic_name>/functions', methods=['GET', 'POST'])
 @require_oauth()
-def item_topic_functions(id, name):
+def item_topic_functions(id, topic_name):
     item = Item.query.filter(Item.id == id).first()
     if item:
 
@@ -911,7 +908,7 @@ def item_topic_functions(id, name):
                                    statusCode=403,
                                    data='Account not authorized to write to item'), 403
 
-                func = Function.query.filter(Function.item_id == item.id and Function.name == input_name).first()
+                func = Function.query.filter(Function.item_id == item.id, Function.name == input_name).first()
 
                 if func:
                     return jsonify(isError=True,
@@ -926,9 +923,9 @@ def item_topic_functions(id, name):
                     input_data = input_json['data']
 
                 func_id = str(uuid.uuid4())
-                func = Function(id=func_id,name=input_name,code=input_code,data=input_data)
+                func = Function(id=func_id,name=input_name,code=input_code,data=input_data, item_id=item.id)
 
-                topic = Topic.query.filter(Topic.item_id == id and Topic.name == name).first()
+                topic = Topic.query.filter(Topic.item_id == id and Topic.name == topic_name).first()
 
                 if topic:
                     if not can_account_write_item(account=current_token.account, item=item):
@@ -937,7 +934,7 @@ def item_topic_functions(id, name):
                                        statusCode=403,
                                        data='Account not authorized to write to this item'), 403
                     db.session.add(func)
-                    topic_func = TopicFunction(id=str(uuid.uuid4()), topic_id=1, function_id=func_id)
+                    topic_func = TopicFunction(id=str(uuid.uuid4()), topic_id=topic.id, function_id=func_id)
                     db.session.add(topic_func)
                     db.session.commit()
 
@@ -957,7 +954,7 @@ def item_topic_functions(id, name):
                                    statusCode=403,
                                    data='Account not authorized to read this item'), 403
 
-                retrieved_funcs = [f.to_dict() for f in TopicFunction.query.filter(TopicFunction.topic_id == topic.id)]
+                retrieved_funcs = [f.function.to_dict() for f in TopicFunction.query.filter(TopicFunction.topic_id == topic.id)]
                 return jsonify(retrieved_funcs)
             else:
                 return jsonify(isError=True,
@@ -979,9 +976,10 @@ def topic_function(id, topic_name, func_name):
     # TODO
     item = Item.query.filter(Item.id == id).first()
     if item:
-        topic = Topic.query.filter(Topic.item_id == id and Topic.name == topic_name).first()
+        func = Function.query.filter(Function.item_id == item.id, Function.name == func_name).first()
+        topic = Topic.query.filter(Topic.item_id == id, Topic.name == topic_name).first()
 
-        if topic:
+        if func and topic:
             if request.method == 'PUT':
                 if not can_account_write_item(account=current_token.account, item=item):
                     return jsonify(isError=True,
@@ -991,27 +989,20 @@ def topic_function(id, topic_name, func_name):
 
                 topic_funcs = TopicFunction.query.filter(TopicFunction.topic_id == topic.id)
 
-                topic_func = next(iter([f for f in topic_funcs if f.name == func_name]), None)
+                topic_func = next(iter([f for f in topic_funcs if f.function_id == func.id]), None)
 
                 if topic_func:
-                    func = Function.query.filter(Function.id == topic_func.function_id).first()
-                    if func:
-                        input_json = request.get_json(force=True, silent=False)
+                    input_json = request.get_json(force=True, silent=False)
 
-                        if 'code' in input_json:
-                            func.code = input_json['code']
+                    if 'code' in input_json:
+                        func.code = input_json['code']
 
-                        if 'data' in input_json:
-                            func.data = input_json['data']
+                    if 'data' in input_json:
+                        func.data = input_json['data']
 
-                        db.session.commit()
+                    db.session.commit()
 
-                        return jsonify(func.to_dict()), 200
-                    else:
-                        return jsonify(isError=True,
-                                       message="Failure",
-                                       statusCode=404,
-                                       data='function {0} not found'.format(func_name)), 404
+                    return jsonify(func.to_dict()), 200
                 else:
                     return jsonify(isError=True,
                                    message="Failure",
@@ -1027,24 +1018,19 @@ def topic_function(id, topic_name, func_name):
 
                 topic_funcs = TopicFunction.query.filter(TopicFunction.topic_id == topic.id)
 
-                topic_func = next(iter([f for f in topic_funcs if f.name == func_name]), None)
+                
+
+                topic_func = next(iter([f for f in topic_funcs if f.function_id == func.id]), None)
 
                 if topic_func:
-                    func = Function.query.filter(Function.id == topic_func.function_id).first()
-                    if func:
-                        db.session.delete(topic_func)
-                        db.session.delete(func)
-                        db.session.commit()
+                    db.session.delete(topic_func)
+                    db.session.delete(func)
+                    db.session.commit()
 
-                        return jsonify(isError=False,
-                                       message="Success",
-                                       statusCode=200,
-                                       data='deleted function {0}'.format(func_name)), 200
-                    else:
-                        return jsonify(isError=True,
-                                       message="Failure",
-                                       statusCode=404,
-                                       data='function {0} not found'.format(func_name)), 404
+                    return jsonify(isError=False,
+                                   message="Success",
+                                   statusCode=200,
+                                   data='deleted function {0}'.format(func_name)), 200
                 else:
                     return jsonify(isError=True,
                                    message="Failure",
@@ -1059,17 +1045,10 @@ def topic_function(id, topic_name, func_name):
 
                 topic_funcs = TopicFunction.query.filter(TopicFunction.topic_id == topic.id)
 
-                topic_func = next(iter([f for f in topic_funcs if f.name == func_name]), None)
+                topic_func = next(iter([f for f in topic_funcs if f.function_id == func.id]), None)
 
                 if topic_func:
-                    func = Function.query.filter(Function.id == topic_func.function_id).first()
-                    if func:
-                        return jsonify(func.to_dict()), 200
-                    else:
-                        return jsonify(isError=True,
-                                       message="Failure",
-                                       statusCode=404,
-                                       data='function {0} not found'.format(func_name)), 404
+                    return jsonify(func.to_dict()), 200
                 else:
                     return jsonify(isError=True,
                                    message="Failure",
