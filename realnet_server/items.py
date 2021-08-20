@@ -494,7 +494,7 @@ def item_acls(id):
                 db.session.commit()
                 return jsonify(acl.to_dict()), 201
             else:
-                jsonify([a.to_dict() for a in Acl.query.filter(Acl.item_id == item.id)])
+                return jsonify([a.to_dict() for a in Acl.query.filter(Acl.item_id == item.id)])
         else:
             return jsonify(isError=True,
                            message="Failure",
@@ -518,7 +518,7 @@ def item_acl(id, aclid):
                 if request.method == 'GET':
                     return jsonify(acl.to_dict()), 200
                 elif request.method == 'DELETE':
-                    db.session.delete(item)
+                    db.session.delete(acl)
                     db.session.commit()
                     return jsonify(isError=False,
                                    message="Success",
