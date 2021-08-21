@@ -1,8 +1,7 @@
 from pynecone import ProtoCmd, ProtoShell
-import uuid
 import os
 from realnet_server import app
-from .models import db, Authenticator, AuthenticatorType, Account, initialize_server
+from .models import db, initialize_server
 from .config import Config
 
 
@@ -16,7 +15,7 @@ class Start(ProtoCmd):
         pass
 
     def run(self, args):
-        cfg = Config.init()
+        cfg = Config()
         app.run(cfg.get_server_host(), cfg.get_server_port())
 
 

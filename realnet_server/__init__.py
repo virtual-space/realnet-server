@@ -16,7 +16,7 @@ import jinja2
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-cfg = Config.init()
+cfg = Config()
 
 app = Flask(__name__)
 app.secret_key = '!secret'
@@ -44,6 +44,8 @@ import realnet_server.oauth
 import realnet_server.items
 import realnet_server.types
 import realnet_server.groups
+import realnet_server.apps
+import realnet_server.accounts
 
 
 
