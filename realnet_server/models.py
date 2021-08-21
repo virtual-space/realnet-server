@@ -193,7 +193,63 @@ class Blob(db.Model):
     mime_type = db.Column(db.String(36), nullable=False)
     item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
 
-def create_tennant(tenant_name, root_username, root_email, root_password):
+def create_account(tenant_name,
+                   account_type,
+                   account_role,
+                   account_username,
+                   account_password,
+                   account_email):
+    id = str(uuid.uuid4())
+    group = db.session.query(Group).filter(Group.name == tenant_name).first()
+    if not group:
+        return None
+    account = Account(id=id,
+                           type=AccountType[account_type],
+                           username=account_username,
+                           email=account_email,
+                           group_id=group.id)
+    account.set_password(account_password)
+
+    db.session.add(account)
+
+    db.session.add(AccountGroup(id=str(uuid.uuid4()),
+                                account_id=account.id,
+                                group_id=group.id,
+                                role_type=GroupRoleType[account_role]))
+    folder_type = db.session.query(Type).filter(Type.name == 'Folder').first()
+    if not folder_type:
+        return None
+
+    person_type = db.session.query(Type).filter(Type.name == 'Person').first()
+    if not person_type:
+        return None
+
+    db.session.add(Item(id=account.id,
+                        name=account.username,
+                        owner_id=account.id,
+                        group_id=group.id,
+                        type_id=person_type.id))
+
+    home_folder_id = str(uuid.uuid4())
+    db.session.add(Item(id=home_folder_id,
+                        name='Home',
+                        owner_id=account.id,
+                        group_id=group.id,
+                        type_id=folder_type.id))
+    db.session.commit()
+
+    adm = db.session.query(Account).filter(Account.id == account.id).first()
+    if adm:
+        print('setting admin home folder id')
+        adm.home_id = home_folder_id
+
+    db.session.commit()
+
+
+def add_account(tenant_name, account_username):
+    pass
+
+def create_tenant(tenant_name, root_username, root_email, root_password):
     
     root_group_id = str(uuid.uuid4())
     db.session.add(Group(id=root_group_id, name=tenant_name))
@@ -206,7 +262,6 @@ def create_tennant(tenant_name, root_username, root_email, root_password):
                             username=root_username, 
                             email=root_email, 
                             group_id=root_group_id)
-    print('setting root password to: {}'.format(root_password))
     root_account.set_password(root_password)
 
     db.session.add(root_account)
@@ -281,7 +336,7 @@ def initialize_server(root_tenant_name,
                root_username,
                root_email, 
                root_password):
-    create_tennant(root_tenant_name, root_username, root_email, root_password)
+    create_tenant(root_tenant_name, root_username, root_email, root_password)
     
 
     
