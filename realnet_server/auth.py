@@ -54,6 +54,7 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
 class PasswordGrant(grants.ResourceOwnerPasswordCredentialsGrant):
     def authenticate_user(self, username, password):
         account = Account.query.filter_by(username=username).first()
+        print(account.check_password(password))
         if account is not None and account.check_password(password):
             return account
 

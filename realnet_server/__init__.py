@@ -43,6 +43,7 @@ migrate.init_app(app, db)
 import realnet_server.oauth
 import realnet_server.items
 import realnet_server.types
+import realnet_server.groups
 
 
 

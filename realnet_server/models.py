@@ -37,7 +37,7 @@ class AccountType(enum.Enum):
     thing = 2
 
 
-class Account(db.Model):
+class Account(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     type = db.Column(db.Enum(AccountType))
     username = db.Column(db.String(40), unique=True)
@@ -52,6 +52,7 @@ class Account(db.Model):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        print(password)
         return check_password_hash(self.password_hash, password)
 
     def get_user_id(self):
@@ -61,30 +62,29 @@ class Account(db.Model):
         return self.username
 
 
-# Define the Role data-model
-class Role(db.Model):
-    id = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(50), unique=True)
-
-
-# Define the AccountRole association table
-class AccountRole(db.Model):
-    id = db.Column(db.String(36), primary_key=True)
-    account_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
-    role_id = db.Column(db.String(36), db.ForeignKey('role.id', ondelete='CASCADE'), nullable=False)
+class GroupRoleType(enum.Enum):
+    root = 1
+    admin = 2
+    contributor = 3
+    member = 4
+    guest = 5
 
 
 # Define the Group data-model
-class Group(db.Model):
+class Group(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(50), unique=True)
+    parent_id = db.Column(db.String(36), db.ForeignKey('group.id'))
 
 
 # Define the AccountGroup association table
-class AccountGroup(db.Model):
+class AccountGroup(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     account_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
+    role_type = db.Column(db.Enum(GroupRoleType), nullable=False)
+    account = db.relationship('Account')
+    group = db.relationship('Group')
 
 
 class Token(db.Model, OAuth2TokenMixin):
@@ -193,66 +193,42 @@ class Blob(db.Model):
     mime_type = db.Column(db.String(36), nullable=False)
     item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
 
-
-def initialize():
-    # db.session.add(Authenticator(id=str(uuid.uuid4()), name='realnet', type=AuthenticatorType.password))
-    # create admin account
-    admin_role_id = str(uuid.uuid4())
-    db.session.add(Role(id=admin_role_id, name='admin'))
-
-    group_id = str(uuid.uuid4())
-    db.session.add(Group(id=group_id, name='admin'))
+def create_tennant(tenant_name, root_username, root_email, root_password):
+    
+    root_group_id = str(uuid.uuid4())
+    db.session.add(Group(id=root_group_id, name=tenant_name))
 
     db.session.commit()
 
-    account_id = str(uuid.uuid4())
-    account = Account(id=account_id, type=AccountType.person, username='admin', email='admin@realnet.io', group_id=group_id)
-    account.set_password('123456')
-    db.session.add(account)
+    root_account_id = str(uuid.uuid4())
+    root_account = Account( id=root_account_id, 
+                            type=AccountType.person, 
+                            username=root_username, 
+                            email=root_email, 
+                            group_id=root_group_id)
+    print('setting root password to: {}'.format(root_password))
+    root_account.set_password(root_password)
 
-    db.session.add(AccountRole(id=str(uuid.uuid4()), account_id=account_id, role_id=admin_role_id))
+    db.session.add(root_account)
 
-    # create basic types
-    person_type_id = str(uuid.uuid4())
-    db.session.add(Type(id=person_type_id, name='Person', owner_id=account_id, group_id=group_id, module='person'))
-    folder_type_id = str(uuid.uuid4())
-    db.session.add(Type(id=folder_type_id, name='Folder', owner_id=account_id, group_id=group_id))
-
-    fs_type_id = str(uuid.uuid4())
-    db.session.add(Type(id=fs_type_id, name='Filesystem', owner_id=account_id, group_id=group_id, module='filesystem'))
-
-    db.session.add(Item(id=account_id, name='Admin', owner_id=account_id, group_id=group_id, type_id=person_type_id))
-
-    home_folder_id = str(uuid.uuid4())
-    db.session.add(Item(id=home_folder_id, name='Home', owner_id=account_id, group_id=group_id, type_id=folder_type_id))
-    db.session.commit()
-
-    adm = db.session.query(Account).filter(Account.id == account_id).first()
-    if adm:
-        print('setting admin home folder id')
-        adm.home_id = home_folder_id
-
-    db.session.add(Item(id=str(uuid.uuid4()),
-                        name='My filesystem',
-                        owner_id=account_id,
-                        group_id=group_id,
-                        type_id=fs_type_id,
-                        parent_id=home_folder_id,
-                        attributes={'path': '.'}))
-    db.session.commit()
+    db.session.add(AccountGroup(id=str(uuid.uuid4()), 
+                                account_id=root_account_id, 
+                                group_id=root_group_id,
+                                role_type=GroupRoleType.root))
 
     client_id = gen_salt(24)
     client_id_issued_at = int(time.time())
+    root_app_id = str(uuid.uuid4())
     client = App(
-        id=str(uuid.uuid4()),
+        id=root_app_id,
         client_id=client_id,
         client_id_issued_at=client_id_issued_at,
-        owner_id=account_id,
-        group_id=group_id
+        owner_id=root_account_id,
+        group_id=root_group_id
     )
 
     client_metadata = {
-        'client_name': 'realnet',
+        'client_name': 'root',
         'client_uri': 'http://localhost:8080',
         'grant_types': ['authorization_code', 'password'],
         'redirect_uris': [],
@@ -269,4 +245,44 @@ def initialize():
 
     db.session.add(client)
     db.session.commit()
+
+    print('{} tenant client id: {}'.format(tenant_name, client_id))
+    print('{} tenant client secret: {}'.format(tenant_name, client.client_secret))
+
+    # create basic types
+    person_type_id = str(uuid.uuid4())
+    db.session.add(Type(id=person_type_id, name='Person', owner_id=root_account_id, group_id=root_group_id, module='person'))
+
+    folder_type_id = str(uuid.uuid4())
+    db.session.add(Type(id=folder_type_id, name='Folder', owner_id=root_account_id, group_id=root_group_id))
+
+    db.session.add(Item(id=root_account_id, 
+                        name=root_username, 
+                        owner_id=root_account_id, 
+                        group_id=root_group_id, 
+                        type_id=person_type_id))
+
+    home_folder_id = str(uuid.uuid4())
+    db.session.add(Item(id=home_folder_id, 
+                        name='Home', 
+                        owner_id=root_account_id, 
+                        group_id=root_group_id, 
+                        type_id=folder_type_id))
+    db.session.commit()
+
+    adm = db.session.query(Account).filter(Account.id == root_account_id).first()
+    if adm:
+        print('setting admin home folder id')
+        adm.home_id = home_folder_id
+
+    db.session.commit()
+
+def initialize_server(root_tenant_name,
+               root_username,
+               root_email, 
+               root_password):
+    create_tennant(root_tenant_name, root_username, root_email, root_password)
+    
+
+    
 
