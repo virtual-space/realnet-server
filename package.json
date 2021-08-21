@@ -1,0 +1,24 @@
+{
+  "name": "realnet-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/virtual-space/realnet-server.git"
+  },
+  "author": "VirtualSpace",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/virtual-space/realnet-server/issues"
+  },
+  "homepage": "https://github.com/virtual-space/realnet-server#readme",
+  "dependencies": {
+    "serverless": "^2.55.0",
+    "serverless-python-requirements": "^5.1.1",
+    "serverless-wsgi": "^2.0.1"
+  }
+}
