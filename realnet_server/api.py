@@ -4,6 +4,11 @@ from realnet_server import app
 from .models import db, initialize_server
 from .config import Config
 
+from dotenv import *
+
+path = os.path.join(os.getcwd(), ".env")
+if os.path.exists(path):
+    load_dotenv(dotenv_path=path)
 
 class Start(ProtoCmd):
 

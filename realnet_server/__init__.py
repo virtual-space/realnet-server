@@ -18,7 +18,9 @@ logging.basicConfig(level=logging.DEBUG)
 
 cfg = Config()
 
-app = Flask(__name__)
+from realnet_server.app import app
+
+# app = Flask(__name__)
 app.secret_key = '!secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = cfg.get_database_url()
 app.config['GOOGLE_CLIENT_ID'] = ''
@@ -46,6 +48,8 @@ import realnet_server.types
 import realnet_server.groups
 import realnet_server.apps
 import realnet_server.accounts
+import realnet_server.app
+
 
 
 
