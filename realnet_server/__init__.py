@@ -16,21 +16,24 @@ import jinja2
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
+print('** begin app_init')
 cfg = Config()
 
-from realnet_server.app import app
+app = Flask(__name__)
+# import realnet_server.wsgi
 
-# app = Flask(__name__)
 app.secret_key = '!secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = cfg.get_database_url()
 app.config['GOOGLE_CLIENT_ID'] = ''
 app.config['GOOGLE_CLIENT_SECRET'] = ''
 app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 
+
 app.jinja_loader = jinja2.ChoiceLoader([
     app.jinja_loader,
     jinja2.PackageLoader(__name__) # in the same folder will search the 'templates' folder
 ])
+
 
 db.init_app(app)
 
@@ -42,13 +45,13 @@ migrate = Migrate(app, db)
 
 migrate.init_app(app, db)
 
+
 import realnet_server.oauth
 import realnet_server.items
 import realnet_server.types
 import realnet_server.groups
 import realnet_server.apps
 import realnet_server.accounts
-import realnet_server.app
 
 
 

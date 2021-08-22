@@ -23,7 +23,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=["realnet_server", "migrations", "realnet_server.templates", "realnet_server.modules"],
+    packages=["realnet_server", "migrations", "realnet_server.templates", "realnet_server.modules", "realnet_wsgi_loader"],
     package_data={'migrations': ['alembic.ini', 'README', 'versions/*'], 'realnet_server.templates': ['*']},
     install_requires=["pynecone==0.0.70",
                       "requests_toolbelt",

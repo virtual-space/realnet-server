@@ -15,8 +15,8 @@ functions:
 
 custom:
   wsgi:
-    app: realnet_server.app
-    pythonBin: python3 # Some systems with Python3 may require this
+    app: realnet_wsgi_loader.wsgi.app
+    pythonBin: python # Some systems with Python3 may require this
     packRequirements: false
   pythonRequirements:
     dockerizePip: non-linux
