@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="realnet-server",
-    version="0.0.2",
+    version="0.0.3",
     description="Realnet server",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -40,7 +40,8 @@ setup(
                       "authlib==0.14.3",
                       "loginpass",
                       "bootstrap-flask",
-                      "pyyaml"],
+                      "pyyaml",
+                      "boto3"],
     entry_points={
         "console_scripts": [
             "realnet-server=realnet_server.__main__:main",

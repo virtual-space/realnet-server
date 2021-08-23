@@ -1,6 +1,8 @@
 import os
 from dotenv import *
 
+from .models import BlobType
+
 path = os.path.join(os.getcwd(), ".env")
 if os.path.exists(path):
     load_dotenv(dotenv_path=path)
@@ -20,6 +22,20 @@ class Config:
     def get_server_port(self):
         return os.getenv('REALNET_SERVER_PORT')
 
-    def get_storage(self):
-        return {'type': os.getenv('REALNET_STORAGE_TYPE'),
-                'path': os.getenv('REALNET_STORAGE_PATH')}
+    def get_storage_type(self):
+        return BlobType[os.getenv('REALNET_STORAGE_TYPE')]
+
+    def get_storage_path(self):
+        return os.getenv('REALNET_STORAGE_PATH')
+
+    def get_s3_region(self):
+        return os.getenv('REALNET_STORAGE_S3_REGION')
+
+    def get_s3_bucket(self):
+        return os.getenv('REALNET_STORAGE_S3_BUCKET')
+
+    def get_s3_key(self):
+        return os.getenv('REALNET_STORAGE_S3_KEY')
+
+    def get_s3_secret(self):
+        return os.getenv('REALNET_STORAGE_S3_SECRET')

@@ -1,6 +1,6 @@
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
-from flask import request, jsonify, send_file
+from flask import request, jsonify, send_file, Response
 from .models import db, Item, Type, Account, AccountGroup, Acl, AclType, Function, Topic, Message, TopicFunction, VisibilityType
 from .auth import require_oauth
 import importlib
@@ -77,7 +77,7 @@ def can_account_write_item(account, item):
         acl.type == AclType.user and acl.name == account.username and 'w' in acl.permission]:
         return True
 
-    account_groups = set([ag.name for ag in AccountGroup.query.filter(AccountGroup.account_id == account.id)])
+    account_groups = set([ag.group.name for ag in AccountGroup.query.filter(AccountGroup.account_id == account.id)])
 
     if [acl for acl in item.acls if
         acl.type == AclType.group and acl.name in account_groups and 'w' in acl.permission]:
@@ -412,9 +412,17 @@ def item_data(id):
                                data='Account not authorized to write data into this item'), 403
 
             if file and allowed_file(file.filename):
-                module_instance.update_item_data(item, file)
-                # file.save(os.path.join(UPLOAD_FOLDER, filename))
-                return jsonify({'url': '/items/{}/data'.format(item.id)})
+                result = module_instance.update_item_data(item, file)
+                if result['created'] or result['updated']:
+                    code = 201
+                    if result['updated']:
+                        code = 200
+                    return jsonify({'url': '/items/{}/data'.format(item.id)}), code
+                else:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=500,
+                                   data='Internal server error'), 500
             else:
                 return jsonify(isError=True,
                                message="Failure",
@@ -431,11 +439,16 @@ def item_data(id):
                                statusCode=403,
                                data='Account not authorized to delete data from this item'), 403
 
-            module_instance.delete_item_data(item)
-            return jsonify(isError=False,
-                           message="Success",
-                           statusCode=200,
-                           data='deleted item {0}'.format(id)), 200
+            if module_instance.delete_item_data(item):
+                return jsonify(isError=False,
+                               message="Success",
+                               statusCode=200,
+                               data='deleted item {0}'.format(id)), 200
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=500,
+                               data='Internal server error'), 500
         else:
             account = Account.query.filter(Account.id == current_token.account.id).first()
 
@@ -445,10 +458,16 @@ def item_data(id):
                                statusCode=403,
                                data='Account not authorized to read data from this item'), 403
 
-            output_filename = module_instance.get_item_data(item)
+            output = module_instance.get_item_data(item)
 
-        if output_filename:
-            return send_file(output_filename, as_attachment=True)
+        if 's3_obj' in output:
+            return Response(
+                output['s3_obj']['Body'].read(),
+                mimetype=output['mimetype'],
+                headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])}
+            )
+        elif 'filename' in output:
+            return send_file(output['filename'], as_attachment=True)
         else:
             return jsonify(isError=True,
                            message="Failure",

@@ -1,4 +1,4 @@
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 from flask import Flask
 from flask_migrate import Migrate
@@ -16,7 +16,6 @@ import jinja2
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-print('** begin app_init')
 cfg = Config()
 
 app = Flask(__name__)
