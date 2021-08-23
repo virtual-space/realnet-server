@@ -58,7 +58,7 @@ def can_account_read_item(account, item):
     if [acl for acl in item.acls if acl.type == AclType.user and acl.name == account.username and ('r' in acl.permission or 'w' in acl.permission)]:
         return True
 
-    account_groups = set([ag.name for ag in AccountGroup.query.filter(AccountGroup.account_id == account.id)])
+    account_groups = set([ag.group.name for ag in AccountGroup.query.filter(AccountGroup.account_id == account.id)])
 
     if [acl for acl in item.acls if acl.type == AclType.group and acl.name in account_groups and ('r' in acl.permission or 'w' in acl.permission)]:
         return True
