@@ -216,7 +216,8 @@ def items():
 
         parent_id = request.args.get('parent_id')
 
-        conditions.append(Item.parent_id == parent_id)
+        if parent_id:
+            conditions.append(Item.parent_id == parent_id)
 
         name = request.args.get('name')
 
@@ -253,6 +254,9 @@ def items():
 
         if tags:
             conditions.append(Item.tags.contains(tags))
+
+        if not conditions:
+            conditions.append(Item.parent_id == current_token.account.home_id)
 
         account = Account.query.filter(Account.id == current_token.account.id).first()
 

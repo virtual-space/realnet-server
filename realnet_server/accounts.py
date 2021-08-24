@@ -2,7 +2,7 @@ from flask import request, jsonify
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from .auth import require_oauth
-from .models import db, Group, Account, AccountGroup, GroupRoleType
+from .models import db, Group, Account, create_account
 from sqlalchemy import or_
 import uuid
 
@@ -22,17 +22,49 @@ def accounts():
         request.on_json_loading_failed = lambda x: print('json parsing error: ', x)
         input_data = request.get_json(force=True, silent=False)
         if input_data:
-            input_name = input_data['name']
-            if input_name:
-                created = Group(id=str(uuid.uuid4()),
-                                name=input_name)
+            input_username = input_data['username']
+            input_password = input_data['password']
+            input_type = input_data['type']
+            input_group = input_data['group']
+            input_role = input_data['role']
+            input_email = input_data['email']
 
-                db.session.add(created)
-                db.session.commit()
+            if input_username and input_password and input_group and input_role and input_email:
+                group = db.session.query(Group).filter(Group.name == input_group).first()
 
-                return jsonify(created.to_dict()), 201
+                if not group:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=4,
+                                   data='Group {} not found'.format(input_group)), 404
+
+                if not can_account_write_accounts(current_token.account, group):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to write to group'), 403
+
+                created = create_account(input_group,
+                                         input_type,
+                                         input_role,
+                                         input_username,
+                                         input_password,
+                                         input_email)
+
+                if created:
+                    return jsonify(created.to_dict()), 201
+                else:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=400,
+                                   data='Cannot create the account'), 400
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=402,
+                               data='Bad request, missing username, password, group, email, type or role parameter'), 402
     else:
-        return jsonify([q.to_dict() for q in Group.query.all()])
+        return jsonify([q.to_dict() for q in Account.query.all()])
 
 @app.route('/accounts/<id>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()

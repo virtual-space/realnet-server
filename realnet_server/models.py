@@ -240,10 +240,12 @@ def create_account(tenant_name,
 
     adm = db.session.query(Account).filter(Account.id == account.id).first()
     if adm:
-        print('setting admin home folder id')
+        print('setting user home folder id')
         adm.home_id = home_folder_id
 
     db.session.commit()
+
+    return account
 
 
 def add_account(tenant_name, account_username):
