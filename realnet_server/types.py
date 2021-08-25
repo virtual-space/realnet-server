@@ -72,59 +72,86 @@ def types():
 @app.route('/types/<id>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def single_type(id):
-    # 1. get the group
-    group = Group.query.filter(or_(Group.id == id, Group.name == id)).first()
-    if group:
+    type = Type.query.filter(or_(Type.id == id, Type.name == id)).first()
+    if type:
+        group = Group.query.filter(Group.id == type.group_id).first()
+        if group:
+            if request.method == 'PUT':
 
-        if request.method == 'PUT':
+                account = Account.query.filter(Account.id == current_token.account.id).first()
 
-            account = Account.query.filter(Account.id == current_token.account.id).first()
+                if not can_account_write_type(account=account, type=type):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to write to type'), 403
 
-            if not can_account_write_type(account=account, type=None):
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=403,
-                               data='Account not authorized to write to group'), 403
+                input_data = request.get_json(force=True, silent=False)
 
-            input_data = request.get_json(force=True, silent=False)
+                if 'name' in input_data:
+                    type.name = input_data['name']
 
-            args = dict()
+                parent_id = None
 
-            if 'name' in input_data:
-                group.name = input_data['name']
+                if 'parent_id' in input_data:
+                    parent_id = input_data['parent_id']
 
-            db.session.commit()
+                    parent = Type.query.filter(Type.id == parent_id).first()
+                    if not parent:
+                        return jsonify(isError=True,
+                                       message="Failure",
+                                       statusCode=404,
+                                       data='Parent type not found'), 404
 
-            return jsonify(group.to_dict())
+                if 'attributes' in input_data:
+                    type.attributes = input_data['attributes']
 
-        elif request.method == 'DELETE':
+                if 'module' in input_data:
+                    type.module = input_data['module']
 
-            account = Account.query.filter(Account.id == current_token.account.id).first()
+                if parent_id:
+                    parent_type = Type.query.filter(Type.id == parent_id).first()
+                    if parent_type:
+                        pass
+                        # TODO: type.parent_id = parent_type.id
 
-            if not can_account_delete_type(account=account, type=None):
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=403,
-                               data='Account not authorized to delete this group'), 403
+                db.session.commit()
 
-            db.session.delete(group)
-            db.session.commit()
+                return jsonify(type.to_dict())
 
-            return jsonify(isError=False,
-                           message="Success",
-                           statusCode=200,
-                           data='deleted item {0}'.format(id)), 200
+            elif request.method == 'DELETE':
+
+                account = Account.query.filter(Account.id == current_token.account.id).first()
+
+                if not can_account_delete_type(account=account, type=type):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to delete this type'), 403
+
+                db.session.delete(type)
+                db.session.commit()
+
+                return jsonify(isError=False,
+                               message="Success",
+                               statusCode=200,
+                               data='deleted app {0}'.format(id)), 200
+            else:
+                account = Account.query.filter(Account.id == current_token.account.id).first()
+
+                if not can_account_read_type(account=account, type=type):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to read this type'), 403
+                return jsonify(type.to_dict())
         else:
-            account = Account.query.filter(Account.id == current_token.account.id).first()
-
-            if not can_account_read_type(account=account, type=None):
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=403,
-                               data='Account not authorized to read this group'), 403
-            return jsonify(group.to_dict())
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=404,
+                           data='group {0} not found'.format(type.group_id)), 404
 
     return jsonify(isError=True,
                    message="Failure",
                    statusCode=404,
-                   data='get_item {0}'.format(id)), 404
+                   data='type {0} not found'.format(id)), 404

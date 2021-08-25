@@ -99,7 +99,7 @@ class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
     account = db.relationship('Account')
 
 
-class App(db.Model, OAuth2ClientMixin):
+class App(db.Model, OAuth2ClientMixin, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
@@ -250,6 +250,46 @@ def create_account(tenant_name,
 
 def add_account(tenant_name, account_username):
     pass
+
+def create_app(name,
+               uri,
+               grant_types,
+               redirect_uris,
+               response_types,
+               scope,
+               auth_method,
+               account_id, group_id):
+    client_id = gen_salt(24)
+    client_id_issued_at = int(time.time())
+    app_id = str(uuid.uuid4())
+    client = App(
+        id=app_id,
+        client_id=client_id,
+        client_id_issued_at=client_id_issued_at,
+        owner_id=account_id,
+        group_id=group_id
+    )
+
+    client_metadata = {
+        'client_name': name,
+        'client_uri': uri,
+        'grant_types': grant_types,
+        'redirect_uris': redirect_uris,
+        'response_types': response_types,
+        'scope': scope,
+        'token_endpoint_auth_method': auth_method
+    }
+    client.set_client_metadata(client_metadata)
+
+    if client_metadata['token_endpoint_auth_method'] == 'none':
+        client.client_secret = ''
+    else:
+        client.client_secret = gen_salt(48)
+
+    db.session.add(client)
+    db.session.commit()
+
+    return client
 
 def create_tenant(tenant_name, root_username, root_email, root_password):
     

@@ -2,7 +2,7 @@ from flask import request, jsonify
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from .auth import require_oauth
-from .models import db, Group, Account, AccountGroup, GroupRoleType
+from .models import db, Group, Account, App, create_app
 from sqlalchemy import or_
 import uuid
 
@@ -23,74 +23,133 @@ def apps():
         input_data = request.get_json(force=True, silent=False)
         if input_data:
             input_name = input_data['name']
-            if input_name:
-                created = Group(id=str(uuid.uuid4()),
-                                name=input_name)
+            input_group = input_data['group']
+            input_uri = input_data['uri']
+            input_scope = input_data['scope']
+            input_auth_method = input_data['auth_method']
+            input_grant_types = input_data['grant_types']
+            input_redirect_uris = input_data['redirect_uris']
+            input_response_types = input_data['response_types']
 
-                db.session.add(created)
-                db.session.commit()
+            if input_name and input_group and input_uri and input_auth_method:
+                group = db.session.query(Group).filter(Group.name == input_group).first()
 
-                return jsonify(created.to_dict()), 201
+                if not group:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=4,
+                                   data='Group {} not found'.format(input_group)), 404
+
+                if not can_account_write_app(current_token.account, group):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to write to app'), 403
+
+                created = create_app(input_name,
+                                     input_uri,
+                                     input_grant_types,
+                                     input_redirect_uris,
+                                     input_scope,
+                                     input_auth_method,
+                                     input_response_types,
+                                     current_token.account.id,
+                                     group.id)
+
+                if created:
+                    return jsonify(created.to_dict()), 201
+                else:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=400,
+                                   data='Cannot create the app'), 400
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=402,
+                               data='Bad request, missing name, group, uri or auth_method parameter'), 402
     else:
-        return jsonify([q.to_dict() for q in Group.query.all()])
+        return jsonify([q.to_dict() for q in App.query.all()])
 
 @app.route('/apps/<id>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def single_app(id):
-    # 1. get the group
-    group = Group.query.filter(or_(Group.id == id, Group.name == id)).first()
-    if group:
-        
-        if request.method == 'PUT':
+    app = App.query.filter(App.id == id).first()
+    if app:
+        group = Group.query.filter(Group.id == app.group_id).first()
+        if group:
+            if request.method == 'PUT':
 
-            account = Account.query.filter(Account.id == current_token.account.id).first()
+                account = Account.query.filter(Account.id == current_token.account.id).first()
 
-            if not can_account_write_app(account=account, app=None):
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=403,
-                               data='Account not authorized to write to group'), 403
+                if not can_account_write_app(account=account, app=app):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to write to app'), 403
 
-            input_data = request.get_json(force=True, silent=False)
+                client_metadata = app.client_metadata
 
-            args = dict()
+                input_data = request.get_json(force=True, silent=False)
 
-            if 'name' in input_data:
-                group.name = input_data['name']
-            
-            db.session.commit()
-            
-            return jsonify(group.to_dict())
+                if 'name' in input_data:
+                    client_metadata['client_name'] = input_data['name']
 
-        elif request.method == 'DELETE':
+                if 'uri' in input_data:
+                    client_metadata['client_uri'] = input_data['uri']
 
-            account = Account.query.filter(Account.id == current_token.account.id).first()
+                if 'grant_types' in input_data:
+                    client_metadata['grant_types'] = input_data['grant_types']
 
-            if not can_account_delete_app(account=account, app=None):
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=403,
-                               data='Account not authorized to delete this group'), 403
+                if 'redirect_uris' in input_data:
+                    client_metadata['redirect_uris'] = input_data['redirect_uris']
 
-            db.session.delete(group)
-            db.session.commit()
+                if 'response_types' in input_data:
+                    client_metadata['response_types'] = input_data['response_types']
 
-            return jsonify(isError=False,
-                           message="Success",
-                           statusCode=200,
-                           data='deleted item {0}'.format(id)), 200
+                if 'scope' in input_data:
+                    client_metadata['scope'] = input_data['scope']
+
+                app.client_metadata = client_metadata
+
+                db.session.commit()
+
+                return jsonify(app.to_dict())
+
+            elif request.method == 'DELETE':
+
+                account = Account.query.filter(Account.id == current_token.account.id).first()
+
+                if not can_account_delete_app(account=account, app=app):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to delete this app'), 403
+
+                db.session.delete(app)
+                db.session.commit()
+
+                return jsonify(isError=False,
+                               message="Success",
+                               statusCode=200,
+                               data='deleted app {0}'.format(id)), 200
+            else:
+                account = Account.query.filter(Account.id == current_token.account.id).first()
+
+                if not can_account_read_app(account=account, app=app):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to read this app'), 403
+                return jsonify(app.to_dict())
         else:
-            account = Account.query.filter(Account.id == current_token.account.id).first()
-
-            if not can_account_read_app(account=account, app=None):
-                return jsonify(isError=True,
-                               message="Failure",
-                               statusCode=403,
-                               data='Account not authorized to read this group'), 403
-            return jsonify(group.to_dict())
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=404,
+                           data='group {0} not found'.format(app.group_id)), 404
 
     return jsonify(isError=True,
-                       message="Failure",
-                       statusCode=404,
-                       data='get_item {0}'.format(id)), 404
+                   message="Failure",
+                   statusCode=404,
+                   data='app {0} not found'.format(id)), 404
 
