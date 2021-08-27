@@ -36,6 +36,7 @@ setup(
                       "GeoAlchemy2",
                       "psycopg2-binary",
                       "flask-script",
+                      "random-password-generator",
                       "flask",
                       "authlib==0.14.3",
                       "loginpass",

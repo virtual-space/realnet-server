@@ -51,6 +51,8 @@ import realnet_server.types
 import realnet_server.groups
 import realnet_server.apps
 import realnet_server.accounts
+import realnet_server.authenticators
+import realnet_server.tenants
 
 
 

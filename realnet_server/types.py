@@ -72,7 +72,7 @@ def types():
 @app.route('/types/<id>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def single_type(id):
-    type = Type.query.filter(or_(Type.id == id, Type.name == id)).first()
+    type = Type.query.filter(or_(Type.id == id, Type.name == id), Type.group_id == current_token.account.group_id).first()
     if type:
         group = Group.query.filter(Group.id == type.group_id).first()
         if group:

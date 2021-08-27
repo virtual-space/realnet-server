@@ -6,6 +6,9 @@ from .models import db, Group, Account, AccountGroup, GroupRoleType
 from sqlalchemy import or_
 import uuid
 
+def can_account_create_group(account):
+    return True
+
 def can_account_read_group(account, group):
     return True
 
@@ -24,28 +27,35 @@ def groups():
         if input_data:
             input_name = input_data['name']
             if input_name:
+                if not can_account_create_group(account=current_token.account):
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=403,
+                                   data='Account not authorized to create the group'), 403
+
                 created = Group(id=str(uuid.uuid4()),
-                                name=input_name)
+                                name=input_name,
+                                parent_id=current_token.account.group_id)
 
                 db.session.add(created)
                 db.session.commit()
 
                 return jsonify(created.to_dict()), 201
     else:
-        return jsonify([q.to_dict() for q in Group.query.all()])
+        return jsonify([q.to_dict() for q in Group.query.filter(Group.parent_id == current_token.account.group_id)])
 
 @app.route('/groups/<id>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def single_group(id):
     # 1. get the group
-    group = Group.query.filter(or_(Group.id == id, Group.name == id)).first()
+    group = Group.query.filter(or_(Group.id == id,
+                                   Group.name == id),
+                                   Group.parent_id == current_token.account.group_id).first()
     if group:
         
         if request.method == 'PUT':
 
-            account = Account.query.filter(Account.id == current_token.account.id).first()
-
-            if not can_account_write_group(account=account, group=group):
+            if not can_account_write_group(account=current_token.account, group=group):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=403,
@@ -64,9 +74,7 @@ def single_group(id):
 
         elif request.method == 'DELETE':
 
-            account = Account.query.filter(Account.id == current_token.account.id).first()
-
-            if not can_account_delete_group(account=account, group=group):
+            if not can_account_delete_group(account=current_token.account, group=group):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=403,
@@ -78,11 +86,9 @@ def single_group(id):
             return jsonify(isError=False,
                            message="Success",
                            statusCode=200,
-                           data='deleted item {0}'.format(id)), 200
+                           data='deleted group {0}'.format(id)), 200
         else:
-            account = Account.query.filter(Account.id == current_token.account.id).first()
-
-            if not can_account_read_group(account=account, group=group):
+            if not can_account_read_group(account=current_token.account, group=group):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=403,
@@ -97,7 +103,9 @@ def single_group(id):
 @app.route('/groups/<id>/accounts', methods=['GET', 'POST'])
 @require_oauth()
 def group_accounts(id):
-    group = Group.query.filter(or_(Group.id == id, Group.name == id)).first()
+    group = Group.query.filter(or_(Group.id == id,
+                                   Group.name == id),
+                                   Group.parent_id == current_token.account.group_id).first()
     if group:
         account = Account.query.filter(Account.id == current_token.account.id).first()
         if request.method == 'POST':
@@ -158,7 +166,8 @@ def group_accounts(id):
 @app.route('/groups/<id>/accounts/<username>', methods=['DELETE'])
 @require_oauth()
 def group_account(id, username):
-    group = Group.query.filter(or_(Group.id == id, Group.name == id)).first()
+    group = Group.query.filter(or_(Group.id == id, Group.name == id),
+                                   Group.parent_id == current_token.account.group_id).first()
     if group:
         account = Account.query.filter(Account.id == current_token.account.id).first()
         target_account = Account.query.filter(Account.username == username).first()

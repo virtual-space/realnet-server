@@ -12,24 +12,25 @@ from authlib.integrations.sqla_oauth2 import (
     OAuth2TokenMixin,
 )
 
-
-class AuthenticatorType(enum.Enum):
-    password = 1
-    oauth = 2
-
-
 db = SQLAlchemy()
 
 # https://stackoverflow.com/questions/52723239/spatialite-backend-for-geoalchemy2-in-python
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/
 
 
-class Authenticator(db.Model):
+class Authenticator(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(40))
-    type = db.Column(db.Enum(AuthenticatorType))
-    client_id = db.Column(db.String(128))
-    client_secret = db.Column(db.String(128))
+    api_base_url = db.Column(db.String(128))
+    request_token_url = db.Column(db.String(128))
+    access_token_url = db.Column(db.String(128))
+    authorize_url = db.Column(db.String(128))
+    client_kwargs = db.Column(db.JSON())
+    userinfo_endpoint = db.Column(db.String(128))
+    userinfo_compliance_fix = db.Column(db.String(128))
+    server_metadata_url = db.Column(db.String(128))
+    owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
+    group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
 
 
 class AccountType(enum.Enum):
@@ -40,8 +41,8 @@ class AccountType(enum.Enum):
 class Account(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     type = db.Column(db.Enum(AccountType))
-    username = db.Column(db.String(40), unique=True)
-    email = db.Column(db.String(254), unique=True)
+    username = db.Column(db.String(40))
+    email = db.Column(db.String(254))
     password_hash = db.Column(db.String(128))
     data = db.Column(db.JSON)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
@@ -114,6 +115,9 @@ class Type(db.Model, SerializerMixin):
     group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
     module = db.Column(db.String(128))
 
+class TypeId:
+    person = 'b533fc2f-fcec-46d4-b3ff-5e8589a18ccb'
+    folder = '962587e1-9900-435f-a7df-16c10e5f584a'
 
 class VisibilityType(enum.Enum):
     visible = 1
@@ -248,9 +252,6 @@ def create_account(tenant_name,
     return account
 
 
-def add_account(tenant_name, account_username):
-    pass
-
 def create_app(name,
                uri,
                grant_types,
@@ -294,7 +295,8 @@ def create_app(name,
 def create_tenant(tenant_name, root_username, root_email, root_password):
     
     root_group_id = str(uuid.uuid4())
-    db.session.add(Group(id=root_group_id, name=tenant_name))
+    root_group = Group(id=root_group_id, name=tenant_name)
+    db.session.add(root_group)
 
     db.session.commit()
 
@@ -313,40 +315,26 @@ def create_tenant(tenant_name, root_username, root_email, root_password):
                                 group_id=root_group_id,
                                 role_type=GroupRoleType.root))
 
-    client_id = gen_salt(24)
-    client_id_issued_at = int(time.time())
-    root_app_id = str(uuid.uuid4())
-    client = App(
-        id=root_app_id,
-        client_id=client_id,
-        client_id_issued_at=client_id_issued_at,
-        owner_id=root_account_id,
-        group_id=root_group_id
-    )
+    client = create_app(name='root',
+                        uri='http://localhost:8080',
+                        grant_types=['authorization_code', 'password'],
+                        redirect_uris=[],
+                        response_types=['code'],
+                        scope='',
+                        auth_method='client_secret_basic',
+                        account_id=root_account_id,
+                        group_id=root_group_id)
 
-    client_metadata = {
-        'client_name': 'root',
-        'client_uri': 'http://localhost:8080',
-        'grant_types': ['authorization_code', 'password'],
-        'redirect_uris': [],
-        'response_types': ['code'],
-        'scope': '',
-        'token_endpoint_auth_method': 'client_secret_basic'
-    }
-    client.set_client_metadata(client_metadata)
-
-    if client_metadata['token_endpoint_auth_method'] == 'none':
-        client.client_secret = ''
-    else:
-        client.client_secret = gen_salt(48)
-
-    db.session.add(client)
-    db.session.commit()
-
-    print('{} tenant client id: {}'.format(tenant_name, client_id))
+    print('{} tenant id: {}'.format(tenant_name, root_group_id))
+    print('{} tenant client id: {}'.format(tenant_name, client.client_id))
     print('{} tenant client secret: {}'.format(tenant_name, client.client_secret))
+    print('{} tenant root id: {}'.format(tenant_name, root_account_id))
+    print('{} tenant root email: {}'.format(tenant_name, root_email))
+    print('{} tenant root username: {}'.format(tenant_name, root_username))
+    print('{} tenant root password: {}'.format(tenant_name, root_password))
 
-    # create basic types
+    # create required types
+
     person_type_id = str(uuid.uuid4())
     db.session.add(Type(id=person_type_id, name='Person', owner_id=root_account_id, group_id=root_group_id, module='person'))
 
@@ -366,13 +354,49 @@ def create_tenant(tenant_name, root_username, root_email, root_password):
                         group_id=root_group_id, 
                         type_id=folder_type_id))
     db.session.commit()
-
+    print('{} tenant root home folder id: {}'.format(tenant_name, home_folder_id))
     adm = db.session.query(Account).filter(Account.id == root_account_id).first()
     if adm:
         print('setting admin home folder id')
         adm.home_id = home_folder_id
 
     db.session.commit()
+
+    create_basic_types(root_account_id, root_group_id)
+    result = root_group.to_dict()
+    result['client_id'] = client.client_id
+    result['client_secret'] = client.client_secret
+    result['root_username'] = root_username
+    result['root_password'] = root_password
+    result['root_email'] = root_email
+    return result
+
+def get_or_create_type(name, owner_id, group_id, module=None):
+    res = db.session.query(Type).filter(Type.name == name).first()
+
+    if not res:
+        res = Type(id=str(uuid.uuid4()), name=name, owner_id=owner_id, group_id=group_id, module=module)
+        db.session.add(res)
+        db.session.commit()
+
+    return res
+
+def create_basic_types(owner_id, group_id):
+    get_or_create_type(name='Document', owner_id=owner_id, group_id=group_id)
+    get_or_create_type(name='Image', owner_id=owner_id, group_id=group_id)
+    get_or_create_type(name='Video', owner_id=owner_id, group_id=group_id)
+    get_or_create_type(name='Drawing', owner_id=owner_id, group_id=group_id)
+    get_or_create_type(name='Scene', owner_id=owner_id, group_id=group_id)
+
+    get_or_create_type(name='Thing', owner_id=owner_id, group_id=group_id)
+
+    get_or_create_type(name='Place', owner_id=owner_id, group_id=group_id)
+
+    get_or_create_type(name='Event', owner_id=owner_id, group_id=group_id)
+
+    get_or_create_type(name='Task', owner_id=owner_id, group_id=group_id)
+
+    get_or_create_type(name='Job', owner_id=owner_id, group_id=group_id)
 
 def initialize_server(root_tenant_name,
                root_username,

@@ -6,6 +6,9 @@ from .models import db, Group, Account, create_account
 from sqlalchemy import or_
 import uuid
 
+def can_account_create_account(account):
+    return True
+
 def can_account_read_accounts(account, group):
     return True
 
@@ -25,26 +28,20 @@ def accounts():
             input_username = input_data['username']
             input_password = input_data['password']
             input_type = input_data['type']
-            input_group = input_data['group']
             input_role = input_data['role']
             input_email = input_data['email']
 
-            if input_username and input_password and input_group and input_role and input_email:
-                group = db.session.query(Group).filter(Group.name == input_group).first()
+            if input_username and input_password and input_role and input_email:
+                group = db.session.query(Group).filter(
+                                   Group.id == current_token.account.group_id).first()
 
-                if not group:
-                    return jsonify(isError=True,
-                                   message="Failure",
-                                   statusCode=4,
-                                   data='Group {} not found'.format(input_group)), 404
-
-                if not can_account_write_accounts(current_token.account, group):
+                if not can_account_create_account(current_token.account):
                     return jsonify(isError=True,
                                    message="Failure",
                                    statusCode=403,
                                    data='Account not authorized to write to group'), 403
 
-                created = create_account(input_group,
+                created = create_account(group.name,
                                          input_type,
                                          input_role,
                                          input_username,
@@ -64,20 +61,20 @@ def accounts():
                                statusCode=402,
                                data='Bad request, missing username, password, group, email, type or role parameter'), 402
     else:
-        return jsonify([q.to_dict() for q in Account.query.all()])
+        return jsonify([q.to_dict() for q in Account.query.filter(Account.group_id == current_token.account.group_id)])
 
 @app.route('/accounts/<id>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def single_account(id):
-    acc = Account.query.filter(or_(Account.id == id, Account.username == id)).first()
+    acc = Account.query.filter(or_(Account.id == id, Account.username == id),
+                                   Account.group_id == current_token.account.group_id).first()
     if acc:
-        group = Group.query.filter(Group.id == acc.group_id).first()
+        group = Group.query.filter(Group.id == acc.group_id,
+                                   Group.parent_id == current_token.account.group_id).first()
         if group:
             if request.method == 'PUT':
 
-                account = Account.query.filter(Account.id == current_token.account.id).first()
-
-                if not can_account_write_accounts(account=account, group=group):
+                if not can_account_write_accounts(account=current_token.account, group=group):
                     return jsonify(isError=True,
                                    message="Failure",
                                    statusCode=403,
@@ -93,15 +90,13 @@ def single_account(id):
 
             elif request.method == 'DELETE':
 
-                account = Account.query.filter(Account.id == current_token.account.id).first()
-
-                if not can_account_delete_accounts(account=account, group=group):
+                if not can_account_delete_accounts(account=current_token.account, group=group):
                     return jsonify(isError=True,
                                    message="Failure",
                                    statusCode=403,
                                    data='Account not authorized to delete this account'), 403
 
-                db.session.delete(account)
+                db.session.delete(acc)
                 db.session.commit()
 
                 return jsonify(isError=False,
@@ -109,14 +104,12 @@ def single_account(id):
                                statusCode=200,
                                data='deleted account {0}'.format(id)), 200
             else:
-                account = Account.query.filter(Account.id == current_token.account.id).first()
-
-                if not can_account_read_accounts(account=account, group=group):
+                if not can_account_read_accounts(account=current_token.account, group=group):
                     return jsonify(isError=True,
                                    message="Failure",
                                    statusCode=403,
                                    data='Account not authorized to read this account'), 403
-                return jsonify(account.to_dict())
+                return jsonify(acc.to_dict())
         else:
             return jsonify(isError=True,
                            message="Failure",

@@ -214,6 +214,8 @@ def items():
     else:
         conditions = []
 
+        conditions.append(Item.group_id == current_token.account.group_id)
+
         parent_id = request.args.get('parent_id')
 
         if parent_id:
@@ -267,7 +269,7 @@ def items():
 @require_oauth()
 def single_item(id):
     # 1. get the type
-    item = Item.query.filter(Item.id == id).first()
+    item = Item.query.filter(Item.id == id, Item.group_id == current_token.account.group_id).first()
     if item:
         module_name = item.type.module
 
@@ -280,9 +282,7 @@ def single_item(id):
 
         if request.method == 'PUT':
 
-            account = Account.query.filter(Account.id == current_token.account.id).first()
-
-            if not can_account_write_item(account=account, item=item):
+            if not can_account_write_item(account=current_token.account, item=item):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=403,
@@ -306,7 +306,7 @@ def single_item(id):
                                    statusCode=404,
                                    data='Parent item not found'), 404
 
-                if not can_account_write_item(account=account, item=parent):
+                if not can_account_write_item(account=current_token.account, item=parent):
                     return jsonify(isError=True,
                                    message="Failure",
                                    statusCode=403,
@@ -331,9 +331,7 @@ def single_item(id):
 
         elif request.method == 'DELETE':
 
-            account = Account.query.filter(Account.id == current_token.account.id).first()
-
-            if not can_account_delete_item(account=account, item=item):
+            if not can_account_delete_item(account=current_token.account, item=item):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=403,
@@ -345,9 +343,7 @@ def single_item(id):
                            statusCode=200,
                            data='deleted item {0}'.format(id)), 200
         else:
-            account = Account.query.filter(Account.id == current_token.account.id).first()
-
-            if not can_account_read_item(account=account, item=item):
+            if not can_account_read_item(account=current_token.account, item=item):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=403,
@@ -379,7 +375,7 @@ def allowed_file(filename):
 @app.route('/items/<id>/data', methods=['GET', 'PUT', 'POST', 'DELETE'])
 @require_oauth()
 def item_data(id):
-    item = Item.query.filter(Item.id == id).first()
+    item = Item.query.filter(Item.id == id, Item.group_id == current_token.account.group_id).first()
     if item:
         module_name = item.type.module
 
@@ -487,7 +483,7 @@ def item_data(id):
 @app.route('/items/<id>/acls', methods=['GET', 'POST'])
 @require_oauth()
 def item_acls(id):
-    item = Item.query.filter(Item.id == id).first()
+    item = Item.query.filter(Item.id == id, Item.group_id == current_token.account.group_id).first()
     if item:
         if item.owner_id == current_token.account.id or item.group_id == current_token.account.group_id:
             if request.method == 'POST':
@@ -533,7 +529,7 @@ def item_acls(id):
 @app.route('/items/<id>/acls/<aclid>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def item_acl(id, aclid):
-    item = Item.query.filter(Item.id == id).first()
+    item = Item.query.filter(Item.id == id, Item.group_id == current_token.account.group_id).first()
     if item:
         if item.owner_id == current_token.account.id or item.group_id == current_token.account.group_id:
             acl = Acl.query.filter(Acl.id == aclid and Acl.item_id == id).first()
@@ -584,7 +580,7 @@ def item_acl(id, aclid):
 @app.route('/items/<id>/functions', methods=['GET', 'POST'])
 @require_oauth()
 def item_functions(id):
-    item = Item.query.filter(Item.id == id).first()
+    item = Item.query.filter(Item.id == id, Item.group_id == current_token.account.group_id).first()
     if item:
 
         if request.method == 'POST':
@@ -646,7 +642,7 @@ def item_functions(id):
 @app.route('/items/<id>/functions/<name>', methods=['GET', 'PUT', 'POST', 'DELETE'])
 @require_oauth()
 def item_function(id, name):
-    item = Item.query.filter(Item.id == id).first()
+    item = Item.query.filter(Item.id == id, Item.group_id == current_token.account.group_id).first()
     if item:
         if request.method == 'POST':
             # function invocation
@@ -749,7 +745,7 @@ def item_function(id, name):
 @app.route('/items/<id>/topics', methods=['GET', 'POST'])
 @require_oauth()
 def item_topics(id):
-    item = Item.query.filter(Item.id == id).first()
+    item = Item.query.filter(Item.id == id, Item.group_id == current_token.account.group_id).first()
     if item:
 
         if request.method == 'POST':
@@ -803,7 +799,7 @@ def item_topics(id):
 @app.route('/items/<id>/topics/<name>', methods=['GET', 'PUT', 'POST', 'DELETE'])
 @require_oauth()
 def item_topic(id, name):
-    item = Item.query.filter(Item.id == id).first()
+    item = Item.query.filter(Item.id == id, Item.group_id == current_token.account.group_id).first()
     if item:
         if request.method == 'POST':
 
@@ -916,7 +912,7 @@ def item_topic(id, name):
 @app.route('/items/<id>/topics/<topic_name>/functions', methods=['GET', 'POST'])
 @require_oauth()
 def item_topic_functions(id, topic_name):
-    item = Item.query.filter(Item.id == id).first()
+    item = Item.query.filter(Item.id == id, Item.group_id == current_token.account.group_id).first()
     if item:
 
         if request.method == 'POST':
@@ -997,7 +993,7 @@ def item_topic_functions(id, topic_name):
 @require_oauth()
 def topic_function(id, topic_name, func_name):
     # TODO
-    item = Item.query.filter(Item.id == id).first()
+    item = Item.query.filter(Item.id == id, Item.group_id == current_token.account.group_id).first()
     if item:
         func = Function.query.filter(Function.item_id == item.id, Function.name == func_name).first()
         topic = Topic.query.filter(Topic.item_id == id, Topic.name == topic_name).first()
@@ -1093,7 +1089,7 @@ def topic_function(id, topic_name, func_name):
 @app.route('/items/<id>/items', methods=['GET', 'POST'])
 @require_oauth()
 def item_items(id):
-    item = Item.query.filter(Item.id == id).first()
+    item = Item.query.filter(Item.id == id, Item.group_id == current_token.account.group_id).first()
     if item:
         module_name = item.type.module
 
