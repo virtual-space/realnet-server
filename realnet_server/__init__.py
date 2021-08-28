@@ -1,6 +1,8 @@
 __version__ = "0.0.3"
 
 from flask import Flask
+from flask_cors import CORS
+
 from flask_migrate import Migrate
 
 from flask_bootstrap import Bootstrap
@@ -19,6 +21,7 @@ logging.basicConfig(level=logging.DEBUG)
 cfg = Config()
 
 app = Flask(__name__)
+CORS(app)
 # import realnet_server.wsgi
 
 app.secret_key = '!secret'

@@ -26,8 +26,9 @@ class Authenticator(db.Model, SerializerMixin):
     access_token_url = db.Column(db.String(128))
     authorize_url = db.Column(db.String(128))
     client_kwargs = db.Column(db.JSON())
+    client_id = db.Column(db.String(255))
+    client_secret = db.Column(db.String(255))
     userinfo_endpoint = db.Column(db.String(128))
-    userinfo_compliance_fix = db.Column(db.String(128))
     server_metadata_url = db.Column(db.String(128))
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
@@ -45,6 +46,7 @@ class Account(db.Model, SerializerMixin):
     email = db.Column(db.String(254))
     password_hash = db.Column(db.String(128))
     data = db.Column(db.JSON)
+    external_id = db.Column(db.String(254))
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
     home_id = db.Column(db.String(36), db.ForeignKey('item.id'))
     parent_id = db.Column(db.String(36), db.ForeignKey('account.id'))
@@ -251,6 +253,66 @@ def create_account(tenant_name,
 
     return account
 
+def get_or_create_delegated_account(tenant_name,
+                                    account_type,
+                                    account_role,
+                                    account_username,
+                                    account_email,
+                                    account_external_id):
+    id = str(uuid.uuid4())
+    group = db.session.query(Group).filter(Group.name == tenant_name).first()
+    if not group:
+        return None
+
+    account = db.session.query(Account).filter(Account.external_id == account_external_id, Account.group_id == group.id).first()
+
+    if account:
+        return account
+
+    account = Account(id=id,
+                          type=AccountType[account_type],
+                          username=account_username,
+                          external_id=account_external_id,
+                          email=account_email,
+                          group_id=group.id)
+
+    db.session.add(account)
+
+    db.session.add(AccountGroup(id=str(uuid.uuid4()),
+                                account_id=account.id,
+                                group_id=group.id,
+                                role_type=GroupRoleType[account_role]))
+
+    folder_type = db.session.query(Type).filter(Type.name == 'Folder').first()
+    if not folder_type:
+        return None
+
+    person_type = db.session.query(Type).filter(Type.name == 'Person').first()
+    if not person_type:
+        return None
+
+    db.session.add(Item(id=account.id,
+                        name=account.username,
+                        owner_id=account.id,
+                        group_id=group.id,
+                        type_id=person_type.id))
+
+    home_folder_id = str(uuid.uuid4())
+    db.session.add(Item(id=home_folder_id,
+                        name='Home',
+                        owner_id=account.id,
+                        group_id=group.id,
+                        type_id=folder_type.id))
+    db.session.commit()
+
+    adm = db.session.query(Account).filter(Account.id == account.id).first()
+    if adm:
+        print('setting user home folder id')
+        adm.home_id = home_folder_id
+
+    db.session.commit()
+
+    return account
 
 def create_app(name,
                uri,

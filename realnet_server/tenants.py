@@ -1,8 +1,9 @@
-from flask import request, jsonify
+from flask import request, jsonify, url_for
 from authlib.integrations.flask_oauth2 import current_token
+from authlib.integrations.flask_client import OAuth
 from realnet_server import app
-from .auth import require_oauth
-from .models import db, Group, Account, create_tenant
+from .auth import authorization, require_oauth
+from .models import db, Group, Account, AccountType, GroupRoleType, create_tenant, Authenticator, get_or_create_delegated_account
 from sqlalchemy import or_
 from password_generator import PasswordGenerator
 import uuid
@@ -59,7 +60,7 @@ def tenants():
 @require_oauth()
 def single_tenant(id):
     # 1. get the group
-    group = Group.query.filter(or_(Group.id == id, Group.name == id)).first()
+    group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
         
         if request.method == 'PUT':
@@ -114,5 +115,87 @@ def single_tenant(id):
                        message="Failure",
                        statusCode=404,
                        data='Tenant {0} not found'.format(id)), 404
+
+@app.route('/tenants/<id>/login/<name>')
+def tenant_login(id, name):
+    # 1. get the group
+    group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
+    if group:
+        auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
+
+        if auth:
+            oauth = OAuth(app)
+            data = auth.to_dict()
+            del data['name']
+            del data['id']
+            backend = oauth.register(auth.name, **data)
+            redirect_uri = url_for('tenant_auth', _external=True, id=id, name=name)
+            return backend.authorize_redirect(redirect_uri)
+
+        else:
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=404,
+                           data='Authenticator {0} not found'.format(name)), 404
+
+    return jsonify(isError=True,
+                   message="Failure",
+                   statusCode=404,
+                   data='Tenant {0} not found'.format(id)), 404
+
+@app.route('/tenants/<id>/auth/<name>')
+def tenant_auth(id, name):
+    # 1. get the group
+    group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
+    if group:
+        auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
+
+        if auth:
+            oauth = OAuth(app)
+            data = auth.to_dict()
+            del data['name']
+            del data['id']
+            backend = oauth.register(auth.name, **data)
+            token = backend.authorize_access_token()
+            if token:
+                userinfo = backend.get(auth.userinfo_endpoint, token=token)
+                if userinfo:
+                    userinfo_data = userinfo.json()
+                    email = userinfo_data['email']
+                    external_id = '{}:{}'.format(auth.name, userinfo_data.get('sub', userinfo_data.get('id', None)))
+                    user = get_or_create_delegated_account(id,
+                                                           'person',
+                                                           'guest',
+                                                           email,
+                                                           email,
+                                                           external_id)
+                    if user:
+                        return authorization.create_authorization_response(grant_user=user)
+                    else:
+                        return jsonify(isError=True,
+                                       message="Failure",
+                                       statusCode=401,
+                                       data='Invalid user'), 401
+                else:
+                    return jsonify(isError=True,
+                                   message="Failure",
+                                   statusCode=400,
+                                   data='Cannot retrieve user profile info'), 400
+            else:
+                return jsonify(isError=True,
+                        message="Failure",
+                        statusCode=401,
+                        data='Invalid token'), 401
+
+        else:
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=404,
+                           data='Authenticator {0} not found'.format(name)), 404
+
+    return jsonify(isError=True,
+                   message="Failure",
+                   statusCode=404,
+                   data='Tenant {0} not found'.format(id)), 404
 
 

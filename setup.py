@@ -32,6 +32,7 @@ setup(
                       "requests",
                       "flask-migrate",
                       "flask-sqlalchemy",
+                      "flask-cors",
                       "sqlalchemy-serializer",
                       "GeoAlchemy2",
                       "psycopg2-binary",

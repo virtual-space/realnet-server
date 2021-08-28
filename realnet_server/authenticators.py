@@ -6,7 +6,7 @@ from .models import db, Group, Account, Authenticator
 from sqlalchemy import or_
 import uuid
 
-def can_account_create_authenticator(account, group):
+def can_account_create_authenticator(account):
     return True
 
 def can_account_read_authenticator(account, authenticator):
@@ -56,8 +56,11 @@ def authenticators():
                 if 'userinfo_endpoint' in input_data:
                     args['userinfo_endpoint'] = input_data['userinfo_endpoint']
 
-                if 'userinfo_compliance_fix' in input_data:
-                    args['userinfo_compliance_fix'] = input_data['userinfo_compliance_fix']
+                if 'client_id' in input_data:
+                    args['client_id'] = input_data['client_id']
+
+                if 'client_secret' in input_data:
+                    args['client_secret'] = input_data['client_secret']
 
                 if 'server_metadata_url' in input_data:
                     args['server_metadata_url'] = input_data['server_metadata_url']
@@ -79,7 +82,7 @@ def authenticators():
 @require_oauth()
 def single_authenticator(id):
     # 1. get the authenticator
-    auth = Authenticator.query.filter(Authenticator.id == id, Authenticator.group_id == current_token.account.group_id).first()
+    auth = Authenticator.query.filter(or_(Authenticator.id == id, Authenticator.name == id), Authenticator.group_id == current_token.account.group_id).first()
     if auth:
         
         if request.method == 'PUT':
@@ -110,8 +113,11 @@ def single_authenticator(id):
             if 'userinfo_endpoint' in input_data:
                 auth.userinfo_endpoint = input_data['userinfo_endpoint']
 
-            if 'userinfo_compliance_fix' in input_data:
-                auth.userinfo_compliance_fix = input_data['userinfo_compliance_fix']
+            if 'client_id' in input_data:
+                auth.client_id = input_data['client_id']
+
+            if 'client_secret' in input_data:
+                auth.client_secret = input_data['client_secret']
 
             if 'server_metadata_url' in input_data:
                 auth.server_metadata_url = input_data['server_metadata_url']
