@@ -1,4 +1,4 @@
-from flask import request, jsonify, url_for
+from flask import request, jsonify, url_for, redirect
 from authlib.integrations.flask_oauth2 import current_token
 from authlib.integrations.flask_client import OAuth
 from realnet_server import app
@@ -6,6 +6,13 @@ from .auth import authorization, require_oauth
 from .models import db, Group, Account, Token, create_tenant, Authenticator, get_or_create_delegated_account
 from sqlalchemy import or_
 from password_generator import PasswordGenerator
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
+
+from authlib.common.urls import url_encode
+
 import uuid
 
 def can_account_create_tenant(account):
@@ -143,6 +150,24 @@ def tenant_login(id, name):
                    statusCode=404,
                    data='Tenant {0} not found'.format(id)), 404
 
+def add_params_to_qs(query, params):
+    """Extend a query with a list of two-tuples."""
+    if isinstance(params, dict):
+        params = params.items()
+
+    qs = urlparse.parse_qsl(query, keep_blank_values=True)
+    qs.extend(params)
+    return url_encode(qs)
+
+def add_params_to_uri(uri, params, fragment=False):
+    """Add a list of two-tuples to the uri query components."""
+    sch, net, path, par, query, fra = urlparse.urlparse(uri)
+    if fragment:
+        fra = add_params_to_qs(fra, params)
+    else:
+        query = add_params_to_qs(query, params)
+    return urlparse.urlunparse((sch, net, path, par, query, fra))
+
 @app.route('/tenants/<id>/auth/<name>')
 def tenant_auth(id, name):
     # 1. get the group
@@ -179,7 +204,13 @@ def tenant_auth(id, name):
                         )
                         db.session.add(t)
                         db.session.commit()
-                        return token
+                        redirect_uri = 'http://localhost:4200'
+                        params = [(k, token[k]) for k in token]
+                        uri = add_params_to_uri(redirect_uri, params, fragment=True)
+                        return redirect(uri)
+                        # headers = [('Location', uri)]
+                        # return 302, '', headers
+                        # return token
                     else:
                         return jsonify(isError=True,
                                        message="Failure",
