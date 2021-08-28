@@ -3,7 +3,7 @@ from authlib.integrations.flask_oauth2 import current_token
 from authlib.integrations.flask_client import OAuth
 from realnet_server import app
 from .auth import authorization, require_oauth
-from .models import db, Group, Account, AccountType, GroupRoleType, create_tenant, Authenticator, get_or_create_delegated_account
+from .models import db, Group, Account, Token, create_tenant, Authenticator, get_or_create_delegated_account
 from sqlalchemy import or_
 from password_generator import PasswordGenerator
 import uuid
@@ -170,7 +170,16 @@ def tenant_auth(id, name):
                                                            email,
                                                            external_id)
                     if user:
-                        return authorization.create_authorization_response(grant_user=user)
+                        # return authorization.create_token_response()
+                        token = authorization.generate_token('auth', 'implicit')
+                        t = Token(
+                            client_id='auth',
+                            user_id=user.id,
+                            **token
+                        )
+                        db.session.add(t)
+                        db.session.commit()
+                        return token
                     else:
                         return jsonify(isError=True,
                                        message="Failure",
@@ -198,4 +207,13 @@ def tenant_auth(id, name):
                    statusCode=404,
                    data='Tenant {0} not found'.format(id)), 404
 
-
+@app.route('/tenants/<id>/auth', methods=['GET'])
+def tenant_auths(id):
+    group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
+    if group:
+        return jsonify([{ 'name': n['name'], 'type': 'oauth'} for n in [q.to_dict() for q in Authenticator.query.filter(Authenticator.group_id == group.id)]])
+    else:
+        return jsonify(isError=True,
+                   message="Failure",
+                   statusCode=404,
+                   data='Tenant {0} not found'.format(id)), 404
