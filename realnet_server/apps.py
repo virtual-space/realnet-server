@@ -69,7 +69,7 @@ def apps():
 @app.route('/apps/<id>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def single_app(id):
-    app = App.query.filter(or_(App.id == id, App.client_name == id),
+    app = App.query.filter(or_(App.id == id, App.name == id),
                            App.group_id == current_token.account.group_id).first()
     if app:
         if request.method == 'PUT':

@@ -129,7 +129,6 @@ def tenant_login(id, name):
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
         client_id = request.args['client_id']
-        client_redirect_uri = request.args['redirect_uri']
         client = App.query.filter(App.name == client_id, App.group_id == group.id).first()
         if client:
             auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
@@ -139,8 +138,7 @@ def tenant_login(id, name):
                 del data['name']
                 del data['id']
                 backend = oauth.register(auth.name, **data)
-                print(client_redirect_uri)
-                redirect_uri = url_for('tenant_auth', _external=True, id=id, client_id=client_id, name=name, redirect_uri=client_redirect_uri)
+                redirect_uri = url_for('tenant_auth', _external=True, id=id, client_id=client_id, name=name)
                 return backend.authorize_redirect(redirect_uri)
             else:
                 return jsonify(isError=True,
@@ -189,6 +187,7 @@ def tenant_auth(id, client_id, name):
                 data = auth.to_dict()
                 del data['name']
                 del data['id']
+                print(request)
                 backend = oauth.register(auth.name, **data)
                 token = backend.authorize_access_token()
                 if token:
@@ -214,10 +213,9 @@ def tenant_auth(id, client_id, name):
                             )
                             db.session.add(t)
                             db.session.commit()
-                            redirect_uri = request.args['redirect_uri']
-                            reidrect_uris = client.redirect_uris
-                            if not redirect_uri and redirect_uris:
-                                redirect_uri = redirect_uris[0]
+                            redirect_uri = ''
+                            if client.redirect_uris:
+                                redirect_uri = client.redirect_uris[0]
                             params = [(k, token[k]) for k in token]
                             uri = add_params_to_uri(redirect_uri, params, fragment=True)
                             return redirect(uri)
