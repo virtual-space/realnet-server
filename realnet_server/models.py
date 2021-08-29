@@ -104,6 +104,7 @@ class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
 
 class App(db.Model, OAuth2ClientMixin, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
+    name = db.Column(db.String(42))
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
     data = db.Column(db.JSON)
@@ -327,6 +328,7 @@ def create_app(name,
     app_id = str(uuid.uuid4())
     client = App(
         id=app_id,
+        name=name,
         client_id=client_id,
         client_id_issued_at=client_id_issued_at,
         owner_id=account_id,

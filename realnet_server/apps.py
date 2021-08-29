@@ -26,7 +26,6 @@ def apps():
         input_data = request.get_json(force=True, silent=False)
         if input_data:
             input_name = input_data['name']
-            input_group = input_data['group']
             input_uri = input_data['uri']
             input_scope = input_data['scope']
             input_auth_method = input_data['auth_method']
@@ -34,15 +33,7 @@ def apps():
             input_redirect_uris = input_data['redirect_uris']
             input_response_types = input_data['response_types']
 
-            if input_name and input_group and input_uri and input_auth_method:
-                group = db.session.query(Group).filter(Group.name == input_group,
-                                   Group.parent_id == current_token.account.group_id).first()
-
-                if not group:
-                    return jsonify(isError=True,
-                                   message="Failure",
-                                   statusCode=4,
-                                   data='Group {} not found'.format(input_group)), 404
+            if input_name  and input_uri and input_auth_method:
 
                 if not can_account_create_app(current_token.account):
                     return jsonify(isError=True,
@@ -58,7 +49,7 @@ def apps():
                                      input_auth_method,
                                      input_response_types,
                                      current_token.account.id,
-                                     group.id)
+                                     current_token.account.group_id)
 
                 if created:
                     return jsonify(created.to_dict()), 201
@@ -94,6 +85,7 @@ def single_app(id):
             input_data = request.get_json(force=True, silent=False)
 
             if 'name' in input_data:
+                app.name = input_data['name']
                 client_metadata['client_name'] = input_data['name']
 
             if 'uri' in input_data:

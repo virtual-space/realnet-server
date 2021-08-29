@@ -3,7 +3,7 @@ from authlib.integrations.flask_oauth2 import current_token
 from authlib.integrations.flask_client import OAuth
 from realnet_server import app
 from .auth import authorization, require_oauth
-from .models import db, Group, Account, Token, create_tenant, Authenticator, get_or_create_delegated_account
+from .models import db, Group, Account, Token, App, create_tenant, Authenticator, get_or_create_delegated_account
 from sqlalchemy import or_
 from password_generator import PasswordGenerator
 try:
@@ -128,22 +128,30 @@ def tenant_login(id, name):
     # 1. get the group
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
-        auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
-
-        if auth:
-            oauth = OAuth(app)
-            data = auth.to_dict()
-            del data['name']
-            del data['id']
-            backend = oauth.register(auth.name, **data)
-            redirect_uri = url_for('tenant_auth', _external=True, id=id, name=name)
-            return backend.authorize_redirect(redirect_uri)
-
+        client_id = request.args['client_id']
+        client_redirect_uri = request.args['redirect_uri']
+        client = App.query.filter(App.name == client_id, App.group_id == group.id).first()
+        if client:
+            auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
+            if auth:
+                oauth = OAuth(app)
+                data = auth.to_dict()
+                del data['name']
+                del data['id']
+                backend = oauth.register(auth.name, **data)
+                print(client_redirect_uri)
+                redirect_uri = url_for('tenant_auth', _external=True, id=id, client_id=client_id, name=name, redirect_uri=client_redirect_uri)
+                return backend.authorize_redirect(redirect_uri)
+            else:
+                return jsonify(isError=True,
+                               message="Failure",
+                               statusCode=404,
+                               data='Authenticator {0} not found'.format(name)), 404
         else:
             return jsonify(isError=True,
                            message="Failure",
                            statusCode=404,
-                           data='Authenticator {0} not found'.format(name)), 404
+                           data='Client {0} not found'.format(client_id)), 404
 
     return jsonify(isError=True,
                    message="Failure",
@@ -168,70 +176,77 @@ def add_params_to_uri(uri, params, fragment=False):
         query = add_params_to_qs(query, params)
     return urlparse.urlunparse((sch, net, path, par, query, fra))
 
-@app.route('/tenants/<id>/auth/<name>')
-def tenant_auth(id, name):
+@app.route('/tenants/<id>/clients/<client_id>/auth/<name>')
+def tenant_auth(id, client_id, name):
     # 1. get the group
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
-        auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
-
-        if auth:
-            oauth = OAuth(app)
-            data = auth.to_dict()
-            del data['name']
-            del data['id']
-            backend = oauth.register(auth.name, **data)
-            token = backend.authorize_access_token()
-            if token:
-                userinfo = backend.get(auth.userinfo_endpoint, token=token)
-                if userinfo:
-                    userinfo_data = userinfo.json()
-                    email = userinfo_data['email']
-                    external_id = '{}:{}'.format(auth.name, userinfo_data.get('sub', userinfo_data.get('id', None)))
-                    user = get_or_create_delegated_account(id,
-                                                           'person',
-                                                           'guest',
-                                                           email,
-                                                           email,
-                                                           external_id)
-                    if user:
-                        # return authorization.create_token_response()
-                        token = authorization.generate_token('auth', 'implicit')
-                        t = Token(
-                            client_id='auth',
-                            user_id=user.id,
-                            **token
-                        )
-                        db.session.add(t)
-                        db.session.commit()
-                        redirect_uri = 'http://localhost:4200'
-                        params = [(k, token[k]) for k in token]
-                        uri = add_params_to_uri(redirect_uri, params, fragment=True)
-                        return redirect(uri)
-                        # headers = [('Location', uri)]
-                        # return 302, '', headers
-                        # return token
+        client = App.query.filter(App.name == client_id, App.group_id == group.id).first()
+        if client:
+            auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
+            if auth:
+                oauth = OAuth(app)
+                data = auth.to_dict()
+                del data['name']
+                del data['id']
+                backend = oauth.register(auth.name, **data)
+                token = backend.authorize_access_token()
+                if token:
+                    userinfo = backend.get(auth.userinfo_endpoint, token=token)
+                    if userinfo:
+                        userinfo_data = userinfo.json()
+                        email = userinfo_data['email']
+                        external_id = '{}:{}'.format(auth.name, userinfo_data.get('sub', userinfo_data.get('id', None)))
+                        user = get_or_create_delegated_account(id,
+                                                               'person',
+                                                               'guest',
+                                                               email,
+                                                               email,
+                                                               external_id)
+                        if user:
+                            # return authorization.create_token_response()
+                            # client.
+                            token = authorization.generate_token('auth', 'implicit')
+                            t = Token(
+                                client_id='auth',
+                                user_id=user.id,
+                                **token
+                            )
+                            db.session.add(t)
+                            db.session.commit()
+                            redirect_uri = request.args['redirect_uri']
+                            reidrect_uris = client.redirect_uris
+                            if not redirect_uri and redirect_uris:
+                                redirect_uri = redirect_uris[0]
+                            params = [(k, token[k]) for k in token]
+                            uri = add_params_to_uri(redirect_uri, params, fragment=True)
+                            return redirect(uri)
+                        else:
+                            return jsonify(isError=True,
+                                           message="Failure",
+                                           statusCode=401,
+                                           data='Invalid user'), 401
                     else:
                         return jsonify(isError=True,
                                        message="Failure",
-                                       statusCode=401,
-                                       data='Invalid user'), 401
+                                       statusCode=400,
+                                       data='Cannot retrieve user profile info'), 400
                 else:
                     return jsonify(isError=True,
-                                   message="Failure",
-                                   statusCode=400,
-                                   data='Cannot retrieve user profile info'), 400
+                            message="Failure",
+                            statusCode=401,
+                            data='Invalid token'), 401
+
             else:
                 return jsonify(isError=True,
-                        message="Failure",
-                        statusCode=401,
-                        data='Invalid token'), 401
-
+                               message="Failure",
+                               statusCode=404,
+                               data='Authenticator {0} not found'.format(name)), 404
         else:
             return jsonify(isError=True,
                            message="Failure",
                            statusCode=404,
-                           data='Authenticator {0} not found'.format(name)), 404
+                           data='Client {0} not found'.format(client_id)), 404
 
     return jsonify(isError=True,
                    message="Failure",
