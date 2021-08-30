@@ -49,6 +49,11 @@ def types():
                 if 'module' in input_data:
                     input_module = input_data['module']
 
+                input_icon = ''
+
+                if 'icon' in input_data:
+                    input_icon = input_data['icon']
+
                 parent_type = None
 
                 if parent_id:
@@ -56,6 +61,7 @@ def types():
 
                 created_type = Type(id=str(uuid.uuid4()),
                                     name=input_name,
+                                    icon=input_icon,
                                     attributes=input_attributes,
                                     owner_id=current_token.account.id,
                                     group_id=current_token.account.group_id,
@@ -90,6 +96,9 @@ def single_type(id):
 
                 if 'name' in input_data:
                     type.name = input_data['name']
+
+                if 'icon' in input_data:
+                    type.icon = input_data['icon']
 
                 parent_id = None
 

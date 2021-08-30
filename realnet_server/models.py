@@ -113,6 +113,7 @@ class App(db.Model, OAuth2ClientMixin, SerializerMixin):
 class Type(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(128))
+    icon = db.Column(db.String(128))
     attributes = db.Column(db.JSON)
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
@@ -227,19 +228,31 @@ def create_account(tenant_name,
     if not folder_type:
         return None
 
-    person_type = db.session.query(Type).filter(Type.name == 'Person').first()
-    if not person_type:
-        return None
+    if account.type == AccountType.person:
+        person_type = db.session.query(Type).filter(Type.name == 'Person').first()
+        if not person_type:
+            return None
 
-    db.session.add(Item(id=account.id,
-                        name=account.username,
-                        owner_id=account.id,
-                        group_id=group.id,
-                        type_id=person_type.id))
+        db.session.add(Item(id=account.id,
+                            name=account.username,
+                            owner_id=account.id,
+                            group_id=group.id,
+                            type_id=person_type.id))
+    else:
+        thing_type = db.session.query(Type).filter(Type.name == 'Thing').first()
+        if not thing_type:
+            return None
+
+        db.session.add(Item(id=account.id,
+                            name=account.username,
+                            owner_id=account.id,
+                            group_id=group.id,
+                            type_id=thing_type.id))
 
     home_folder_id = str(uuid.uuid4())
     db.session.add(Item(id=home_folder_id,
-                        name='Home',
+                        name='home',
+                        parent_id=account.id,
                         owner_id=account.id,
                         group_id=group.id,
                         type_id=folder_type.id))
@@ -300,8 +313,9 @@ def get_or_create_delegated_account(tenant_name,
 
     home_folder_id = str(uuid.uuid4())
     db.session.add(Item(id=home_folder_id,
-                        name='Home',
+                        name='home',
                         owner_id=account.id,
+                        parent_id=account.id,
                         group_id=group.id,
                         type_id=folder_type.id))
     db.session.commit()
@@ -366,7 +380,7 @@ def create_tenant(tenant_name, root_username, root_email, root_password):
 
     root_account_id = str(uuid.uuid4())
     root_account = Account( id=root_account_id, 
-                            type=AccountType.person, 
+                            type=AccountType.thing,
                             username=root_username, 
                             email=root_email, 
                             group_id=root_group_id)
@@ -397,26 +411,30 @@ def create_tenant(tenant_name, root_username, root_email, root_password):
     print('{} tenant root username: {}'.format(tenant_name, root_username))
     print('{} tenant root password: {}'.format(tenant_name, root_password))
 
-    # create required types
+    create_basic_types(root_account_id, root_group_id)
 
-    person_type_id = str(uuid.uuid4())
-    db.session.add(Type(id=person_type_id, name='Person', owner_id=root_account_id, group_id=root_group_id, module='person'))
+    folder_type = db.session.query(Type).filter(Type.name == 'Folder').first()
+    if not folder_type:
+        return None
 
-    folder_type_id = str(uuid.uuid4())
-    db.session.add(Type(id=folder_type_id, name='Folder', owner_id=root_account_id, group_id=root_group_id))
+    thing_type = db.session.query(Type).filter(Type.name == 'Thing').first()
+    if not thing_type:
+        return None
+
 
     db.session.add(Item(id=root_account_id, 
                         name=root_username, 
                         owner_id=root_account_id, 
                         group_id=root_group_id, 
-                        type_id=person_type_id))
+                        type_id=thing_type.id))
 
     home_folder_id = str(uuid.uuid4())
     db.session.add(Item(id=home_folder_id, 
-                        name='Home', 
+                        name='home',
+                        parent_id=root_account_id,
                         owner_id=root_account_id, 
                         group_id=root_group_id, 
-                        type_id=folder_type_id))
+                        type_id=folder_type.id))
     db.session.commit()
     print('{} tenant root home folder id: {}'.format(tenant_name, home_folder_id))
     adm = db.session.query(Account).filter(Account.id == root_account_id).first()
@@ -435,32 +453,33 @@ def create_tenant(tenant_name, root_username, root_email, root_password):
     result['root_email'] = root_email
     return result
 
-def get_or_create_type(name, owner_id, group_id, module=None):
+def get_or_create_type(name, icon, owner_id, group_id, module=None):
     res = db.session.query(Type).filter(Type.name == name).first()
 
     if not res:
-        res = Type(id=str(uuid.uuid4()), name=name, owner_id=owner_id, group_id=group_id, module=module)
+        res = Type(id=str(uuid.uuid4()), name=name, icon=icon, owner_id=owner_id, group_id=group_id, module=module)
         db.session.add(res)
         db.session.commit()
 
     return res
 
 def create_basic_types(owner_id, group_id):
-    get_or_create_type(name='Document', owner_id=owner_id, group_id=group_id)
-    get_or_create_type(name='Image', owner_id=owner_id, group_id=group_id)
-    get_or_create_type(name='Video', owner_id=owner_id, group_id=group_id)
-    get_or_create_type(name='Drawing', owner_id=owner_id, group_id=group_id)
-    get_or_create_type(name='Scene', owner_id=owner_id, group_id=group_id)
+    get_or_create_type(name='Person', owner_id=owner_id, group_id=group_id, module='person', icon='person')
+    get_or_create_type(name='Thing', owner_id=owner_id, group_id=group_id, icon='graphic_eq')
 
-    get_or_create_type(name='Thing', owner_id=owner_id, group_id=group_id)
+    get_or_create_type(name='Folder', owner_id=owner_id, group_id=group_id, icon='folder')
+    get_or_create_type(name='Document', owner_id=owner_id, group_id=group_id, icon='description')
+    get_or_create_type(name='Image', owner_id=owner_id, group_id=group_id, icon='image')
+    get_or_create_type(name='Video', owner_id=owner_id, group_id=group_id, icon='ondemand_video')
+    get_or_create_type(name='Drawing', owner_id=owner_id, group_id=group_id, icon='gesture')
+    get_or_create_type(name='Scene', owner_id=owner_id, group_id=group_id, icon='view_in_ar')
 
-    get_or_create_type(name='Place', owner_id=owner_id, group_id=group_id)
 
-    get_or_create_type(name='Event', owner_id=owner_id, group_id=group_id)
 
-    get_or_create_type(name='Task', owner_id=owner_id, group_id=group_id)
-
-    get_or_create_type(name='Job', owner_id=owner_id, group_id=group_id)
+    get_or_create_type(name='Place', owner_id=owner_id, group_id=group_id, icon='other_houses')
+    get_or_create_type(name='Event', owner_id=owner_id, group_id=group_id, icon='event')
+    get_or_create_type(name='Task', owner_id=owner_id, group_id=group_id, icon='assignment_turned_in')
+    get_or_create_type(name='Job', owner_id=owner_id, group_id=group_id, icon='trending_up')
 
 def initialize_server(root_tenant_name,
                root_username,
