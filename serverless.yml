@@ -11,7 +11,9 @@ functions:
     handler: wsgi_handler.handler
     events:
       - http: ANY /
+        cors: true
       - http: 'ANY {proxy+}'
+        cors: true
 
 custom:
   wsgi:
