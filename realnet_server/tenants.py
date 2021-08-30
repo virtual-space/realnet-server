@@ -3,7 +3,7 @@ from authlib.integrations.flask_oauth2 import current_token
 from authlib.integrations.flask_client import OAuth
 from realnet_server import app
 from .auth import authorization, require_oauth
-from .models import db, Group, Account, Token, App, create_tenant, Authenticator, get_or_create_delegated_account
+from .models import db, Group, Account, AccountGroup, GroupRoleType, Token, App, create_tenant, Authenticator, get_or_create_delegated_account
 from sqlalchemy import or_
 from password_generator import PasswordGenerator
 try:
@@ -13,19 +13,39 @@ except ImportError:
 
 from authlib.common.urls import url_encode
 
-import uuid
 
 def can_account_create_tenant(account):
-    return True
+    for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                  AccountGroup.account_id == account.id):
+        if accountGroup.role_type == GroupRoleType.root:
+            return True
 
 def can_account_read_tenant(account, tenant):
-    return True
+    if account.group_id == tenant.id:
+        for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                      AccountGroup.account_id == account.id):
+            if accountGroup.role_type == GroupRoleType.root:
+                return True
+
+    return False
 
 def can_account_write_tenant(account, tenant):
-    return True
+    if account.group_id == tenant.id:
+        for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                      AccountGroup.account_id == account.id):
+            if accountGroup.role_type == GroupRoleType.root:
+                return True
+
+    return False
 
 def can_account_delete_tenant(account, tenant):
-    return True
+    if account.group_id == tenant.id:
+        for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                      AccountGroup.account_id == account.id):
+            if accountGroup.role_type == GroupRoleType.root:
+                return True
+
+    return False
 
 @app.route('/tenants', methods=('GET', 'POST'))
 @require_oauth()
@@ -61,6 +81,11 @@ def tenants():
                 created = create_tenant(input_name, root_username, root_email, root_password)
                 return jsonify(created), 201
     else:
+        if not can_account_create_tenant(account=current_token.account):
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=403,
+                           data='Account not authorized to read tenants'), 403
         return jsonify([q.to_dict() for q in Group.query.filter(Group.parent_id == None)])
 
 @app.route('/tenants/<id>', methods=['GET', 'PUT', 'DELETE'])

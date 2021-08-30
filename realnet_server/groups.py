@@ -10,13 +10,30 @@ def can_account_create_group(account):
     return True
 
 def can_account_read_group(account, group):
-    return True
+    if account.group_id == group.id or account.group_id == group.parent_id:
+        return True
+
+    return False
 
 def can_account_write_group(account, group):
-    return True
+    if account.group_id == group.id or account.group_id == group.parent_id:
+        for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                      AccountGroup.account_id == account.id):
+            if accountGroup.role_type == GroupRoleType.root \
+                    or accountGroup.role_type == GroupRoleType.admin:
+                return True
+
+    return False
 
 def can_account_delete_group(account, group):
-    return True
+    if account.group_id == group.id or account.group_id == group.parent_id:
+        for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                      AccountGroup.account_id == account.id):
+            if accountGroup.role_type == GroupRoleType.root \
+                    or accountGroup.role_type == GroupRoleType.admin:
+                return True
+
+    return False
 
 @app.route('/groups', methods=('GET', 'POST'))
 @require_oauth()

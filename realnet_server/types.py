@@ -2,21 +2,48 @@ from flask import request, jsonify
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from .auth import require_oauth
-from .models import db, Type, Group, Account
+from .models import db, Type, Group, Account, AccountGroup, GroupRoleType
 from sqlalchemy import or_
 import uuid
 
+
 def can_account_create_type(account, group):
-    return True
+    if account.group_id == group.id:
+        for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                      AccountGroup.account_id == account.id):
+            if accountGroup.role_type == GroupRoleType.root or \
+                    accountGroup.role_type == GroupRoleType.admin or \
+                    accountGroup.role_type == GroupRoleType.contributor:
+                return True
+
+    return False
+
 
 def can_account_read_type(account, type):
-    return True
+    return account.group_id == type.group_id
+
 
 def can_account_write_type(account, type):
-    return True
+    if account.group_id == type.group_id:
+        for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                      AccountGroup.account_id == account.id):
+            if accountGroup.role_type == GroupRoleType.root or \
+                    accountGroup.role_type == GroupRoleType.admin or \
+                    accountGroup.role_type == GroupRoleType.contributor:
+                return True
+
+    return False
 
 def can_account_delete_type(account, type):
-    return True
+    if account.group_id == type.group_id:
+        for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                      AccountGroup.account_id == account.id):
+            if accountGroup.role_type == GroupRoleType.root or \
+                    accountGroup.role_type == GroupRoleType.admin or \
+                    accountGroup.role_type == GroupRoleType.contributor:
+                return True
+
+    return False
 
 @app.route('/types', methods=('GET', 'POST'))
 @require_oauth()
@@ -72,7 +99,7 @@ def types():
 
                 return jsonify(created_type.to_dict()), 201
     else:
-        return jsonify([q.to_dict() for q in Type.query.all()])
+        return jsonify([q.to_dict() for q in Type.query.filter(Type.group_id == current_token.account.group_id)])
 
 
 @app.route('/types/<id>', methods=['GET', 'PUT', 'DELETE'])

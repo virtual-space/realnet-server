@@ -2,21 +2,44 @@ from flask import request, jsonify
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from .auth import require_oauth
-from .models import db, Group, Account, App, create_app
+from .models import db, AccountGroup, GroupRoleType, App, create_app
 from sqlalchemy import or_
-import uuid
 
 def can_account_create_app(account):
-    return True
+    for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                  AccountGroup.account_id == account.id):
+        if accountGroup.role_type == GroupRoleType.root or accountGroup.role_type == GroupRoleType.admin:
+            return True
+
+    return False
+
 
 def can_account_read_app(account, app):
-    return True
+    if account.group_id == app.group_id:
+        for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                      AccountGroup.account_id == account.id):
+            if accountGroup.role_type == GroupRoleType.root or accountGroup.role_type == GroupRoleType.admin:
+                return True
+
+    return False
 
 def can_account_write_app(account, app):
-    return True
+    if account.group_id == app.group_id:
+        for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                      AccountGroup.account_id == account.id):
+            if accountGroup.role_type == GroupRoleType.root or accountGroup.role_type == GroupRoleType.admin:
+                return True
+
+    return False
 
 def can_account_delete_app(account, app):
-    return True
+    if account.group_id == app.group_id:
+        for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
+                                                      AccountGroup.account_id == account.id):
+            if accountGroup.role_type == GroupRoleType.root or accountGroup.role_type == GroupRoleType.admin:
+                return True
+
+    return False
 
 @app.route('/apps', methods=('GET', 'POST'))
 @require_oauth()
@@ -64,6 +87,11 @@ def apps():
                                statusCode=402,
                                data='Bad request, missing name, group, uri or auth_method parameter'), 402
     else:
+        if not can_account_create_app(account=current_token.account):
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=403,
+                           data='Account not authorized to read accounts'), 403
         return jsonify([q.to_dict() for q in App.query.filter(App.group_id == current_token.account.group_id)])
 
 @app.route('/apps/<id>', methods=['GET', 'PUT', 'DELETE'])
