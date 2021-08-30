@@ -218,8 +218,14 @@ def items():
 
         parent_id = request.args.get('parent_id')
 
+        my_items = request.args.get('my_items')
+
         if parent_id:
             conditions.append(Item.parent_id == parent_id)
+        elif my_items:
+            conditions.append(Item.parent_id == current_token.account.home_id)
+        else:
+            conditions.append(Item.parent_id == None)
 
         name = request.args.get('name')
 

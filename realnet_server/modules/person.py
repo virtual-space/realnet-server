@@ -1,6 +1,7 @@
 from .module import Module
 from realnet_server.models import Account
 from flask import jsonify
+import json
 
 class Person(Module):
     def create_item(self, parent_item=None, **kwargs):
@@ -25,9 +26,5 @@ class Person(Module):
         pass
 
     def get_item(self, item):
-        account = Account.query.filter(Account.id == item.id).first()
-        if account:
-            return jsonify({'id': account.id, 'name': account.username})
-
-        return None
+        return json.dumps(item.to_dict())
 

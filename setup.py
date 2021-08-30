@@ -39,7 +39,7 @@ setup(
                       "flask-script",
                       "random-password-generator",
                       "flask",
-                      "authlib==0.14.3",
+                      "authlib==0.15.4",
                       "loginpass",
                       "bootstrap-flask",
                       "pyyaml",
