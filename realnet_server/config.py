@@ -39,3 +39,6 @@ class Config:
 
     def get_s3_secret(self):
         return os.getenv('REALNET_STORAGE_S3_SECRET')
+
+    def get_app_secret(self):
+        return os.getenv('REALNET_APP_SECRET')

@@ -24,7 +24,7 @@ app = Flask(__name__)
 CORS(app)
 # import realnet_server.wsgi
 
-app.secret_key = '!secret'
+app.secret_key = cfg.get_app_secret()
 app.config['SQLALCHEMY_DATABASE_URI'] = cfg.get_database_url()
 app.config['GOOGLE_CLIENT_ID'] = ''
 app.config['GOOGLE_CLIENT_SECRET'] = ''

@@ -225,7 +225,13 @@ def items():
         elif my_items:
             conditions.append(Item.parent_id == current_token.account.home_id)
         else:
-            conditions.append(Item.parent_id == None)
+            root_item_name = app.config['ROOT_ITEM']
+            if root_item_name:
+                root_item = Item.query.filter(Item.name == root_item_name).first()
+                if root_item:
+                    conditions.append(Item.parent_id == root_item.id)
+                else:
+                    conditions.append(Item.parent_id == None)
 
         name = request.args.get('name')
 
