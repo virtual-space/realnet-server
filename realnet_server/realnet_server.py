@@ -1,4 +1,4 @@
-from pynecone import Shell, ProtoCmd, ProtoShell
+from pynecone import Shell, ProtoCmd
 import os
 from realnet_server import app
 from .models import db, initialize_server

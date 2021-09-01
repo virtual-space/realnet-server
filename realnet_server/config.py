@@ -42,3 +42,9 @@ class Config:
 
     def get_app_secret(self):
         return os.getenv('REALNET_APP_SECRET')
+
+    def get_jwt_key(self):
+        return os.getenv('REALNET_JWT_KEY')
+
+    def get_jwt_issuer(self):
+        return os.getenv('REALNET_JWT_ISSUER')
