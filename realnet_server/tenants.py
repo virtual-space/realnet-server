@@ -216,19 +216,17 @@ def tenant_auth(id, client_id, name):
                 print(request)
                 code = request.args.get('code')
                 if code:
-                    client = OAuth2Session(auth.client_id, auth.client_secret, scope=request.args.get('scope'))
+                    oaclient = OAuth2Session(auth.client_id, auth.client_secret, scope=request.args.get('scope'))
                     token_endpoint = 'https://oauth2.googleapis.com/token'
                     try:
-                        token1 = client.fetch_token(token_endpoint, authorization_response=request.url)
-                        print(token1)
+                        token = oaclient.fetch_token(token_endpoint, authorization_response=request.url)
+                        print(token)
                     except Exception as e:
                         print(e)
+                else:
+                    backend = oauth.register(auth.name, **data)
+                    token = backend.authorize_access_token()
 
-
-                backend = oauth.register(auth.name, **data)
-                # token1 = backend.fetch_token(**request.args)
-                # print(token1)
-                token = backend.authorize_access_token()
                 if token:
                     userinfo = backend.get(auth.userinfo_endpoint, token=token)
                     if userinfo:
