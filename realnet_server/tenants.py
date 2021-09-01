@@ -220,13 +220,13 @@ def tenant_auth(id, client_id, name):
                     oaclient = OAuth2Session(auth.client_id, auth.client_secret, scope=request.args.get('scope'))
                     token_endpoint = 'https://oauth2.googleapis.com/token'
                     try:
-                        token = oaclient.fetch_token(token_endpoint, authorization_response=request.url)
-                        print(token)
+                        token_test = oaclient.fetch_token(token_endpoint, authorization_response=request.url)
+                        print(token_test)
                     except Exception as e:
                         print('error while fetching token {}'.format(e))
-                else:
-                    backend = oauth.register(auth.name, **data)
-                    token = backend.authorize_access_token()
+
+                backend = oauth.register(auth.name, **data)
+                token = backend.authorize_access_token()
 
                 if token:
                     userinfo = backend.get(auth.userinfo_endpoint, token=token)
