@@ -27,6 +27,7 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
     ]
 
     def save_authorization_code(self, code, request):
+        print('*** authorization_code_grant:save_authorization_code ***')
         code_challenge = request.data.get('code_challenge')
         code_challenge_method = request.data.get('code_challenge_method')
 
@@ -55,16 +56,19 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
         return auth_code
 
     def query_authorization_code(self, code, client):
+        print('*** authorization_code_grant:query_authorization_code ***')
         auth_code = AuthorizationCode.query.filter_by(
             code=code, client_id=client.client_id).first()
         if auth_code and not auth_code.is_expired():
             return auth_code
 
     def delete_authorization_code(self, authorization_code):
+        print('*** authorization_code_grant:delete_authorization_code ***')
         db.session.delete(authorization_code)
         db.session.commit()
 
     def authenticate_user(self, authorization_code):
+        print('*** authorization_code_grant:authenticate_user ***')
         return Account.query.get(authorization_code.user_id)
 
 
@@ -96,12 +100,14 @@ config = Config()
 
 class OpenIDCode(oidc_grants.OpenIDCode):
     def exists_nonce(self, nonce, request):
+        print('*** openid_code_grant:exists_nonce ***')
         exists = AuthorizationCode.query.filter_by(
             client_id=request.client_id, nonce=nonce
         ).first()
         return bool(exists)
 
     def get_jwt_config(self, grant):
+        print('*** openid_code_grant:get_jwt_config ***')
         return {
             'key': config.get_jwt_key(),
             'alg': 'RS512',
@@ -110,6 +116,7 @@ class OpenIDCode(oidc_grants.OpenIDCode):
         }
 
     def generate_user_info(self, user, scope):
+        print('*** openid_code_grant:get_user_info ***')
         user_info = UserInfo(sub=user.id, name=user.name)
         if 'email' in scope:
             user_info['email'] = user.email
@@ -117,12 +124,14 @@ class OpenIDCode(oidc_grants.OpenIDCode):
 
 class OpenIDImplicitGrant(oidc_grants.OpenIDImplicitGrant):
     def exists_nonce(self, nonce, request):
+        print('*** openid_implicit_grant:exists_nonce ***')
         exists = AuthorizationCode.query.filter_by(
             client_id=request.client_id, nonce=nonce
         ).first()
         return bool(exists)
 
     def get_jwt_config(self):
+        print('*** openid_implicit_grant:get_jwt_config ***')
         return {
             'key': config.get_jwt_key(),
             'alg': 'RS512',
@@ -131,6 +140,7 @@ class OpenIDImplicitGrant(oidc_grants.OpenIDImplicitGrant):
         }
 
     def generate_user_info(self, user, scope):
+        print('*** openid_implicit_grant:generate_user_info ***')
         user_info = UserInfo(sub=user.id, name=user.name)
         if 'email' in scope:
             user_info['email'] = user.email
@@ -153,15 +163,18 @@ def create_authorization_code(client, grant_user, request):
 class HybridGrant(oidc_grants.OpenIDHybridGrant):
 
     def create_authorization_code(self, client, grant_user, request):
+        print('*** hybrid_grant:create_authorization_code ***')
         return create_authorization_code(client, grant_user, request)
 
     def exists_nonce(self, nonce, request):
+        print('*** hybrid_grant:exists_nonce ***')
         exists = AuthorizationCode.query.filter_by(
             client_id=request.client_id, nonce=nonce
         ).first()
         return bool(exists)
 
     def get_jwt_config(self):
+        print('*** hybrid_grant:get_jwt_config ***')
         return {
             'key': config.get_jwt_key(),
             'alg': 'RS512',
@@ -170,6 +183,7 @@ class HybridGrant(oidc_grants.OpenIDHybridGrant):
         }
 
     def generate_user_info(self, user, scope):
+        print('*** hybrid_grant:generate_user_info ***')
         user_info = UserInfo(sub=user.id, name=user.name)
         if 'email' in scope:
             user_info['email'] = user.email

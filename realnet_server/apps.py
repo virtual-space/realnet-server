@@ -64,15 +64,15 @@ def apps():
                                    statusCode=403,
                                    data='Account not authorized to create the app'), 403
 
-                created = create_app(input_name,
-                                     input_uri,
-                                     input_grant_types,
-                                     input_redirect_uris,
-                                     input_scope,
-                                     input_auth_method,
-                                     input_response_types,
-                                     current_token.account.id,
-                                     current_token.account.group_id)
+                created = create_app(name=input_name,
+                                     uri=input_uri,
+                                     grant_types=input_grant_types,
+                                     redirect_uris=input_redirect_uris,
+                                     scope=input_scope,
+                                     auth_method=input_auth_method,
+                                     response_types=input_response_types,
+                                     account_id=current_token.account.id,
+                                     group_id=current_token.account.group_id)
 
                 if created:
                     return jsonify(created.to_dict()), 201
@@ -131,7 +131,7 @@ def single_app(id):
             if 'scope' in input_data:
                 client_metadata['scope'] = input_data['scope']
 
-            app.client_metadata = client_metadata
+            app.set_client_metadata(client_metadata)
 
             db.session.commit()
 

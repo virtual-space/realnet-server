@@ -28,6 +28,8 @@ def authorize():
     else:
         grant_user = None
     '''
+    print('/oauth/authorize called')
+    print(request.url)
     grant_user = None
     return authorization.create_authorization_response(grant_user=grant_user)
 
