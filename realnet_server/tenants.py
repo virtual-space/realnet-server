@@ -215,6 +215,7 @@ def tenant_auth(id, client_id, name):
                 del data['id']
                 print(request)
                 code = request.args.get('code')
+                token = None
                 if code:
                     oaclient = OAuth2Session(auth.client_id, auth.client_secret, scope=request.args.get('scope'))
                     token_endpoint = 'https://oauth2.googleapis.com/token'
@@ -222,7 +223,7 @@ def tenant_auth(id, client_id, name):
                         token = oaclient.fetch_token(token_endpoint, authorization_response=request.url)
                         print(token)
                     except Exception as e:
-                        print(e)
+                        print('error while fetching token {}'.format(e))
                 else:
                     backend = oauth.register(auth.name, **data)
                     token = backend.authorize_access_token()
