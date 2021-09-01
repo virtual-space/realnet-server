@@ -31,23 +31,23 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
         code_challenge = request.data.get('code_challenge')
         code_challenge_method = request.data.get('code_challenge_method')
 
-        if request.nonce:
+        if request.data.get('nonce'):
             auth_code = AuthorizationCode(
                 code=code,
                 client_id=request.client.client_id,
                 redirect_uri=request.redirect_uri,
                 scope=request.scope,
-                user_id=request.user.id,
+                account_id=request.user.id,
                 code_challenge=code_challenge,
                 code_challenge_method=code_challenge_method,
-                nonce=request.nonce)
+                nonce=request.data.get('nonce'))
         else:
             auth_code = AuthorizationCode(
                 code=code,
                 client_id=request.client.client_id,
                 redirect_uri=request.redirect_uri,
                 scope=request.scope,
-                user_id=request.user.id,
+                account_id=request.user.id,
                 code_challenge=code_challenge,
                 code_challenge_method=code_challenge_method)
 
