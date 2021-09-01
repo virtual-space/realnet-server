@@ -1,6 +1,7 @@
 from flask import request, jsonify, url_for, redirect
 from authlib.integrations.flask_oauth2 import current_token
 from authlib.integrations.flask_client import OAuth
+from authlib.integrations.requests_client import OAuth2Session
 from realnet_server import app
 from .auth import authorization, require_oauth
 from .models import db, Group, Account, AccountGroup, GroupRoleType, Token, App, create_tenant, Authenticator, get_or_create_delegated_account
@@ -163,7 +164,7 @@ def tenant_login(id, name):
                 del data['name']
                 del data['id']
                 backend = oauth.register(auth.name, **data)
-                redirect_uri = url_for('tenant_auth', _external=True, id=id, client_id=client_id, name=name)
+                redirect_uri = url_for('tenant_auth', _external=True, id=id, client_id=client_id, name=name, access_type='offline')
                 return backend.authorize_redirect(redirect_uri)
             else:
                 return jsonify(isError=True,
@@ -213,7 +214,20 @@ def tenant_auth(id, client_id, name):
                 del data['name']
                 del data['id']
                 print(request)
+                code = request.args.get('code')
+                if code:
+                    client = OAuth2Session(auth.client_id, auth.client_secret, scope=request.args.get('scope'))
+                    token_endpoint = 'https://oauth2.googleapis.com/token'
+                    try:
+                        token1 = client.fetch_token(token_endpoint, authorization_response=request.url)
+                        print(token1)
+                    except Exception as e:
+                        print(e)
+
+
                 backend = oauth.register(auth.name, **data)
+                # token1 = backend.fetch_token(**request.args)
+                # print(token1)
                 token = backend.authorize_access_token()
                 if token:
                     userinfo = backend.get(auth.userinfo_endpoint, token=token)
