@@ -149,106 +149,41 @@ def single_tenant(id):
                        statusCode=404,
                        data='Tenant {0} not found'.format(id)), 404
 
-@app.route('/tenants/<id>/login',methods=['GET', 'POST'] )
-def tenant_login(id):
+@app.route('/<id>/login/<name>',methods=['GET', 'POST'] )
+def tenant_login(id, name):
     # 1. get the group
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
         client_id = request.args.get('client_id')
-        name = request.args.get('name')
-        client = App.query.filter(App.client_id == client_id, App.group_id == group.id).first()
+        client = App.query.filter(or_(App.client_id == client_id, App.name == client_id), App.group_id == group.id).first()
         if client:
             if request.method == 'POST':
-                if not name:
-                    username = request.form.get('username')
-                    password = request.form.get('password')
-                    account = Account.query.filter_by(username=username).first()
-                    if account is not None and account.check_password(password):
-                        return authorization.create_authorization_response(grant_user=account)
-
-                        token = authorization.generate_token(client.id, 'password')
-                        t = Token(
-                            client_id=client_id,
-                            user_id=account.id,
-                            **token
-                        )
-                        db.session.add(t)
-                        db.session.commit()
-                        redirect_uri = ''
-                        if client.redirect_uris:
-                            redirect_uri = client.redirect_uris[0]
-                        if redirect_uri:
-                            params = [(k, token[k]) for k in token]
-                            uri = add_params_to_uri(redirect_uri, params, fragment=True)
-                            return redirect(uri)
-                        else:
-                            return jsonify(token)
+                username = request.form.get('username')
+                password = request.form.get('password')
+                account = Account.query.filter_by(username=username).first()
+                if account is not None and account.check_password(password):
+                    return authorization.create_authorization_response(grant_user=account)
+            else:
+                if name=='password':
+                    return render_template('login.html')
                 else:
                     auth = Authenticator.query.filter(Authenticator.name == name,
                                                       Authenticator.group_id == group.id).first()
                     if auth:
+                        print(auth)
                         oauth = OAuth(app)
                         data = auth.to_dict()
                         del data['name']
                         del data['id']
-
                         backend = oauth.register(auth.name, **data)
-                        token = backend.authorize_access_token()
-
-                        if token:
-                            userinfo = backend.get(auth.userinfo_endpoint, token=token)
-                            if userinfo:
-                                userinfo_data = userinfo.json()
-                                email = userinfo_data['email']
-                                external_id = '{}:{}'.format(auth.name, userinfo_data.get('sub',
-                                                                                          userinfo_data.get('id',
-                                                                                                            None)))
-                                user = get_or_create_delegated_account(id,
-                                                                       'person',
-                                                                       'guest',
-                                                                       email,
-                                                                       email,
-                                                                       external_id)
-                                if user:
-                                    # return authorization.create_token_response()
-                                    # client.
-                                    token = authorization.generate_token('auth', 'implicit')
-                                    t = Token(
-                                        client_id='auth',
-                                        user_id=user.id,
-                                        **token
-                                    )
-                                    db.session.add(t)
-                                    db.session.commit()
-                                    redirect_uri = ''
-                                    if client.redirect_uris:
-                                        redirect_uri = client.redirect_uris[0]
-                                    params = [(k, token[k]) for k in token]
-                                    uri = add_params_to_uri(redirect_uri, params, fragment=True)
-                                    return redirect(uri)
-                                else:
-                                    return jsonify(isError=True,
-                                                   message="Failure",
-                                                   statusCode=401,
-                                                   data='Invalid user'), 401
-                            else:
-                                return jsonify(isError=True,
-                                               message="Failure",
-                                               statusCode=400,
-                                               data='Cannot retrieve user profile info'), 400
-                        else:
-                            return jsonify(isError=True,
-                                           message="Failure",
-                                           statusCode=401,
-                                           data='Invalid token'), 401
+                        redirect_uri = url_for('tenant_auth', _external=True, id=id, client_id=client_id, name=name)
+                        print(redirect_uri)
+                        return backend.authorize_redirect(redirect_uri=redirect_uri)
                     else:
                         return jsonify(isError=True,
                                        message="Failure",
                                        statusCode=404,
                                        data='Authenticator {0} not found'.format(name)), 404
-
-            else:
-                return render_template('login.html')
         else:
             return jsonify(isError=True,
                            message="Failure",
@@ -279,7 +214,7 @@ def add_params_to_uri(uri, params, fragment=False):
     return urlparse.urlunparse((sch, net, path, par, query, fra))
 
 
-@app.route('/tenants/<id>/clients/<client_id>/register', methods=('GET', 'POST'))
+@app.route('/<id>/<client_id>/register', methods=('GET', 'POST'))
 def tenant_register(id, client_id):
     if request.method == 'POST':
         username = request.form.get('username')
@@ -302,16 +237,15 @@ def tenant_register(id, client_id):
     else:
         return render_template('register.html')
 
-@app.route('/tenants/<id>/clients/<client_id>/auth/<name>')
+@app.route('/<id>/<client_id>/authorize/<name>')
 def tenant_auth(id, client_id, name):
     # 1. get the group
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
-        client = App.query.filter(App.name == client_id, App.group_id == group.id).first()
+        client = App.query.filter(App.client_id == client_id, App.group_id == group.id).first()
         if client:
             auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
             if auth:
-                if name:
                     oauth = OAuth(app)
                     data = auth.to_dict()
                     del data['name']
@@ -323,60 +257,62 @@ def tenant_auth(id, client_id, name):
                         oaclient = OAuth2Session(auth.client_id, auth.client_secret, scope=request.args.get('scope'))
                         token_endpoint = 'https://oauth2.googleapis.com/token'
                         try:
-                            token_test = oaclient.fetch_token(token_endpoint, authorization_response=request.url)
-                            print(token_test)
+                            redirect_uri = redirect_uri = url_for('tenant_auth', _external=True, id=id, client_id=client_id, name=name)
+                            token_test = oaclient.fetch_token(token_endpoint, authorization_response=request.url, redirect_uri=redirect_uri)
+                            if token_test:
+                                headers = {'Authorization': 'Bearer ' + token_test['access_token']}
+                                userinfo = oaclient.get(auth.userinfo_endpoint, headers=headers)
+                                if userinfo:
+                                    userinfo_data = userinfo.json()
+                                    email = userinfo_data['email']
+                                    external_id = '{}:{}'.format(auth.name, userinfo_data.get('sub',
+                                                                                              userinfo_data.get('id',
+                                                                                                                None)))
+                                    user = get_or_create_delegated_account(id,
+                                                                           'person',
+                                                                           'guest',
+                                                                           email,
+                                                                           email,
+                                                                           external_id)
+                                    if user:
+                                        # return authorization.create_token_response()
+                                        # client.
+                                        token = authorization.generate_token('auth', 'implicit')
+                                        t = Token(
+                                            client_id='auth',
+                                            user_id=user.id,
+                                            **token
+                                        )
+                                        db.session.add(t)
+                                        db.session.commit()
+                                        redirect_uri = ''
+                                        if client.redirect_uris:
+                                            redirect_uri = client.redirect_uris[0]
+                                        params = [(k, token[k]) for k in token]
+                                        uri = add_params_to_uri(redirect_uri, params, fragment=True)
+                                        return redirect(uri)
+                                    else:
+                                        return jsonify(isError=True,
+                                                       message="Failure",
+                                                       statusCode=401,
+                                                       data='Invalid user'), 401
+                                else:
+                                    return jsonify(isError=True,
+                                                   message="Failure",
+                                                   statusCode=400,
+                                                   data='Cannot retrieve user profile info'), 400
+                            else:
+                                return jsonify(isError=True,
+                                               message="Failure",
+                                               statusCode=401,
+                                               data='Invalid token'), 401
+
                         except Exception as e:
                             print('error while fetching token {}'.format(e))
 
                     backend = oauth.register(auth.name, **data)
                     token = backend.authorize_access_token()
 
-                    if token:
-                        userinfo = backend.get(auth.userinfo_endpoint, token=token)
-                        if userinfo:
-                            userinfo_data = userinfo.json()
-                            email = userinfo_data['email']
-                            external_id = '{}:{}'.format(auth.name, userinfo_data.get('sub', userinfo_data.get('id', None)))
-                            user = get_or_create_delegated_account(id,
-                                                                   'person',
-                                                                   'guest',
-                                                                   email,
-                                                                   email,
-                                                                   external_id)
-                            if user:
-                                # return authorization.create_token_response()
-                                # client.
-                                token = authorization.generate_token('auth', 'implicit')
-                                t = Token(
-                                    client_id='auth',
-                                    user_id=user.id,
-                                    **token
-                                )
-                                db.session.add(t)
-                                db.session.commit()
-                                redirect_uri = ''
-                                if client.redirect_uris:
-                                    redirect_uri = client.redirect_uris[0]
-                                params = [(k, token[k]) for k in token]
-                                uri = add_params_to_uri(redirect_uri, params, fragment=True)
-                                return redirect(uri)
-                            else:
-                                return jsonify(isError=True,
-                                               message="Failure",
-                                               statusCode=401,
-                                               data='Invalid user'), 401
-                        else:
-                            return jsonify(isError=True,
-                                           message="Failure",
-                                           statusCode=400,
-                                           data='Cannot retrieve user profile info'), 400
-                    else:
-                        return jsonify(isError=True,
-                                message="Failure",
-                                statusCode=401,
-                                data='Invalid token'), 401
-                else:
-                    pass
 
             else:
                 return jsonify(isError=True,
@@ -394,7 +330,7 @@ def tenant_auth(id, client_id, name):
                    statusCode=404,
                    data='Tenant {0} not found'.format(id)), 404
 
-@app.route('/tenants/<id>/auth', methods=['GET'])
+@app.route('/<id>/auth', methods=['GET'])
 def tenant_auths(id):
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
