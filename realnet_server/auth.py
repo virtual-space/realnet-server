@@ -203,6 +203,7 @@ def config_oauth(app):
     authorization.init_app(app)
 
     # support all grants
+    authorization.register_grant(grants.ImplicitGrant)
     authorization.register_grant(OpenIDImplicitGrant)
     authorization.register_grant(grants.ClientCredentialsGrant)
     authorization.register_grant(AuthorizationCodeGrant, [CodeChallenge(required=True), OpenIDCode(require_nonce=True)])

@@ -225,7 +225,7 @@ def items():
         elif my_items:
             conditions.append(Item.parent_id == current_token.account.home_id)
         else:
-            root_item_name = app.config['ROOT_ITEM']
+            root_item_name = app.config.get('ROOT_ITEM')
             if root_item_name:
                 root_item = Item.query.filter(Item.name == root_item_name).first()
                 if root_item:

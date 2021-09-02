@@ -149,6 +149,7 @@ def single_tenant(id):
                        statusCode=404,
                        data='Tenant {0} not found'.format(id)), 404
 
+@app.route('/<id>/login', defaults={'name': None}, methods=['GET', 'POST'] )
 @app.route('/<id>/login/<name>',methods=['GET', 'POST'] )
 def tenant_login(id, name):
     # 1. get the group
@@ -164,7 +165,7 @@ def tenant_login(id, name):
                 if account is not None and account.check_password(password):
                     return authorization.create_authorization_response(grant_user=account)
             else:
-                if name=='password':
+                if name == None:
                     return render_template('login.html')
                 else:
                     auth = Authenticator.query.filter(Authenticator.name == name,
@@ -242,7 +243,7 @@ def tenant_auth(id, client_id, name):
     # 1. get the group
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
-        client = App.query.filter(App.client_id == client_id, App.group_id == group.id).first()
+        client = App.query.filter(or_(App.client_id == client_id, App.name == client_id), App.group_id == group.id).first()
         if client:
             auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
             if auth:
@@ -309,11 +310,6 @@ def tenant_auth(id, client_id, name):
 
                         except Exception as e:
                             print('error while fetching token {}'.format(e))
-
-                    backend = oauth.register(auth.name, **data)
-                    token = backend.authorize_access_token()
-
-
             else:
                 return jsonify(isError=True,
                                message="Failure",
@@ -334,7 +330,9 @@ def tenant_auth(id, client_id, name):
 def tenant_auths(id):
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
-        return jsonify([{ 'name': n['name'], 'type': 'oauth'} for n in [q.to_dict() for q in Authenticator.query.filter(Authenticator.group_id == group.id)]])
+        oauths = [{ 'name': n['name'], 'type': 'oauth'} for n in [q.to_dict() for q in Authenticator.query.filter(Authenticator.group_id == group.id)]]
+        oauths.append({'name': 'password', 'type': 'password'})
+        return jsonify(oauths)
     else:
         return jsonify(isError=True,
                    message="Failure",
