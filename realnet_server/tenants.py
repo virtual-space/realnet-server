@@ -153,6 +153,7 @@ def single_tenant(id):
 @app.route('/<id>/login/<name>',methods=['GET', 'POST'] )
 def tenant_login(id, name):
     # 1. get the group
+    print(request.url)
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
         client_id = request.args.get('client_id')
@@ -240,7 +241,8 @@ def tenant_register(id, client_id):
 
 @app.route('/<id>/<client_id>/authorize/<name>')
 def tenant_auth(id, client_id, name):
-    # 1. get the group
+    # 1. get the
+    print(request.url)
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
         client = App.query.filter(or_(App.client_id == client_id, App.name == client_id), App.group_id == group.id).first()
