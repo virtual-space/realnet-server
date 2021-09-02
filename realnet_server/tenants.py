@@ -149,38 +149,104 @@ def single_tenant(id):
                        statusCode=404,
                        data='Tenant {0} not found'.format(id)), 404
 
-@app.route('/tenants/<id>/clients/<client_id>/login',methods=['GET', 'POST'] )
-def tenant_login_password(id, client_id):
+@app.route('/tenants/<id>/login',methods=['GET', 'POST'] )
+def tenant_login(id):
     # 1. get the group
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
-        client = App.query.filter(App.name == client_id, App.group_id == group.id).first()
+        client_id = request.args.get('client_id')
+        name = request.args.get('name')
+        client = App.query.filter(App.client_id == client_id, App.group_id == group.id).first()
         if client:
             if request.method == 'POST':
-                username = request.form.get('username')
-                password = request.form.get('password')
-                account = Account.query.filter_by(username=username).first()
-                if account is not None and account.check_password(password):
-                    return authorization.create_authorization_response(grant_user=account)
-                    token = authorization.generate_token(client.id, 'password')
-                    t = Token(
-                        client_id=client_id,
-                        user_id=account.id,
-                        **token
-                    )
-                    db.session.add(t)
-                    db.session.commit()
-                    redirect_uri = ''
-                    if client.redirect_uris:
-                        redirect_uri = client.redirect_uris[0]
-                    if redirect_uri:
-                        params = [(k, token[k]) for k in token]
-                        uri = add_params_to_uri(redirect_uri, params, fragment=True)
-                        return redirect(uri)
-                    else:
-                        return jsonify(token)
+                if not name:
+                    username = request.form.get('username')
+                    password = request.form.get('password')
+                    account = Account.query.filter_by(username=username).first()
+                    if account is not None and account.check_password(password):
+                        return authorization.create_authorization_response(grant_user=account)
+
+                        token = authorization.generate_token(client.id, 'password')
+                        t = Token(
+                            client_id=client_id,
+                            user_id=account.id,
+                            **token
+                        )
+                        db.session.add(t)
+                        db.session.commit()
+                        redirect_uri = ''
+                        if client.redirect_uris:
+                            redirect_uri = client.redirect_uris[0]
+                        if redirect_uri:
+                            params = [(k, token[k]) for k in token]
+                            uri = add_params_to_uri(redirect_uri, params, fragment=True)
+                            return redirect(uri)
+                        else:
+                            return jsonify(token)
                 else:
-                    return render_template('login.html')
+                    auth = Authenticator.query.filter(Authenticator.name == name,
+                                                      Authenticator.group_id == group.id).first()
+                    if auth:
+                        oauth = OAuth(app)
+                        data = auth.to_dict()
+                        del data['name']
+                        del data['id']
+
+                        backend = oauth.register(auth.name, **data)
+                        token = backend.authorize_access_token()
+
+                        if token:
+                            userinfo = backend.get(auth.userinfo_endpoint, token=token)
+                            if userinfo:
+                                userinfo_data = userinfo.json()
+                                email = userinfo_data['email']
+                                external_id = '{}:{}'.format(auth.name, userinfo_data.get('sub',
+                                                                                          userinfo_data.get('id',
+                                                                                                            None)))
+                                user = get_or_create_delegated_account(id,
+                                                                       'person',
+                                                                       'guest',
+                                                                       email,
+                                                                       email,
+                                                                       external_id)
+                                if user:
+                                    # return authorization.create_token_response()
+                                    # client.
+                                    token = authorization.generate_token('auth', 'implicit')
+                                    t = Token(
+                                        client_id='auth',
+                                        user_id=user.id,
+                                        **token
+                                    )
+                                    db.session.add(t)
+                                    db.session.commit()
+                                    redirect_uri = ''
+                                    if client.redirect_uris:
+                                        redirect_uri = client.redirect_uris[0]
+                                    params = [(k, token[k]) for k in token]
+                                    uri = add_params_to_uri(redirect_uri, params, fragment=True)
+                                    return redirect(uri)
+                                else:
+                                    return jsonify(isError=True,
+                                                   message="Failure",
+                                                   statusCode=401,
+                                                   data='Invalid user'), 401
+                            else:
+                                return jsonify(isError=True,
+                                               message="Failure",
+                                               statusCode=400,
+                                               data='Cannot retrieve user profile info'), 400
+                        else:
+                            return jsonify(isError=True,
+                                           message="Failure",
+                                           statusCode=401,
+                                           data='Invalid token'), 401
+                    else:
+                        return jsonify(isError=True,
+                                       message="Failure",
+                                       statusCode=404,
+                                       data='Authenticator {0} not found'.format(name)), 404
+
             else:
                 return render_template('login.html')
         else:
