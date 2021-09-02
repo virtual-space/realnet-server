@@ -54,6 +54,7 @@ def authorize():
 
 @app.route('/oauth/token', methods=['POST'])
 def issue_token():
+    print('*** issue token called')
     return authorization.create_token_response()
 
 
@@ -65,6 +66,7 @@ def revoke_token():
 @app.route('/oauth/userinfo')
 @require_oauth('profile')
 def api_me():
+    print('*** userinfo called')
     return jsonify(UserInfo(sub=str(current_token.user.id), name=current_token.user.username))
 
 

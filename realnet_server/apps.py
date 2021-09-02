@@ -125,6 +125,9 @@ def single_app(id):
             if 'redirect_uris' in input_data:
                 client_metadata['redirect_uris'] = input_data['redirect_uris']
 
+            if 'auth_method' in input_data:
+                client_metadata['token_endpoint_auth_method'] = input_data['auth_method']
+
             if 'response_types' in input_data:
                 client_metadata['response_types'] = input_data['response_types']
 
