@@ -109,6 +109,13 @@ class App(db.Model, OAuth2ClientMixin, SerializerMixin):
     group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
     data = db.Column(db.JSON)
 
+    def get_allowed_scope(self, scope):
+        if not scope:
+            return ''
+        allowed = set(self.scope)
+        scopes = [s for s in self.scope]
+        return ' '.join([s for s in scopes if s in allowed])
+
 
 class Type(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)

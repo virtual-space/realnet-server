@@ -58,9 +58,6 @@ def authorize():
 def issue_token():
     print('*** issue token called')
     print(pprint.pformat(request.environ, depth=5))
-    print(request.body)
-    print(request.args)
-    print(request.form)
     return authorization.create_token_response()
 
 

@@ -69,7 +69,7 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
 
     def authenticate_user(self, authorization_code):
         print('*** authorization_code_grant:authenticate_user ***')
-        return Account.query.get(authorization_code.user_id)
+        return Account.query.get(authorization_code.account_id)
 
 
 class PasswordGrant(grants.ResourceOwnerPasswordCredentialsGrant):
@@ -110,14 +110,14 @@ class OpenIDCode(oidc_grants.OpenIDCode):
         print('*** openid_code_grant:get_jwt_config ***')
         return {
             'key': config.get_jwt_key(),
-            'alg': 'RS512',
+            'alg': 'HS256',
             'iss': config.get_jwt_issuer(),
             'exp': 3600
         }
 
     def generate_user_info(self, user, scope):
         print('*** openid_code_grant:get_user_info ***')
-        user_info = UserInfo(sub=user.id, name=user.name)
+        user_info = UserInfo(sub=user.id, name=user.username)
         if 'email' in scope:
             user_info['email'] = user.email
         return user_info
@@ -134,7 +134,7 @@ class OpenIDImplicitGrant(oidc_grants.OpenIDImplicitGrant):
         print('*** openid_implicit_grant:get_jwt_config ***')
         return {
             'key': config.get_jwt_key(),
-            'alg': 'RS512',
+            'alg': 'HS256',
             'iss': config.get_jwt_issuer(),
             'exp': 3600
         }
