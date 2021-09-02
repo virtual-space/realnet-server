@@ -8,6 +8,8 @@ from authlib.integrations.flask_oauth2 import current_token
 from authlib.oauth2 import OAuth2Error
 from .models import Account
 
+import pprint
+
 oauth = OAuth(app)
 
 
@@ -55,7 +57,10 @@ def authorize():
 @app.route('/oauth/token', methods=['POST'])
 def issue_token():
     print('*** issue token called')
-    print(request.url)
+    print(pprint.pformat(request.environ, depth=5))
+    print(request.body)
+    print(request.args)
+    print(request.form)
     return authorization.create_token_response()
 
 
