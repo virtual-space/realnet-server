@@ -56,6 +56,7 @@ import realnet_server.apps
 import realnet_server.accounts
 import realnet_server.authenticators
 import realnet_server.tenants
+import realnet_server.mobile
 
 
 
