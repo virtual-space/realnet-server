@@ -8,6 +8,8 @@ from .auth import authorization, require_oauth
 from .models import db, Group, Account, AccountGroup, GroupRoleType, Token, App, create_tenant, Authenticator, get_or_create_delegated_account
 from sqlalchemy import or_
 from password_generator import PasswordGenerator
+
+
 try:
     import urlparse
 except ImportError:
@@ -254,14 +256,12 @@ def tenant_auth(id, client_id, name):
         if client:
             auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
             if auth:
-                    oauth = OAuth(app)
                     data = auth.to_dict()
                     del data['name']
                     del data['id']
                     print(request)
                     code = request.args.get('code')
                     response_type = request.args.get('response_type')
-                    token = None
                     if code:
                         oaclient = OAuth2Session(auth.client_id, auth.client_secret, scope=request.args.get('scope'))
                         token_endpoint = auth.access_token_url
@@ -284,29 +284,8 @@ def tenant_auth(id, client_id, name):
                                                                            email,
                                                                            external_id)
                                     if user:
-                                        # return authorization.create_token_response()
-                                        # http_args = request.args.to_dict()
-                                        # http_args['client_id'] = client_id
-                                        # request.args = ImmutableMultiDict(http_args)
-                                        # request.query_string = request.query_string + '&client_id={}'.format(client_id)
                                         request.query_string = to_bytes(to_unicode(request.query_string) + '&client_id={}'.format(client_id))
                                         return authorization.create_authorization_response(request=request, grant_user=user)
-                                        # return authorization.create_token_response()
-                                        # client.
-                                        token = authorization.generate_token('auth', 'implicit')
-                                        t = Token(
-                                            client_id='auth',
-                                            user_id=user.id,
-                                            **token
-                                        )
-                                        db.session.add(t)
-                                        db.session.commit()
-                                        redirect_uri = ''
-                                        if client.redirect_uris:
-                                            redirect_uri = client.redirect_uris[0]
-                                        params = [(k, token[k]) for k in token]
-                                        uri = add_params_to_uri(redirect_uri, params, fragment=True)
-                                        return redirect(uri)
                                     else:
                                         return jsonify(isError=True,
                                                        message="Failure",
