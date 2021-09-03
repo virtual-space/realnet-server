@@ -2,6 +2,7 @@ from flask import request, jsonify, url_for, redirect, render_template
 from authlib.integrations.flask_oauth2 import current_token
 from authlib.integrations.flask_client import OAuth
 from authlib.integrations.requests_client import OAuth2Session
+from authlib.common.encoding import to_unicode, to_bytes
 from realnet_server import app
 from .auth import authorization, require_oauth
 from .models import db, Group, Account, AccountGroup, GroupRoleType, Token, App, create_tenant, Authenticator, get_or_create_delegated_account
@@ -157,6 +158,7 @@ def tenant_login(id, name):
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
         client_id = request.args.get('client_id')
+        response_type = request.args.get('response_type')
         client = App.query.filter(or_(App.client_id == client_id, App.name == client_id), App.group_id == group.id).first()
         if client:
             if request.method == 'POST':
@@ -178,7 +180,7 @@ def tenant_login(id, name):
                         del data['name']
                         del data['id']
                         backend = oauth.register(auth.name, **data)
-                        redirect_uri = url_for('tenant_auth', _external=True, id=id, client_id=client_id, name=name)
+                        redirect_uri = url_for('tenant_auth', _external=True, id=id, client_id=client_id, name=name, response_type=response_type)
                         print(redirect_uri)
                         return backend.authorize_redirect(redirect_uri=redirect_uri)
                     else:
@@ -239,12 +241,15 @@ def tenant_register(id, client_id):
     else:
         return render_template('register.html')
 
+@app.route('/<id>/authorize/<name>', defaults={'client_id': None})
 @app.route('/<id>/<client_id>/authorize/<name>')
 def tenant_auth(id, client_id, name):
     # 1. get the
     print(request.url)
     group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
     if group:
+        if client_id is None:
+            client_id = request.args.get('client_id')
         client = App.query.filter(or_(App.client_id == client_id, App.name == client_id), App.group_id == group.id).first()
         if client:
             auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
@@ -255,12 +260,13 @@ def tenant_auth(id, client_id, name):
                     del data['id']
                     print(request)
                     code = request.args.get('code')
+                    response_type = request.args.get('response_type')
                     token = None
                     if code:
                         oaclient = OAuth2Session(auth.client_id, auth.client_secret, scope=request.args.get('scope'))
-                        token_endpoint = 'https://oauth2.googleapis.com/token'
+                        token_endpoint = auth.access_token_url
                         try:
-                            redirect_uri = redirect_uri = url_for('tenant_auth', _external=True, id=id, client_id=client_id, name=name)
+                            redirect_uri = url_for('tenant_auth', _external=True, id=id, client_id=client_id, name=name, response_type=response_type)
                             token_test = oaclient.fetch_token(token_endpoint, authorization_response=request.url, redirect_uri=redirect_uri)
                             if token_test:
                                 headers = {'Authorization': 'Bearer ' + token_test['access_token']}
@@ -278,6 +284,13 @@ def tenant_auth(id, client_id, name):
                                                                            email,
                                                                            external_id)
                                     if user:
+                                        # return authorization.create_token_response()
+                                        # http_args = request.args.to_dict()
+                                        # http_args['client_id'] = client_id
+                                        # request.args = ImmutableMultiDict(http_args)
+                                        # request.query_string = request.query_string + '&client_id={}'.format(client_id)
+                                        request.query_string = to_bytes(to_unicode(request.query_string) + '&client_id={}'.format(client_id))
+                                        return authorization.create_authorization_response(request=request, grant_user=user)
                                         # return authorization.create_token_response()
                                         # client.
                                         token = authorization.generate_token('auth', 'implicit')
