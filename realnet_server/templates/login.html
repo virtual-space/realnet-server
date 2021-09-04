@@ -8,23 +8,23 @@
 <body>
 <div class="container h-100">
   <div class="d-flex justify-content-md-center align-items-center vh-100">
-      <div class="column">
-          <div class="row">
+      <div class="row">
+          <div class="col-md-12">
               <h3>Login to RealNet</h3>
           </div>
-          <div class="row">
+          <div class="col-md-12">
               <form action="" method="post">
-                <label for="username">username:</label><br>
-                  <input type="text" id="username" name="username" value="John"><br>
-                  <label for="password">password:</label><br>
-                  <input type="password" id="password" name="password"><br>
-                  <button type="submit">Login</button>
+                <label for="username" class="form-label">username:</label><br>
+                  <input type="text" id="username" name="username" class="form-control"><br>
+                  <label for="password" class="form-label">password:</label><br>
+                  <input type="password" id="password" name="password" class="form-control"><br>
+                  <button type="submit" class="btn btn-primary">Login</button>
                </form>
           </div>
-          <div class="row">
+          <div class="col-md-12">
               <ul class="list-group">
                 {% for auth in authenticators %}
-                <li class="list-group-item list-group-item-action"><a href="{{auth.url}}">{{auth.name}}</a></li>
+                <li class="list-group-item list-group-item-action"><a href="{{auth.url}}" class="btn btn-secondary">{{auth.name}}</a></li>
                 {% endfor %}
               </ul>
           </div>
