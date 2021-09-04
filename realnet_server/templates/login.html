@@ -6,14 +6,32 @@
     {{ bootstrap.load_css() }}
 </head>
 <body>
-  <form action="" method="post">
-    <label for="username">username:</label><br>
-      <input type="text" id="username" name="username" value="John"><br>
-      <label for="password">password:</label><br>
-      <input type="password" id="password" name="password"><br>
-    <button type="submit">Login</button><a href="/login/google">Google</a>
-  </form>
-    <li><a href="/register">Register</a></li>
+<div class="container h-100">
+  <div class="d-flex justify-content-md-center align-items-center vh-100">
+      <div class="column">
+          <div class="row">
+              <h3>Login to RealNet</h3>
+          </div>
+          <div class="row">
+              <form action="" method="post">
+                <label for="username">username:</label><br>
+                  <input type="text" id="username" name="username" value="John"><br>
+                  <label for="password">password:</label><br>
+                  <input type="password" id="password" name="password"><br>
+                  <button type="submit">Login</button>
+               </form>
+          </div>
+          <div class="row">
+              <ul class="list-group">
+                {% for auth in authenticators %}
+                <li class="list-group-item list-group-item-action"><a href="{{auth.url}}">{{auth.name}}</a></li>
+                {% endfor %}
+              </ul>
+          </div>
+      </div>
+  </div>
+ </div>
+
     {{ bootstrap.load_js() }}
 </body>
 </html>

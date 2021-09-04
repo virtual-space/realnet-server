@@ -171,7 +171,11 @@ def tenant_login(id, name):
                     return authorization.create_authorization_response(grant_user=account)
             else:
                 if name == None:
-                    return render_template('login.html')
+                    oauths = [{'name': n['name'],
+                               'url': '/{0}/login/{1}?client_id={2}&response_type={3}'.format(id, n['name'], client_id, response_type)} for n in
+                              [q.to_dict() for q in Authenticator.query.filter(Authenticator.group_id == group.id)]]
+
+                    return render_template('login.html', authenticators=oauths, client_id=client_id)
                 else:
                     auth = Authenticator.query.filter(Authenticator.name == name,
                                                       Authenticator.group_id == group.id).first()
