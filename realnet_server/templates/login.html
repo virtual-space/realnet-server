@@ -12,21 +12,22 @@
           <div class="col-md-12">
               <h3>Login to RealNet</h3>
           </div>
-          <div class="col-md-12">
+          <div class="col-md-12" style="margin-bottom:30px;">
               <form action="" method="post">
                 <label for="username" class="form-label">username:</label><br>
                   <input type="text" id="username" name="username" class="form-control"><br>
                   <label for="password" class="form-label">password:</label><br>
                   <input type="password" id="password" name="password" class="form-control"><br>
-                  <button type="submit" class="btn btn-primary">Login</button>
+                  <button type="submit" class="btn btn-primary btn-lg">Login</button>
                </form>
           </div>
           <div class="col-md-12">
-              <ul class="list-group">
+
                 {% for auth in authenticators %}
-                <li class="list-group-item list-group-item-action"><a href="{{auth.url}}" class="btn btn-secondary">{{auth.name}}</a></li>
-                {% endfor %}
-              </ul>
+                    <a href="{{auth.url}}" class="btn btn-primary btn-sm">{{auth.name}}</a>
+              {% endfor %}
+
+
           </div>
       </div>
   </div>
