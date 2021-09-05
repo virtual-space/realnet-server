@@ -6,6 +6,7 @@ from geoalchemy2 import Geometry
 from werkzeug.security import generate_password_hash, check_password_hash, gen_salt
 from sqlalchemy_serializer import SerializerMixin
 
+
 from authlib.integrations.sqla_oauth2 import (
     OAuth2ClientMixin,
     OAuth2AuthorizationCodeMixin,
