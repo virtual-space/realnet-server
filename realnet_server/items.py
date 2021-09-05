@@ -270,9 +270,8 @@ def items():
             visibility2 = request.args.get('public')
             if visibility2:
                 visibility = 'visible'
-            else:
-                visibility = 'restricted'
-            conditions.append(Item.visibility == VisibilityType[visibility])
+                conditions.append(Item.visibility == VisibilityType[visibility])
+
 
         tags = request.args.getlist('tags')
 
