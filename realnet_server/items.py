@@ -6,7 +6,7 @@ from .auth import require_oauth
 import importlib
 import json
 import uuid
-from sqlalchemy.sql import func, and_, or_, not_
+from sqlalchemy.sql import func, and_, or_, not_, functions
 
 
 def can_account_execute_item(account, item):

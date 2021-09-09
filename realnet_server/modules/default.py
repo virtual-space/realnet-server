@@ -25,6 +25,8 @@ class Default(Module):
         item_type_id = None
         item_attributes = None
         item_parent_id = None
+        item_location = None
+        item_visibility = None
 
         for key, value in kwargs.items():
             # print("%s == %s" % (key, value))
@@ -38,6 +40,10 @@ class Default(Module):
                 item_type_id = value
             elif key == 'attributes':
                 item_attributes = value
+            elif key == 'location':
+                item_location = 'SRID=4326;POINT({0} {1})'.format(value['lng'], value['lat'])
+            elif key == 'visibility':
+                item_visibility = value
 
         if parent_item:
             item_parent_id = parent_item.id
@@ -48,7 +54,9 @@ class Default(Module):
                     group_id=item_group_id,
                     type_id=item_type_id,
                     parent_id=item_parent_id,
-                    attributes=item_attributes)
+                    attributes=item_attributes,
+                    visibility=item_visibility,
+                    location=item_location)
         db.session.add(item)
         db.session.commit()
         return json.dumps(item.to_dict())

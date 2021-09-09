@@ -3,8 +3,12 @@ import uuid
 import time
 from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2 import Geometry
+from geoalchemy2.elements import WKBElement
+from geoalchemy2.shape import to_shape
 from werkzeug.security import generate_password_hash, check_password_hash, gen_salt
 from sqlalchemy_serializer import SerializerMixin
+import shapely
+import json
 
 
 from authlib.integrations.sqla_oauth2 import (
@@ -136,7 +140,13 @@ class VisibilityType(enum.Enum):
     hidden = 2
     restricted = 3
 
+def jsonize_geometry(g):
+    return json.loads(json.dumps(shapely.geometry.mapping(to_shape(g))))
+
 class Item(db.Model, SerializerMixin):
+    serialize_types = (
+        (WKBElement, lambda x: jsonize_geometry(x)),
+    )
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(128))
     attributes = db.Column(db.JSON)
