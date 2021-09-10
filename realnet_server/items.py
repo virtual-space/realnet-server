@@ -240,6 +240,8 @@ def single_item_data(id):
 
         if 's3_obj' in output:
             print('*** returning s3_obj {}'.format(output))
+            read = output['s3_obj']['Body'].read()
+            print(read)
             return Response(
                 output['s3_obj']['Body'].read(),
                 mimetype=output['mimetype'],
