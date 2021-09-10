@@ -26,6 +26,7 @@ CORS(app)
 
 app.secret_key = cfg.get_app_secret()
 app.config['SQLALCHEMY_DATABASE_URI'] = cfg.get_database_url()
+app.config['SQLALCHEMY_ECHO'] = True
 app.config['GOOGLE_CLIENT_ID'] = ''
 app.config['GOOGLE_CLIENT_SECRET'] = ''
 app.config['BOOTSTRAP_SERVE_LOCAL'] = True

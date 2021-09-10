@@ -7,6 +7,10 @@ import importlib
 import json
 import uuid
 from sqlalchemy.sql import func, and_, or_, not_, functions
+try:
+    from urllib.parse import unquote  # PY3
+except ImportError:
+    from urllib import unquote  # PY2
 
 
 def can_account_execute_item(account, item):
@@ -72,6 +76,13 @@ def can_account_read_item(account, item):
     if item.owner_id == account.id:
         return True
 
+def is_item_public(item):
+
+    if [acl for acl in item.acls if acl.type == AclType.public]:
+        return True
+
+    return False
+
 
 def can_account_write_item(account, item):
     if [acl for acl in item.acls if
@@ -104,6 +115,147 @@ def can_account_delete_item(account, item):
 def filter_readable_items(account, items_json):
     return [i for i in json.loads(items_json) if can_account_read_item(account, Item(**i))] if items_json else []
 
+
+def perform_search(request, account, public=False):
+    conditions = []
+
+    parent_id = request.args.get('parent_id')
+
+    my_items = request.args.get('my_items')
+
+    if parent_id:
+        conditions.append(Item.parent_id == parent_id)
+    elif my_items:
+        conditions.append(Item.parent_id == current_token.account.home_id)
+    else:
+        root_item_name = app.config.get('ROOT_ITEM')
+        if root_item_name:
+            root_item = Item.query.filter(Item.name == root_item_name).first()
+            if root_item:
+                conditions.append(Item.parent_id == root_item.id)
+            else:
+                conditions.append(Item.parent_id == None)
+
+    name = request.args.get('name')
+
+    if name:
+        conditions.append(Item.name.ilike('{}%'.format(unquote(name))))
+
+    type_names = request.args.getlist('types')
+
+    if type_names:
+        type_ids = [ti.id for ti in Type.query.filter(Type.name in {t for t in type_names}).all()]
+        conditions.append(Item.type_id.in_(type_ids))
+
+    keys = request.args.getlist('key')
+
+    values = request.args.getlist('value')
+
+    for kv in zip(keys, values):
+        conditions.append(Item.attributes[kv[0]].astext == kv[1])
+
+    lat = request.args.get('lat')
+
+    lng = request.args.get('lng')
+
+    if lat and lng:
+        range = request.args.get('range', 100.00)
+        conditions.append(func.ST_DWithin(Item.location, 'SRID=4326;POINT({} {})'.format(lat, lng), range))
+
+    visibility = request.args.get('visibility')
+
+    if visibility:
+        conditions.append(Item.visibility == VisibilityType[visibility])
+
+    tags = request.args.getlist('tags')
+
+    if tags:
+        conditions.append(Item.tags.contains(tags))
+
+    if public:
+        if not conditions:
+            return jsonify([])
+        else:
+            return jsonify([i.to_dict() for i in Item.query.filter(*conditions) if is_item_public(i)]), 200
+    else:
+        if not conditions:
+            conditions.append(Item.parent_id == current_token.account.home_id)
+        return jsonify([i.to_dict() for i in Item.query.filter(*conditions) if can_account_read_item(account, i)]), 200
+
+
+
+@app.route('/public/items', methods=['GET'])
+def public_items():
+    return perform_search(request, None, True)
+
+@app.route('/public/items/<id>', methods=['GET'])
+def public_single_item(id):
+    item = Item.query.filter(Item.id == id).first()
+    if item:
+        module_name = item.type.module
+
+        if not module_name:
+            module_name = 'default'
+
+        module = importlib.import_module('realnet_server.modules.{}'.format(module_name))
+        module_class = getattr(module, module_name.capitalize())
+        module_instance = module_class()
+
+        if not is_item_public(item=item):
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=403,
+                           data='Account not authorized to read this item'), 403
+
+        retrieved_item = module_instance.get_item(item)
+
+        return retrieved_item
+    else:
+        return jsonify(isError=True,
+                       message="Failure",
+                       statusCode=404,
+                       data='Item {0} not found'.format(id)), 404
+
+
+@app.route('/public/items/<id>/data', methods=['GET'])
+def single_item_data(id):
+    item = Item.query.filter(Item.id == id).first()
+    if item:
+        if not is_item_public(item=item):
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=403,
+                           data='Account not authorized to read this item'), 403
+
+        module_name = item.type.module
+
+        if not module_name:
+            module_name = 'default'
+
+        module = importlib.import_module('realnet_server.modules.{}'.format(module_name))
+        module_class = getattr(module, module_name.capitalize())
+        module_instance = module_class()
+
+        output = module_instance.get_item_data(item)
+
+        if 's3_obj' in output:
+            return Response(
+                output['s3_obj']['Body'].read(),
+                mimetype=output['mimetype'],
+                headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])}
+            )
+        elif 'filename' in output:
+            return send_file(output['filename'], as_attachment=True)
+        else:
+            return jsonify(isError=True,
+                           message="Failure",
+                           statusCode=500,
+                           data='get item {0} data'.format(id)), 500
+    else:
+        return jsonify(isError=True,
+                       message="Failure",
+                       statusCode=404,
+                       data='Item {0} not found'.format(id)), 404
 
 @app.route('/items', methods=['GET', 'POST'])
 @require_oauth()
@@ -162,8 +314,8 @@ def items():
 
                     if 'visibility' in input_data:
                         input_visibility = input_data['visibility']
-                    elif 'public' in input_data:
-                        input_visibility = 'visible' if input_data['public'] else 'restricted'
+                    else:
+                        input_visibility = 'restricted'
 
                     input_tags = None
 
@@ -198,6 +350,14 @@ def items():
 
                     created_item = module_instance.create_item(parent_item=parent_item, **args)
 
+                    if 'public' in input_data:
+                        i = json.loads(created_item)
+                        acl = Acl(id=str(uuid.uuid4()), type=AclType.public, name='public', permission='r',
+                                  item_id=i['id'])
+                        db.session.add(acl)
+                        db.session.commit()
+                        pass
+
                     return created_item, 201
                 else:
                     return jsonify(isError=True,
@@ -215,75 +375,7 @@ def items():
                                statusCode=400,
                                data='Bad request'), 400
     else:
-        conditions = []
-
-        conditions.append(Item.group_id == current_token.account.group_id)
-
-        parent_id = request.args.get('parent_id')
-
-        my_items = request.args.get('my_items')
-
-        if parent_id:
-            conditions.append(Item.parent_id == parent_id)
-        elif my_items:
-            conditions.append(Item.parent_id == current_token.account.home_id)
-        else:
-            root_item_name = app.config.get('ROOT_ITEM')
-            if root_item_name:
-                root_item = Item.query.filter(Item.name == root_item_name).first()
-                if root_item:
-                    conditions.append(Item.parent_id == root_item.id)
-                else:
-                    conditions.append(Item.parent_id == None)
-
-        name = request.args.get('name')
-
-        if name:
-            conditions.append(Item.name.ilike('{}%'.format(name)))
-
-        type_names = request.args.getlist('type')
-
-        if type_names:
-            type_ids = {ti.id for ti in Type.query.filter(Type.name in {t for t in type_names}).all()}
-            conditions.append(Item.type_id in type_ids)
-
-        keys = request.args.getlist('key')
-
-        values = request.args.getlist('value')
-
-        for kv in zip(keys,values):
-            conditions.append(Item.attributes[kv[0]].astext == kv[1])
-
-        lat = request.args.get('lat')
-
-        lng = request.args.get('lng')
-
-        if lat and lng:
-            range = request.args.get('range', 100.00)
-            conditions.append(func.ST_DWithin(Item.location, 'SRID=4326;POINT({} {})'.format(lat, lng), range))
-
-        visibility = request.args.get('visibility')
-
-        if visibility:
-            conditions.append(Item.visibility == VisibilityType[visibility])
-        else:
-            visibility2 = request.args.get('public')
-            if visibility2:
-                visibility = 'visible'
-                conditions.append(Item.visibility == VisibilityType[visibility])
-
-
-        tags = request.args.getlist('tags')
-
-        if tags:
-            conditions.append(Item.tags.contains(tags))
-
-        if not conditions:
-            conditions.append(Item.parent_id == current_token.account.home_id)
-
-        account = Account.query.filter(Account.id == current_token.account.id).first()
-
-        return jsonify([i.to_dict() for i in Item.query.filter(* conditions) if can_account_read_item(account, i)]), 200
+        return perform_search(request, current_token.account, False)
 
 
 @app.route('/items/<id>', methods=['GET', 'PUT', 'DELETE'])
