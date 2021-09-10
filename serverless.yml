@@ -22,10 +22,14 @@ custom:
     packRequirements: false
   pythonRequirements:
     dockerizePip: non-linux
+  apigwBinary:
+    types: #list of mime-types
+      - 'image/*'
 
 plugins:
   - serverless-wsgi
   - serverless-python-requirements
+  - serverless-apigw-binary
 
 package:
   exclude:
