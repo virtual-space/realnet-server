@@ -239,12 +239,14 @@ def single_item_data(id):
         output = module_instance.get_item_data(item)
 
         if 's3_obj' in output:
+            print('*** returning s3_obj {}'.format(output))
             return Response(
                 output['s3_obj']['Body'].read(),
                 mimetype=output['mimetype'],
                 headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])}
             )
         elif 'filename' in output:
+            print('*** returning local file')
             return send_file(output['filename'], as_attachment=True)
         else:
             return jsonify(isError=True,
