@@ -241,9 +241,9 @@ def single_item_data(id):
         if 's3_obj' in output:
             print('*** returning s3_obj {}'.format(output))
             read = output['s3_obj']['Body'].read()
-            print(read)
+            print(len(read))
             return Response(
-                output['s3_obj']['Body'].read(),
+                read,
                 mimetype=output['mimetype'],
                 headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])}
             )
