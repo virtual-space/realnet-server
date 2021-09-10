@@ -6,6 +6,9 @@ from .auth import require_oauth
 import importlib
 import json
 import uuid
+import base64
+
+
 from sqlalchemy.sql import func, and_, or_, not_, functions
 try:
     from urllib.parse import unquote  # PY3
@@ -241,9 +244,8 @@ def single_item_data(id):
         if 's3_obj' in output:
             print('*** returning s3_obj {}'.format(output))
             read = output['s3_obj']['Body'].read()
-            print(len(read))
             return Response(
-                read,
+                base64.b64encode(read).decode('utf-8'),
                 mimetype=output['mimetype'],
                 headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])}
             )
