@@ -5,6 +5,7 @@ service: realnet-api
 provider:
   name: aws
   runtime: python3.7
+  endpointType: REGIONAL
 
 functions:
   app:
