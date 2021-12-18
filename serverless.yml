@@ -27,14 +27,14 @@ custom:
     types: #list of mime-types
       - 'image/*'
   slackDeployNotification:
-     token: ${param:SLACK_ACCESS_TOKEN}
-     channel:  ${param:SLACK_CHANNEL_ID}  
+    token: ${param:SLACK_ACCESS_TOKEN}
+    channel: ${param:SLACK_CHANNEL_ID}  
 
 plugins:
   - serverless-wsgi
   - serverless-python-requirements
   - serverless-apigw-binary
-  - @schibsted/serverless-slack-deploy-notification
+  - "@schibsted/serverless-slack-deploy-notification"
 
 package:
   exclude:
