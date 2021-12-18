@@ -34,7 +34,7 @@ plugins:
   - serverless-wsgi
   - serverless-python-requirements
   - serverless-apigw-binary
-  - "@schibsted/serverless-slack-deploy-notification"
+  - @schibsted/serverless-slack-deploy-notification
 
 package:
   exclude:
