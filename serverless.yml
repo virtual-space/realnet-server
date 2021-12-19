@@ -10,6 +10,12 @@ provider:
 functions:
   app:
     handler: wsgi_handler.handler
+    environment:
+      REALNET_DB_USER: ${param:REALNET_DB_USER} 
+      REALNET_DB_PASS: ${param:REALNET_DB_PASS}
+      REALNET_DB_HOST: ${param:REALNET_DB_HOST}
+      REALNET_DB_PORT: ${param:REALNET_DB_PORT}
+      REALNET_DB_NAME: ${param:REALNET_DB_NAME}
     events:
       - http: ANY /
         cors: true
