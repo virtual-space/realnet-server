@@ -101,3 +101,5 @@ helm install realnet -f values.yaml bitnami/postgresql
 This requires a values.yaml file to be in directory you use this command: You can get one from the bitnami github. You probably want to change from the default password and use a port that won't interfere with other databases on the system.
 
 Replace password and port in the .env file with the password and port you used in values.yaml
+
+Run `kubectl port-forward --namespace default svc/localpostgresql [port]:[port]` in a linux terminal. This allows the backend server to connect to the database.
