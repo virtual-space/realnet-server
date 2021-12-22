@@ -1,8 +1,6 @@
 # realnet-server
 ## How to run on linux:
 
-NEED TO ADD INSTRUCTIONS FOR INSTALLING AND CREATING A DOCKER SERVER
-
 - Clone out the repo
 ```
 git clone https://github.com/virtual-space/realnet-server/realnet-server.git
