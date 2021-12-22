@@ -88,14 +88,16 @@ g++ --version
 # Creating a database for realnet-server
 The following section should be done on your windows terminal if you are using WSL2.
 
-Install Docker: `https://docs.docker.com/desktop/windows/install/`
+Install Docker: https://docs.docker.com/desktop/windows/install/
 Install Kubernetes: Go to settings in docker -> kubernetes -> enable kubernetes.
 
 Get helm 3.1.0 or above.
-Create a postgresql container in docker using the bitnami distribution: `https://github.com/bitnami/charts/tree/master/bitnami/postgresql`
+Create a postgresql container in docker using the bitnami distribution: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
 Run the following after installing helm.
-`helm repo add bitnami https://charts.bitnami.com/bitnami`
-`helm install realnet -f values.yaml bitnami/postgresql`
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install realnet -f values.yaml bitnami/postgresql
+```
 This requires a values.yaml file to be in directory you use this command: You can get one from the bitnami github. You probably want to change from the default password and use a port that won't interfere with other databases on the system.
 
 Replace password and port in the .env file with the password and port you used in values.yaml
