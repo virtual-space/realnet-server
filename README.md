@@ -44,7 +44,7 @@ python setup.py install
 ```
 - finally to start realnet server run the following command:
 ```
-realnet-server 
+realnet-server serve
 ```
 Choose from 'serve', 'upgrade', 'initialize', 'migrate'.
 
@@ -96,10 +96,11 @@ Create a postgresql container in docker using the bitnami distribution: https://
 Run the following after installing helm.
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
 helm install realnet -f values.yaml bitnami/postgresql
 ```
 This requires a values.yaml file to be in directory you use this command: You can get one from the bitnami github. You probably want to change from the default password and use a port that won't interfere with other databases on the system.
 
 Replace password and port in the .env file with the password and port you used in values.yaml
 
-Run `kubectl port-forward --namespace default svc/localpostgresql [port]:[port]` in a linux terminal. This allows the backend server to connect to the database.
+Run `kubectl port-forward --namespace default svc/realnet-postgresql [port]:[port]` in a linux terminal. This allows the backend server to connect to the database.
