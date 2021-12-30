@@ -110,7 +110,7 @@ Run in linux:
 sudo docker ps -a
 ```
 This will list the containers available in docker. Note the CONTAINER ID of the database you just created.
-Run the following command:
+Run the following commands:
 ```
 docker exec -u root -it [CONTAINER ID] bash
 install_packages postgis
@@ -127,4 +127,4 @@ This should produce the following.
  2.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1
 (1 row)
 ```
-Once the .env details have been updated to point at your local database, use `realnet-server initialize` to create the default database.
+Once the .env details have been updated to point at your local database, use `realnet-server initialize` to create the default database in your venv.
