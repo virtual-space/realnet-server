@@ -103,4 +103,28 @@ This requires a values.yaml file to be in directory you use this command: You ca
 
 Replace password and port in the .env file with the password and port you used in values.yaml
 
-Run `kubectl port-forward --namespace default svc/realnet-postgresql [port]:[port]` in a linux terminal. This allows the backend server to connect to the database.
+Run `kubectl port-forward --namespace default svc/realnet-postgresql [port]:[port]` in a linux terminal. This allows connections from outside the container to reach the database.
+
+Run in linux:
+```
+sudo docker ps -a
+```
+This will list the containers available in docker. Note the CONTAINER ID of the database you just created.
+Run the following command:
+```
+docker exec -u root -it [CONTAINER ID] bash
+install_packages postgis
+psql -U postgres
+CREATE EXTENSION postgis;
+```
+Check version:
+```
+SELECT postgis_version();
+```
+This should produce the following.
+```
+---------------------------------------
+ 2.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1
+(1 row)
+```
+Once the .env details have been updated to point at your local database, use `realnet-server initialize` to create the default database.
