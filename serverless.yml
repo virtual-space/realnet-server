@@ -10,6 +10,12 @@ provider:
 functions:
   app:
     handler: wsgi_handler.handler
+    environment:
+      REALNET_DB_USER: ${param:REALNET_DB_USER} 
+      REALNET_DB_PASS: ${param:REALNET_DB_PASS}
+      REALNET_DB_HOST: ${param:REALNET_DB_HOST}
+      REALNET_DB_PORT: ${param:REALNET_DB_PORT}
+      REALNET_DB_NAME: ${param:REALNET_DB_NAME}
     events:
       - http: ANY /
         cors: true
@@ -26,11 +32,15 @@ custom:
   apigwBinary:
     types: #list of mime-types
       - 'image/*'
+  slackDeployNotification:
+    token: ${param:SLACK_ACCESS_TOKEN}
+    channel: ${param:SLACK_CHANNEL_ID}  
 
 plugins:
   - serverless-wsgi
   - serverless-python-requirements
   - serverless-apigw-binary
+  - "@schibsted/serverless-slack-deploy-notification"
 
 package:
   exclude:

@@ -19,7 +19,8 @@
   "dependencies": {
     "serverless": "^2.55.0",
     "serverless-python-requirements": "^5.1.1",
-    "serverless-wsgi": "^2.0.1"
+    "serverless-wsgi": "^2.0.1",
+    "@schibsted/serverless-slack-deploy-notification": "^0.3.7"
   },
   "devDependencies": {
     "serverless-apigw-binary": "^0.4.4"
