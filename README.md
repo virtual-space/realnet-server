@@ -9,7 +9,7 @@ git clone https://github.com/virtual-space/realnet-server/realnet-server.git
 ```
 cd realnet-server
 ```
-- The realnet-server will need a database to connect to. Instructions for how to do that will be included at the end.
+- The realnet-server will need a database to connect to. Instructions for how to create a local db will be included at the end.
 - In the repo root folder create an .env file with the following content:
 ```
 REALNET_SERVER_HOST='0.0.0.0'
