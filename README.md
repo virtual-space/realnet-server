@@ -48,6 +48,13 @@ realnet-server serve
 ```
 Choose from 'serve', 'upgrade', 'initialize', 'migrate'.
 
+# Running as a local development server
+
+Run the following command before `realnet-server serve`. This disables the https requirement.
+```
+export AUTHLIB_INSECURE_TRANSPORT=1
+```
+
 # python setup.py install notes
 
 You may need to manually install some dependencies. `python setup.py install` should tell you what is missing.
