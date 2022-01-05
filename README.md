@@ -25,12 +25,10 @@ REALNET_STORAGE_S3_BUCKET='realnet-dev'
 REALNET_STORAGE_S3_KEY='ddd'
 REALNET_STORAGE_S3_SECRET='ggg'
 REALNET_STORAGE_S3_REGION='us-east-1'
-REALNET_NAME='root'
+REALNET_NAME='public'
 REALNET_USERNAME='admin'
-REALNET_PASSWORD='fsdf7987f9sd87f89sdf789s'
 REALNET_EMAIL='joe.blog@gmail.com'
 ```
- 
 - run command
 ```
 chmod 700 .env
@@ -134,4 +132,4 @@ This should produce the following.
  2.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1
 (1 row)
 ```
-Once the .env details have been updated to point at your local database, use `realnet-server initialize` to create the default database in your venv.
+Once the .env details have been updated to point at your local database, use `realnet-server initialize` to create the default database in your venv. This will also complain that there is no REALNET_PASSWORD. You will need to include one in the .env file, or add it to the initialize command via `--password`.
