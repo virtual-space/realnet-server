@@ -184,4 +184,4 @@ This should produce the following.
  2.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1
 (1 row)
 ```
-Once the .env details have been updated to point at your local database, use `realnet-server initialize` to create the default database in your venv. This will also complain that there is no REALNET_PASSWORD. You will need to include one in the .env file, or add it to the initialize command via `--password`.
+Once the .env details have been updated to point at your local database, use `realnet-server initialize` to create the default database in your venv. This will also complain that there is no REALNET_PASSWORD. You will need to include one in the .env file, or add it to the initialize command via `--password`. You will need to recompile (python setup.py install) to get the .env changes.
