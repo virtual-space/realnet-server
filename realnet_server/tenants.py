@@ -161,7 +161,7 @@ def tenant_login(id, name):
     if group:
         client_id = request.args.get('client_id')
         response_type = request.args.get('response_type')
-        client = App.query.filter(or_(App.client_id == client_id, App.name == client_id), App.group_id == group.id).first()
+        client = App.query.filter(or_(App.client_id == client_id, App.name == client_id, App.group_id == group.id)).first()
         if client:
             if request.method == 'POST':
                 username = request.form.get('username')
