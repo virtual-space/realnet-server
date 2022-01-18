@@ -406,13 +406,15 @@ def get_or_create_delegated_account(tenant_name,
 
 def create_app(name,
                uri,
-               client_id=gen_salt(24),
                grant_types,
                redirect_uris,
                response_types,
                scope,
                auth_method,
-               account_id, group_id):
+               account_id,
+               group_id,
+               client_id=gen_salt(24)
+               ):
     client_id_issued_at = int(time.time())
     app_id = str(uuid.uuid4())
     client = App(
