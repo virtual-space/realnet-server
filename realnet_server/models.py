@@ -488,7 +488,7 @@ def create_tenant(tenant_name, root_username, root_email, root_password, uri, we
                         redirect_uris=[web_redirect_uri],
                         response_types=['token'],
                         scope='',
-                        auth_method=None,
+                        auth_method='none',
                         account_id=root_account_id,
                         group_id=root_group_id)
 
