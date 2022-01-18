@@ -267,6 +267,10 @@ def create_account(tenant_name,
                             group_id=group.id,
                             type_id=thing_type.id))
 
+    app_type = db.session.query(Type).filter(Type.name == 'App').first()
+    if not app_type:
+        return None
+
     home_folder_id = str(uuid.uuid4())
     db.session.add(Item(id=home_folder_id,
                         name='home',
@@ -274,6 +278,31 @@ def create_account(tenant_name,
                         owner_id=account.id,
                         group_id=group.id,
                         type_id=folder_type.id))
+
+    db.session.add(Item(id=uuid.uuid4(),
+                        name='Find',
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
+                        parent_id=account.id,
+                        owner_id=account.id,
+                        group_id=group.id,
+                        type_id=app_type.id))
+
+    db.session.add(Item(id=uuid.uuid4(),
+                        name='Around',
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
+                        parent_id=account.id,
+                        owner_id=account.id,
+                        group_id=group.id,
+                        type_id=app_type.id))
+
+    db.session.add(Item(id=uuid.uuid4(),
+                        name='Home',
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
+                        parent_id=account.id,
+                        owner_id=account.id,
+                        group_id=group.id,
+                        type_id=app_type.id))
+
     db.session.commit()
 
     adm = db.session.query(Account).filter(Account.id == account.id).first()
@@ -323,6 +352,10 @@ def get_or_create_delegated_account(tenant_name,
     if not person_type:
         return None
 
+    app_type = db.session.query(Type).filter(Type.name == 'App').first()
+    if not app_type:
+        return None
+
     db.session.add(Item(id=account.id,
                         name=account.username,
                         owner_id=account.id,
@@ -330,12 +363,36 @@ def get_or_create_delegated_account(tenant_name,
                         type_id=person_type.id))
 
     home_folder_id = str(uuid.uuid4())
+
     db.session.add(Item(id=home_folder_id,
                         name='home',
                         owner_id=account.id,
                         parent_id=account.id,
                         group_id=group.id,
                         type_id=folder_type.id))
+    db.session.add(Item(id=uuid.uuid4(),
+                        name='Find',
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
+                        parent_id=account.id,
+                        owner_id=account.id,
+                        group_id=group.id,
+                        type_id=app_type.id))
+
+    db.session.add(Item(id=uuid.uuid4(),
+                        name='Around',
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
+                        parent_id=account.id,
+                        owner_id=account.id,
+                        group_id=group.id,
+                        type_id=app_type.id))
+
+    db.session.add(Item(id=uuid.uuid4(),
+                        name='Home',
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
+                        parent_id=account.id,
+                        owner_id=account.id,
+                        group_id=group.id,
+                        type_id=app_type.id))
     db.session.commit()
 
     adm = db.session.query(Account).filter(Account.id == account.id).first()
@@ -388,7 +445,7 @@ def create_app(name,
 
     return client
 
-def create_tenant(tenant_name, root_username, root_email, root_password):
+def create_tenant(tenant_name, root_username, root_email, root_password, uri, web_redirect_uri):
     
     root_group_id = str(uuid.uuid4())
     root_group = Group(id=root_group_id, name=tenant_name)
@@ -398,7 +455,7 @@ def create_tenant(tenant_name, root_username, root_email, root_password):
 
     root_account_id = str(uuid.uuid4())
     root_account = Account( id=root_account_id, 
-                            type=AccountType.thing,
+                            type=AccountType.person,
                             username=root_username, 
                             email=root_email, 
                             group_id=root_group_id)
@@ -411,19 +468,32 @@ def create_tenant(tenant_name, root_username, root_email, root_password):
                                 group_id=root_group_id,
                                 role_type=GroupRoleType.root))
 
-    client = create_app(name='root',
-                        uri='http://localhost:8080',
-                        grant_types=['authorization_code', 'password'],
+    cli_client = create_app(name=tenant_name + '_cli',
+                        client_id='Vk6Swe7GyqJIKKfa3SiXYJbv',
+                        uri=uri,
+                        grant_types=['password'],
                         redirect_uris=[],
-                        response_types=['code'],
+                        response_types=['token'],
                         scope='',
                         auth_method='client_secret_basic',
                         account_id=root_account_id,
                         group_id=root_group_id)
 
+    web_client = create_app(name=tenant_name + '_web',
+                        client_id='IEmf5XYQJXIHvWcQtZ5FXbLM',
+                        uri=uri,
+                        grant_types=['password'],
+                        redirect_uris=[web_redirect_uri],
+                        response_types=['token'],
+                        scope='',
+                        auth_method=None,
+                        account_id=root_account_id,
+                        group_id=root_group_id)
+
     print('{} tenant id: {}'.format(tenant_name, root_group_id))
-    print('{} tenant client id: {}'.format(tenant_name, client.client_id))
-    print('{} tenant client secret: {}'.format(tenant_name, client.client_secret))
+    print('{} tenant cli client id: {}'.format(tenant_name, cli_client.client_id))
+    print('{} tenant cli client secret: {}'.format(tenant_name, cli_client.client_secret))
+    print('{} tenant web client id: {}'.format(tenant_name, web_client.client_id))
     print('{} tenant root id: {}'.format(tenant_name, root_account_id))
     print('{} tenant root email: {}'.format(tenant_name, root_email))
     print('{} tenant root username: {}'.format(tenant_name, root_username))
@@ -435,8 +505,12 @@ def create_tenant(tenant_name, root_username, root_email, root_password):
     if not folder_type:
         return None
 
-    thing_type = db.session.query(Type).filter(Type.name == 'Thing').first()
-    if not thing_type:
+    person_type = db.session.query(Type).filter(Type.name == 'Person').first()
+    if not person_type:
+        return None
+
+    app_type = db.session.query(Type).filter(Type.name == 'App').first()
+    if not app_type:
         return None
 
 
@@ -444,7 +518,7 @@ def create_tenant(tenant_name, root_username, root_email, root_password):
                         name=root_username, 
                         owner_id=root_account_id, 
                         group_id=root_group_id, 
-                        type_id=thing_type.id))
+                        type_id=person_type.id))
 
     home_folder_id = str(uuid.uuid4())
     db.session.add(Item(id=home_folder_id, 
@@ -453,6 +527,31 @@ def create_tenant(tenant_name, root_username, root_email, root_password):
                         owner_id=root_account_id, 
                         group_id=root_group_id, 
                         type_id=folder_type.id))
+
+    db.session.add(Item(id=uuid.uuid4(),
+                        name='Find',
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
+                        parent_id=root_account_id,
+                        owner_id=root_account_id,
+                        group_id=root_group_id,
+                        type_id=app_type.id))
+
+    db.session.add(Item(id=uuid.uuid4(),
+                        name='Around',
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
+                        parent_id=root_account_id,
+                        owner_id=root_account_id,
+                        group_id=root_group_id,
+                        type_id=app_type.id))
+
+    db.session.add(Item(id=uuid.uuid4(),
+                        name='Home',
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
+                        parent_id=root_account_id,
+                        owner_id=root_account_id,
+                        group_id=root_group_id,
+                        type_id=app_type.id))
+
     db.session.commit()
     print('{} tenant root home folder id: {}'.format(tenant_name, home_folder_id))
     adm = db.session.query(Account).filter(Account.id == root_account_id).first()
@@ -464,8 +563,8 @@ def create_tenant(tenant_name, root_username, root_email, root_password):
 
     create_basic_types(root_account_id, root_group_id)
     result = root_group.to_dict()
-    result['client_id'] = client.client_id
-    result['client_secret'] = client.client_secret
+    result['client_id'] = cli_client.client_id
+    result['client_secret'] = cli_client.client_secret
     result['root_username'] = root_username
     result['root_password'] = root_password
     result['root_email'] = root_email
@@ -492,7 +591,7 @@ def create_basic_types(owner_id, group_id):
     get_or_create_type(name='Drawing', owner_id=owner_id, group_id=group_id, icon='gesture')
     get_or_create_type(name='Scene', owner_id=owner_id, group_id=group_id, icon='view_in_ar')
 
-
+    get_or_create_type(name='App', owner_id=owner_id, group_id=group_id, icon='apps')
 
     get_or_create_type(name='Place', owner_id=owner_id, group_id=group_id, icon='other_houses')
     get_or_create_type(name='Event', owner_id=owner_id, group_id=group_id, icon='event')
@@ -502,8 +601,11 @@ def create_basic_types(owner_id, group_id):
 def initialize_server(root_tenant_name,
                root_username,
                root_email, 
-               root_password):
-    create_tenant(root_tenant_name, root_username, root_email, root_password)
+               root_password,
+               uri,
+               web_redirect_uri):
+    create_tenant(root_tenant_name, root_username, root_email, root_password, uri, web_redirect_uri)
+
     
 
     
