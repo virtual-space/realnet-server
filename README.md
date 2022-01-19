@@ -25,6 +25,7 @@ REALNET_STORAGE_S3_REGION='us-east-1'
 REALNET_NAME='public'
 REALNET_USERNAME='admin'
 REALNET_EMAIL='joe.blog@gmail.com'
+REALNET_REDIRECT_URI='http://localhost:4200/callback'
 ```
 
 - run command
@@ -74,6 +75,7 @@ REALNET_STORAGE_S3_REGION='us-east-1'
 REALNET_NAME='public'
 REALNET_USERNAME='admin'
 REALNET_EMAIL='joe.blog@gmail.com'
+REALNET_REDIRECT_URI='http://localhost:4200/callback'
 ```
 - run command
 ```
