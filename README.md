@@ -187,3 +187,15 @@ This should produce the following.
 (1 row)
 ```
 Once the .env details have been updated to point at your local database, use `realnet-server initialize` to create the default database in your venv. This will also complain that there is no REALNET_PASSWORD. You will need to include one in the .env file, or add it to the initialize command via `--password`.
+
+# Notes for MacOS
+
+Build from sources:
+1. brew install libyaml
+2. pip install pyyaml
+3. pip install cython
+4. brew install shapely
+5. pip install geos
+6. pip install cryptography
+7. If you are having trouble installing psycopg2 by pointing it to where your openssl library is, ie:
+env LDFLAGS="-I/opt/homebrew/Cellar/openssl@1.1/1.1.1m/include -L/opt/homebrew/Cellar/openssl@1.1/1.1.1m/lib" python setup.py install
