@@ -68,11 +68,13 @@ class Initialize(ProtoCmd):
         parser.add_argument('--username', help='specify the root username', default=os.getenv('REALNET_USERNAME'))
         parser.add_argument('--password', help='specify the root password', default=os.getenv('REALNET_PASSWORD'))
         parser.add_argument('--email', help='specify the root email', default=os.getenv('REALNET_EMAIL'))
+        parser.add_argument('--uri', help='specify the tenant uri', default=os.getenv('REALNET_URI'))
+        parser.add_argument('--redirect_uri', help='specify the tenant redirect uri', default=os.getenv('REALNET_REDIRECT_URI'))
 
     def run(self, args):
         with app.app_context():
             db.create_all()
-            initialize_server(args.name, args.username, args.email, args.password)
+            initialize_server(args.name, args.username, args.email, args.password, args.uri, args.redirect_uri)
 
 
 class RealnetServer(Shell):

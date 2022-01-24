@@ -158,11 +158,14 @@ def perform_search(request, account, public=False):
         conditions.append(Item.attributes[kv[0]].astext == kv[1])
 
     lat = request.args.get('lat')
-
     lng = request.args.get('lng')
+    radius = request.args.get('radius')
 
     if lat and lng:
-        range = request.args.get('range', 100.00)
+        if radius:
+            range = request.args.get('range', radius)
+        else:
+            range = request.args.get('range', 100.00)
         conditions.append(func.ST_DWithin(Item.location, 'SRID=4326;POINT({} {})'.format(lat, lng), range))
 
     visibility = request.args.get('visibility')
