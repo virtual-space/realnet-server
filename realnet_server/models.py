@@ -97,21 +97,21 @@ class AccountGroup(db.Model, SerializerMixin):
 
 class Token(db.Model, OAuth2TokenMixin):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
     account = db.relationship('Account')
 
 
 class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
     id = db.Column(db.Integer, primary_key=True)
-    account_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
+    account_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
     account = db.relationship('Account')
 
 
 class App(db.Model, OAuth2ClientMixin, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(42))
-    owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
-    group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
+    group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
     data = db.Column(db.JSON)
 
     def get_allowed_scope(self, scope):
@@ -127,8 +127,8 @@ class Type(db.Model, SerializerMixin):
     name = db.Column(db.String(128))
     icon = db.Column(db.String(128))
     attributes = db.Column(db.JSON)
-    owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
-    group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
+    group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
     module = db.Column(db.String(128))
 
 class TypeId:
@@ -150,15 +150,15 @@ class Item(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(128))
     attributes = db.Column(db.JSON)
-    owner_id = db.Column(db.String(36), db.ForeignKey('account.id'), nullable=False)
-    group_id = db.Column(db.String(36), db.ForeignKey('group.id'), nullable=False)
-    type_id = db.Column(db.String(36), db.ForeignKey('type.id'), nullable=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
+    group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
+    type_id = db.Column(db.String(36), db.ForeignKey('type.id', ondelete='CASCADE'), nullable=False)
     parent_id = db.Column(db.String(36), db.ForeignKey('item.id'))
     location = db.Column(Geometry(geometry_type='GEOMETRY', srid=4326))
     visibility = db.Column(db.Enum(VisibilityType))
     tags = db.Column(db.ARRAY(db.String()))
     type = db.relationship('Type')
-    acls = db.relationship('Acl')
+    acls = db.relationship('Acl', passive_deletes=True)
     # parent = db.relationship('Item')
 
 
@@ -167,26 +167,26 @@ class Function(db.Model, SerializerMixin):
     name = db.Column(db.String(128))
     code = db.Column(db.Text)
     data = db.Column(db.JSON)
-    item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
+    item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
 
 
 class Topic(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(128))
     data = db.Column(db.JSON)
-    item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
+    item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
 
 class TopicFunction(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
-    topic_id = db.Column(db.String(36), db.ForeignKey('topic.id'), nullable=False)
-    function_id = db.Column(db.String(36), db.ForeignKey('function.id'), nullable=False)
+    topic_id = db.Column(db.String(36), db.ForeignKey('topic.id', ondelete='CASCADE'), nullable=False)
+    function_id = db.Column(db.String(36), db.ForeignKey('function.id', ondelete='CASCADE'), nullable=False)
     function = db.relationship('Function')
 
 
 class Message(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     data = db.Column(db.JSON)
-    topic_id = db.Column(db.String(36), db.ForeignKey('topic.id'), nullable=False)
+    topic_id = db.Column(db.String(36), db.ForeignKey('topic.id', ondelete='CASCADE'), nullable=False)
 
 class AclType(enum.Enum):
     public = 1
@@ -200,7 +200,7 @@ class Acl(db.Model, SerializerMixin):
     type = db.Column(db.Enum(AclType))
     name = db.Column(db.String(50))
     permission = db.Column(db.String(50))
-    item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
+    item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
 
 
 class BlobType(enum.Enum):
@@ -217,7 +217,7 @@ class Blob(db.Model):
     content_type = db.Column(db.String(36), nullable=False)
     filename = db.Column(db.String(250), nullable=False)
     mime_type = db.Column(db.String(36), nullable=False)
-    item_id = db.Column(db.String(36), db.ForeignKey('item.id'), nullable=False)
+    item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
 
 def create_account(tenant_name,
                    account_type,
