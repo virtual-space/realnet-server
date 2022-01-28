@@ -256,6 +256,42 @@ def create_account(tenant_name,
                             owner_id=account.id,
                             group_id=group.id,
                             type_id=person_type.id))
+
+        home_folder_id = str(uuid.uuid4())
+        db.session.add(Item(id=home_folder_id,
+                            name='home',
+                            parent_id=account.id,
+                            owner_id=account.id,
+                            group_id=group.id,
+                            type_id=folder_type.id))
+
+        app_type = db.session.query(Type).filter(Type.name == 'App').first()
+        if not app_type:
+            return None
+
+        db.session.add(Item(id=uuid.uuid4(),
+                            name='Find',
+                            attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {'explore': 'true'}},
+                            parent_id=account.id,
+                            owner_id=account.id,
+                            group_id=group.id,
+                            type_id=app_type.id))
+
+        db.session.add(Item(id=uuid.uuid4(),
+                            name='Around',
+                            attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {'current_location': 'true'}},
+                            parent_id=account.id,
+                            owner_id=account.id,
+                            group_id=group.id,
+                            type_id=app_type.id))
+
+        db.session.add(Item(id=uuid.uuid4(),
+                            name='Home',
+                            attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {'my_items': 'true'}},
+                            parent_id=account.id,
+                            owner_id=account.id,
+                            group_id=group.id,
+                            type_id=app_type.id))
     else:
         thing_type = db.session.query(Type).filter(Type.name == 'Thing').first()
         if not thing_type:
@@ -267,41 +303,9 @@ def create_account(tenant_name,
                             group_id=group.id,
                             type_id=thing_type.id))
 
-    app_type = db.session.query(Type).filter(Type.name == 'App').first()
-    if not app_type:
-        return None
 
-    home_folder_id = str(uuid.uuid4())
-    db.session.add(Item(id=home_folder_id,
-                        name='home',
-                        parent_id=account.id,
-                        owner_id=account.id,
-                        group_id=group.id,
-                        type_id=folder_type.id))
 
-    db.session.add(Item(id=uuid.uuid4(),
-                        name='Find',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
-                        parent_id=account.id,
-                        owner_id=account.id,
-                        group_id=group.id,
-                        type_id=app_type.id))
 
-    db.session.add(Item(id=uuid.uuid4(),
-                        name='Around',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
-                        parent_id=account.id,
-                        owner_id=account.id,
-                        group_id=group.id,
-                        type_id=app_type.id))
-
-    db.session.add(Item(id=uuid.uuid4(),
-                        name='Home',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
-                        parent_id=account.id,
-                        owner_id=account.id,
-                        group_id=group.id,
-                        type_id=app_type.id))
 
     db.session.commit()
 
@@ -372,24 +376,27 @@ def get_or_create_delegated_account(tenant_name,
                         type_id=folder_type.id))
     db.session.add(Item(id=uuid.uuid4(),
                         name='Find',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
-                        parent_id=account.id,
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}],
+                                    'query': {'explore': 'true'}},
+                        parent_id=home_folder_id,
                         owner_id=account.id,
                         group_id=group.id,
                         type_id=app_type.id))
 
     db.session.add(Item(id=uuid.uuid4(),
                         name='Around',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
-                        parent_id=account.id,
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}],
+                                    'query': {'current_location': 'true'}},
+                        parent_id=home_folder_id,
                         owner_id=account.id,
                         group_id=group.id,
                         type_id=app_type.id))
 
     db.session.add(Item(id=uuid.uuid4(),
                         name='Home',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
-                        parent_id=account.id,
+                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}],
+                                    'query': {'my_items': 'true'}},
+                        parent_id=home_folder_id,
                         owner_id=account.id,
                         group_id=group.id,
                         type_id=app_type.id))
@@ -481,7 +488,7 @@ def create_tenant(tenant_name, root_username, root_email, root_password, uri, we
                         account_id=root_account_id,
                         group_id=root_group_id)
 
-    web_client = create_app(name=tenant_name + '_web',
+    web_client = create_app(name=tenant_name + '_realscape_web',
                         client_id='IEmf5XYQJXIHvWcQtZ5FXbLM',
                         uri=uri,
                         grant_types=['password'],
@@ -492,10 +499,24 @@ def create_tenant(tenant_name, root_username, root_email, root_password, uri, we
                         account_id=root_account_id,
                         group_id=root_group_id)
 
+    mobile_client = create_app(name=tenant_name + '_realscape_mob',
+                            client_id='MPpG679mTwfpkwzVfK1flaPa',
+                            client_secret='2CNYMgCEVoOsqgSQGipwDN5bo8AsxQktU1KegT7jrQl3Arjq',
+                            uri=uri,
+                            grant_types=['authorization_code','password'],
+                            redirect_uris=["io.realnet.api-dev:/callback"],
+                            response_types=['code'],
+                            scope='',
+                            auth_method='client_secret_basic',
+                            account_id=root_account_id,
+                            group_id=root_group_id)
+
     print('{} tenant id: {}'.format(tenant_name, root_group_id))
     print('{} tenant cli client id: {}'.format(tenant_name, cli_client.client_id))
     print('{} tenant cli client secret: {}'.format(tenant_name, cli_client.client_secret))
     print('{} tenant web client id: {}'.format(tenant_name, web_client.client_id))
+    print('{} tenant mob client id: {}'.format(tenant_name, mobile_client.client_id))
+    print('{} tenant mob client secret: {}'.format(tenant_name, mobile_client.client_secret))
     print('{} tenant root id: {}'.format(tenant_name, root_account_id))
     print('{} tenant root email: {}'.format(tenant_name, root_email))
     print('{} tenant root username: {}'.format(tenant_name, root_username))
