@@ -420,7 +420,8 @@ def create_app(name,
                auth_method,
                account_id,
                group_id,
-               client_id=gen_salt(24)
+               client_id=gen_salt(24),
+               client_secret=gen_salt(48)
                ):
     client_id_issued_at = int(time.time())
     app_id = str(uuid.uuid4())
@@ -447,7 +448,7 @@ def create_app(name,
     if client_metadata['token_endpoint_auth_method'] == 'none':
         client.client_secret = ''
     else:
-        client.client_secret = gen_salt(48)
+        client.client_secret = client_secret
 
     db.session.add(client)
     db.session.commit()
