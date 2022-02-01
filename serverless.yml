@@ -30,6 +30,7 @@ functions:
         cors: true
       - http: 'ANY {proxy+}'
         cors: true
+      - cloudwatchLog: '/aws/lambda/realnet-server'
 
 custom:
   wsgi:
