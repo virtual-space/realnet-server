@@ -1,6 +1,8 @@
 import uuid
 import os
 import json
+
+from sqlalchemy import null
 from .module import Module
 from realnet_server.models import db, Item, Blob, BlobType
 from realnet_server.config import Config
@@ -184,13 +186,16 @@ class Default(Module):
                 item.attributes = value
             elif key == 'location':
                 item_location = ''
-                if value['type'] == 'Point':
-                    item_location = 'SRID=4326;POINT({0} {1})'.format(value['coordinates'][0], value['coordinates'][1])
+                if value:
+                    if value['type'] == 'Point':
+                        item_location = 'SRID=4326;POINT({0} {1})'.format(value['coordinates'][0], value['coordinates'][1])
+                    elif value['type'] == 'Polygon':
+                        item_location = 'SRID=4326;POLYGON(('
+                        for ii in value['coordinates'][0]:
+                            item_location = item_location + '{0} {1},'.format(ii[0], ii[1])
+                        item_location = item_location[0:-1] + '))'
                 else:
-                    item_location = 'SRID=4326;POLYGON(('
-                    for ii in value['coordinates'][0]:
-                        item_location = item_location + '{0} {1},'.format(ii[0], ii[1])
-                    item_location = item_location[0:-1] + '))'
+                    item_location = None
                 item.location = item_location
 
         db.session.commit()
