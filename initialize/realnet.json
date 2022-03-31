@@ -23,98 +23,114 @@
             "name": "List",
             "attributes": {
                 "icon": "list",
-                "module": "list"
+                "module": "list",
+                "creatable": "true"
             }
         },
         {
             "name": "Document",
             "attributes": {
-                "icon": "description"
+                "icon": "description",
+                "creatable": "true"
             }
         },
         {
             "name": "Link",
             "attributes": {
-                "icon": "link"
+                "icon": "link",
+                "creatable": "true"
             }
 
         },
         {
             "name": "Page",
             "attributes": {
-                "icon": "web_asset"
+                "icon": "web_asset",
+                "creatable": "true"
             }
         },
         {
             "name": "Image",
             "attributes": {
-                "icon": "image"
+                "icon": "image",
+                "creatable": "true"
             }
         },
         {
             "name": "Video",
             "attributes": {
-                "icon": "ondemand_video"
+                "icon": "ondemand_video",
+                "creatable": "true"
             }
         },
         {
             "name": "Drawing",
             "attributes": {
-                "icon": "gesture"
+                "icon": "gesture",
+                "creatable": "true"
             }
         },
         {
             "name": "Scene",
             "attributes": {
-                "icon": "view_in_ar"
+                "icon": "view_in_ar",
+                "creatable": "true"
             }
         },
         {
             "name": "Thing",
             "attributes": {
-                "icon": "graphic_eq"
+                "icon": "graphic_eq",
+                "creatable": "true"
             }
         },
         {
             "name": "Place",
             "attributes": {
-                "icon": "other_houses"
+                "icon": "other_houses",
+                "creatable": "true"
             }
         },
         {
             "name": "Event",
             "attributes": {
-                "icon": "event"
+                "icon": "event",
+                "creatable": "true"
             }
         },
         {
             "name": "Task",
             "attributes": {
-                "icon": "assignment_turned_in"
+                "icon": "assignment_turned_in",
+                "creatable": "true"
             }
         },
         {
             "name": "Job",
             "attributes": {
-                "icon": "trending_up"
+                "icon": "trending_up",
+                "creatable": "true"
             }
         },
         {
             "name": "Topic",
             "attributes": {
-                "icon": "forum"
+                "icon": "forum",
+                "creatable": "true"
             }
         },
         {
             "name": "Runner",
             "attributes": {
-                "icon": "memory"
+                "icon": "memory",
+                "creatable": "true"
             }
         },
         {
             "name": "Folder",
             "attributes": {
-                "icon": "folder"
+                "icon": "folder",
+                "creatable": "true"
             }
         },
         {
@@ -129,18 +145,6 @@
                 "tags": [],
                 "location": {},
                 "visibility": ""
-            }
-        },
-        {
-            "name": "ButtonView",
-            "attributes": {
-                "icon": "radio_button_checked"
-            }
-        },
-        {
-            "name": "LabelView",
-            "attributes": {
-                "icon": "label"
             }
         },
         {
@@ -171,6 +175,18 @@
             "name": "BoardView",
             "attributes": {
                 "icon": "assignment"
+            }
+        },
+        {
+            "name": "Button",
+            "attributes": {
+                "icon": "radio_button_checked"
+            }
+        },
+        {
+            "name": "Label",
+            "attributes": {
+                "icon": "label"
             }
         },
         {
@@ -220,6 +236,16 @@
             ]
         },
         {
+            "name": "FindAppViews",
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
             "name": "FindApp",
             "instances": [
                 {
@@ -228,15 +254,24 @@
                     "attributes": {}
                 },
                 {
-                    "name": "Views",
-                    "type": "List",
-                    "instances": [
-                        {
-                            "name": "List",
-                            "type": "ListView",
-                            "attributes": {}
-                        }
-                    ]
+                    "name": "FindAppViews",
+                    "type": "FindAppViews"
+                }
+                
+            ]
+        },
+        {
+            "name": "AroundAppViews",
+            "instances": [
+                {
+                    "name": "Map",
+                    "type": "MapView",
+                    "attributes": {}
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
                 }
             ]
         },
@@ -249,20 +284,24 @@
                     "attributes": {}
                 },
                 {
-                    "name": "Views",
-                    "type": "List",
-                    "instances": [
-                        {
-                            "name": "Map",
-                            "type": "MapView",
-                            "attributes": {}
-                        },
-                        {
-                            "name": "List",
-                            "type": "ListView",
-                            "attributes": {}
-                        }
-                    ]
+                    "name": "AroundAppViews",
+                    "type": "AroundAppViews"
+                }
+                
+            ]
+        },
+        {
+            "name": "HomeAppViews",
+            "instances": [
+                {
+                    "name": "Map",
+                    "type": "MapView",
+                    "attributes": {}
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
                 }
             ]
         },
@@ -275,25 +314,13 @@
                     "attributes": {}
                 },
                 {
-                    "name": "Views",
-                    "type": "List",
-                    "instances": [
-                        {
-                            "name": "Map",
-                            "type": "MapView",
-                            "attributes": {}
-                        },
-                        {
-                            "name": "List",
-                            "type": "ListView",
-                            "attributes": {}
-                        }
-                    ]
+                    "name": "HomeAppViews",
+                    "type": "HomeAppViews"
                 }
             ]
         },
         {
-            "name": "AppsFolder",
+            "name": "Apps",
             "attributes": {
                 "icon": "apps"
             },
@@ -324,7 +351,7 @@
                 },
                 {
                     "name": "Apps",
-                    "type": "AppsFolder"
+                    "type": "Apps"
                 }
             ]
         }

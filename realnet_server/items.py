@@ -129,7 +129,7 @@ def perform_search(request, account, public=False):
     if parent_id:
         conditions.append(Item.parent_id == parent_id)
     elif my_items:
-        conditions.append(Item.parent_id == current_token.account.home_id)
+        conditions.append(Item.owner_id == current_token.account.id)
     else:
         root_item_name = app.config.get('ROOT_ITEM')
         if root_item_name:
