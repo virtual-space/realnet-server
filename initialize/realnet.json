@@ -1,0 +1,320 @@
+{
+    "types": [
+        {
+            "name": "Type",
+            "attributes": {
+                "name": "Type",
+                "type": "Type",
+                "base": "Type",
+                "attributes": {
+                    "icon": "",
+                    "module": ""
+                },
+                "instances": []
+            }
+        },
+        {
+            "name": "Instance",
+            "attributes" : {
+                "icon": "approval"
+            }
+        },
+        {
+            "name": "List",
+            "attributes": {
+                "icon": "list",
+                "module": "list"
+            }
+        },
+        {
+            "name": "Document",
+            "attributes": {
+                "icon": "description"
+            }
+        },
+        {
+            "name": "Link",
+            "attributes": {
+                "icon": "link"
+            }
+
+        },
+        {
+            "name": "Page",
+            "attributes": {
+                "icon": "web_asset"
+            }
+        },
+        {
+            "name": "Image",
+            "attributes": {
+                "icon": "image"
+            }
+        },
+        {
+            "name": "Video",
+            "attributes": {
+                "icon": "ondemand_video"
+            }
+        },
+        {
+            "name": "Drawing",
+            "attributes": {
+                "icon": "gesture"
+            }
+        },
+        {
+            "name": "Scene",
+            "attributes": {
+                "icon": "view_in_ar"
+            }
+        },
+        {
+            "name": "Thing",
+            "attributes": {
+                "icon": "graphic_eq"
+            }
+        },
+        {
+            "name": "Place",
+            "attributes": {
+                "icon": "other_houses"
+            }
+        },
+        {
+            "name": "Event",
+            "attributes": {
+                "icon": "event"
+            }
+        },
+        {
+            "name": "Task",
+            "attributes": {
+                "icon": "assignment_turned_in"
+            }
+        },
+        {
+            "name": "Job",
+            "attributes": {
+                "icon": "trending_up"
+            }
+        },
+        {
+            "name": "Topic",
+            "attributes": {
+                "icon": "forum"
+            }
+        },
+        {
+            "name": "Runner",
+            "attributes": {
+                "icon": "memory"
+            }
+        },
+        {
+            "name": "Folder",
+            "attributes": {
+                "icon": "folder"
+            }
+        },
+        {
+            "name": "Query",
+            "attributes": {
+                "icon": "search",
+                "parent_id": "",
+                "name": "",
+                "my_items": "",
+                "public": "",
+                "types": [],
+                "tags": [],
+                "location": {},
+                "visibility": ""
+            }
+        },
+        {
+            "name": "ButtonView",
+            "attributes": {
+                "icon": "radio_button_checked"
+            }
+        },
+        {
+            "name": "LabelView",
+            "attributes": {
+                "icon": "label"
+            }
+        },
+        {
+            "name": "ListView",
+            "attributes": {
+                "icon": "view_list"
+            }
+        },
+        {
+            "name": "CardsView",
+            "attributes": {
+                "icon": "view_module"
+            }
+        },
+        {
+            "name": "MapView",
+            "attributes": {
+                "icon": "map"
+            }
+        },
+        {
+            "name": "CalendarView",
+            "attributes": {
+                "icon": "calendar_today"
+            }
+        },
+        {
+            "name": "BoardView",
+            "attributes": {
+                "icon": "assignment"
+            }
+        },
+        {
+            "name": "PanelView",
+            "attributes": {
+                "icon": "dashboard"
+            }
+        },
+        {
+            "name": "SceneView",
+            "attributes": {
+                "icon": "nature_people"
+            }
+        },
+        {
+            "name": "ContentView",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "PropertiesView",
+            "attributes": {
+                "icon": "ballot"
+            }
+        },
+        {
+            "name": "TreeView",
+            "attributes": {
+                "icon": "account_tree"
+            }
+        },
+        {
+            "name": "App",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query"
+                },
+                {
+                    "name": "Views",
+                    "type": "List"
+                }
+            ]
+        },
+        {
+            "name": "Person",
+            "attributes": {
+                "icon": "person"
+            },
+            "instances": [
+                {
+                    "name": "Home",
+                    "type": "Folder"
+                },
+                {
+                    "name": "Apps",
+                    "type": "Folder",
+                    "instances": [
+                        {
+                            "name": "Find",
+                            "type": "App",
+                            "instances": [
+                                {
+                                    "name": "Query",
+                                    "type": "Query",
+                                    "attributes": {}
+                                },
+                                {
+                                    "name": "Views",
+                                    "type": "List",
+                                    "instances": [
+                                        {
+                                            "name": "List",
+                                            "type": "ListView",
+                                            "attributes": {}
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Around",
+                            "type": "App",
+                            "instances": [
+                                {
+                                    "name": "Query",
+                                    "type": "Query",
+                                    "attributes": {}
+                                },
+                                {
+                                    "name": "Views",
+                                    "type": "List",
+                                    "instances": [
+                                        {
+                                            "name": "Map",
+                                            "type": "MapView",
+                                            "attributes": {}
+                                        },
+                                        {
+                                            "name": "List",
+                                            "type": "ListView",
+                                            "attributes": {}
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Home",
+                            "type": "App",
+                            "instances": [
+                                {
+                                    "name": "Query",
+                                    "type": "Query",
+                                    "attributes": {
+                                        "my_items": "true"
+                                    }
+                                },
+                                {
+                                    "name": "Views",
+                                    "type": "List",
+                                    "instances": [
+                                        {
+                                            "name": "Map",
+                                            "type": "MapView",
+                                            "attributes": {}
+                                        },
+                                        {
+                                            "name": "List",
+                                            "type": "ListView",
+                                            "attributes": {}
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+       
+    ]
+}

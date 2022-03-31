@@ -1,0 +1,184 @@
+{
+    "types": [
+        {
+            "name": "View",
+            "instances": []
+        },
+        {
+            "name": "Control",
+            "base": "View"
+        },
+        {
+            "name": "Views",
+            "base": "View"
+        },
+        {
+            "name": "Listview",
+            "base": "View"
+        },
+        {
+            "name": "Cardview",
+            "base": "View"
+        },
+        {
+            "name": "Calendar",
+            "base": "View"
+        },
+        {
+            "name": "Board",
+            "base": "View"
+        },
+        {
+            "name": "Map",
+            "base": "View"
+        },
+        {
+            "name": "Imageview",
+            "base": "View"
+        },
+        {
+            "name": "Videoview",
+            "base": "View"
+        },
+        {
+            "name": "Documentview",
+            "base": "View"
+        },
+        {
+            "name": "Sceneview",
+            "base": "View"
+        },
+        {
+            "name": "Webview",
+            "base": "View"
+        },
+        {
+            "name": "Link",
+            "base": "Control",
+            "attributes": {
+                "url": "",
+                "target_id": ""
+            }
+        },
+        {
+            "name": "Set",
+            "base": "Control",
+            "instances": []
+        },
+        {
+            "name": "Button",
+            "base": "Control",
+            "attributes": {
+                "text": ""
+            }
+        },
+        {
+            "name": "Textedit",
+            "base": "Control",
+            "attributes": {
+                "text": ""
+            }
+        },
+        {
+            "name": "Label",
+            "base": "Control",
+            "attributes": {
+                "text": ""
+            }
+        },
+        {
+            "name": "Switch",
+            "base": "Control",
+            "instances": [],
+            "attributes": {
+                "selected": "-1"
+            }
+        },
+        {
+            "name": "Slider",
+            "base": "Control",
+            "attributes": {
+                "min": "",
+                "max": "",
+                "step": "",
+                "value": ""
+            }
+        },
+        {
+            "name": "Panel",
+            "base": "Control",
+            "instances": [],
+            "attributes": {
+                "rows": "1",
+                "cols": "1"
+            }
+        },
+        {
+            "name": "Location",
+            "base": "Control",
+            "attributes": {
+                "lat": "",
+                "lng": ""
+            },
+            "instances": [
+                {
+                    "name": "Range",
+                    "type": "Slider"
+                }
+            ]
+        },
+        {
+            "name": "Query",
+            "base": "Panel",
+            "instances": [
+                {
+                    "name": "Parent",
+                    "type": "Link"
+                }, 
+                {
+                    "name": "Name",
+                    "type": "Textedit"
+                },
+                {
+                    "name": "My Items",
+                    "type": "Switch"
+                },
+                {
+                    "name": "Public",
+                    "type": "Switch"
+                },
+                {
+                    "name": "Types",
+                    "type": "Collection"
+                },
+                {
+                    "name": "Tags",
+                    "type": "Collection"
+                },
+                {
+                    "name": "Location",
+                    "type": "Location"
+                },
+                {
+                    "name": "Visibility",
+                    "type": "Switch"
+                },
+            ]
+        },
+        {
+            "name": "App",
+            "base": "Panel",
+            "instances": [
+                {
+                    "name": "Query", 
+                    "type": "Query",
+                    "attributes": {}
+                }, 
+                {
+                    "name": "Views", 
+                    "type": "Collection"
+                }
+            ]
+        },
+    ]
+}

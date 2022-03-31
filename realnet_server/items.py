@@ -147,7 +147,8 @@ def perform_search(request, account, public=False):
     type_names = request.args.getlist('types')
 
     if type_names:
-        type_ids = [ti.id for ti in Type.query.filter(Type.name in {t for t in type_names}).all()]
+        print(type_names)
+        type_ids = [ti.id for ti in Type.query.filter(Type.name.in_(type_names)).all()]
         conditions.append(Item.type_id.in_(type_ids))
 
     keys = request.args.getlist('key')

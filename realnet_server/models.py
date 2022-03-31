@@ -1,6 +1,7 @@
 import enum
 import uuid
 import time
+import os
 from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2 import Geometry
 from geoalchemy2.elements import WKBElement
@@ -129,7 +130,21 @@ class Type(db.Model, SerializerMixin):
     attributes = db.Column(db.JSON)
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
+    base_id = db.Column(db.String(36), db.ForeignKey('type.id', ondelete='CASCADE'))
     module = db.Column(db.String(128))
+    base = db.relationship('Type')
+
+
+class Instance(db.Model, SerializerMixin):
+    id = db.Column(db.String(36), primary_key=True)
+    name = db.Column(db.String(128))
+    icon = db.Column(db.String(128))
+    attributes = db.Column(db.JSON)
+    owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
+    group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
+    type_id = db.Column(db.String(36), db.ForeignKey('type.id', ondelete='CASCADE'), nullable=False)
+    parent_type_id = db.Column(db.String(36), db.ForeignKey('type.id'))
+
 
 class TypeId:
     person = 'b533fc2f-fcec-46d4-b3ff-5e8589a18ccb'
@@ -218,6 +233,103 @@ class Blob(db.Model):
     filename = db.Column(db.String(250), nullable=False)
     mime_type = db.Column(db.String(36), nullable=False)
     item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
+
+def traverse_instance(instances, instance, parent_type_name):
+    for inst in instance.get('instances', []):
+        instances.append({ "instance": inst, "parent_type_name": parent_type_name})
+        traverse_instance(instances, inst, inst.get('type'))
+
+def import_types(db, type_data, owner_id, group_id):
+    types = dict()
+    instances = []
+    commit_needed = False
+    for td in type_data['types']:
+        existing_type = Type.query.filter(Type.name == td['name']).first()
+        base = td.get('base')
+        if not existing_type and not base:
+            attributes = td.get('attributes', dict())
+            existing_type = Type(id=str(uuid.uuid4()),
+                                        name=td['name'],
+                                        icon=attributes.get('icon'),
+                                        attributes=td.get('attributes'),
+                                        owner_id=owner_id,
+                                        group_id=group_id,
+                                        module=td.get('module'))
+            for instance in td.get('instances', []):
+                instances.append({ "instance": instance, "parent_type_name": existing_type.name})
+            db.session.add(existing_type)     
+            commit_needed = True                       
+        
+        types[existing_type.name] = {"type": existing_type, "instances": td.get('instances', []) }
+
+    for td in type_data['types']:
+        existing_type = Type.query.filter(Type.name == td['name']).first()
+        base = td.get('base')
+        if not existing_type and base:
+            attributes = td.get('attributes', dict())
+            existing_type = Type(id=str(uuid.uuid4()),
+                                        name=td['name'],
+                                        icon=attributes.get('icon'),
+                                        attributes=td.get('attributes'),
+                                        owner_id=owner_id,
+                                        group_id=group_id,
+                                        base_id=types[base]['type']['id'],
+                                        module=td.get('module'))
+            for instance in td.get('instances', []):
+                instances.append({ "instance": instance, "parent_type_name": existing_type.name})
+            db.session.add(existing_type)     
+            commit_needed = True                       
+        
+        types[existing_type.name] = {"type": existing_type, "instances": td.get('instances', []) }
+    
+    if commit_needed:
+        db.session.commit()
+        commit_needed = False
+    
+    subinstances = []
+
+    for ie in instances:
+        instance = ie['instance']
+        parent_type_name = ie['parent_type_name']
+        traverse_instance(subinstances, instance, parent_type_name)
+
+    instances.extend(subinstances)    
+
+    for ie in instances:
+        instance = ie['instance']
+        parent_type_name = ie['parent_type_name']
+        target = types.get(instance['type'], Type.query.filter(Type.name == instance['type']).first())
+        if target:
+            parent = types.get(parent_type_name, Type.query.filter(Type.name == parent_type_name).first())
+            attributes = instance.get('attributes', dict())
+            created_instance = Instance(id=str(uuid.uuid4()),
+                                        name=instance['name'],
+                                        icon=attributes.get('icon'),
+                                        attributes=instance.get('attributes'),
+                                        owner_id=owner_id,
+                                        group_id=group_id,
+                                        type_id=target['type'].id,
+                                        parent_type_id=parent.get('id'))
+            db.session.add(created_instance)
+            commit_needed = True
+            
+    
+    if commit_needed:
+        db.session.commit()
+
+    return [dv['type'].to_dict() for dv in types.values()]
+
+
+def create_basic_types(owner_id, group_id):
+    realnet_json_path = "C:\\Users\\marko\\source\\repos\\realnet-server\\initialize\\realnet.json"
+    print(realnet_json_path)
+    with open(realnet_json_path, 'r') as f:
+        data = json.load(f)
+        if data:
+            type_data = data.get('types')
+            if type_data:
+                import_types(db, data,owner_id, group_id)
+
 
 def create_account(tenant_name,
                    account_type,
@@ -603,24 +715,6 @@ def get_or_create_type(name, icon, owner_id, group_id, module=None):
         db.session.commit()
 
     return res
-
-def create_basic_types(owner_id, group_id):
-    get_or_create_type(name='Person', owner_id=owner_id, group_id=group_id, module='person', icon='person')
-    get_or_create_type(name='Thing', owner_id=owner_id, group_id=group_id, icon='graphic_eq')
-
-    get_or_create_type(name='Folder', owner_id=owner_id, group_id=group_id, icon='folder')
-    get_or_create_type(name='Document', owner_id=owner_id, group_id=group_id, icon='description')
-    get_or_create_type(name='Image', owner_id=owner_id, group_id=group_id, icon='image')
-    get_or_create_type(name='Video', owner_id=owner_id, group_id=group_id, icon='ondemand_video')
-    get_or_create_type(name='Drawing', owner_id=owner_id, group_id=group_id, icon='gesture')
-    get_or_create_type(name='Scene', owner_id=owner_id, group_id=group_id, icon='view_in_ar')
-
-    get_or_create_type(name='App', owner_id=owner_id, group_id=group_id, icon='apps')
-
-    get_or_create_type(name='Place', owner_id=owner_id, group_id=group_id, icon='other_houses')
-    get_or_create_type(name='Event', owner_id=owner_id, group_id=group_id, icon='event')
-    get_or_create_type(name='Task', owner_id=owner_id, group_id=group_id, icon='assignment_turned_in')
-    get_or_create_type(name='Job', owner_id=owner_id, group_id=group_id, icon='trending_up')
 
 def initialize_server(root_tenant_name,
                root_username,
