@@ -220,6 +220,99 @@
             ]
         },
         {
+            "name": "FindApp",
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {}
+                },
+                {
+                    "name": "Views",
+                    "type": "List",
+                    "instances": [
+                        {
+                            "name": "List",
+                            "type": "ListView",
+                            "attributes": {}
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "AroundApp",
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {}
+                },
+                {
+                    "name": "Views",
+                    "type": "List",
+                    "instances": [
+                        {
+                            "name": "Map",
+                            "type": "MapView",
+                            "attributes": {}
+                        },
+                        {
+                            "name": "List",
+                            "type": "ListView",
+                            "attributes": {}
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "HomeApp",
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {}
+                },
+                {
+                    "name": "Views",
+                    "type": "List",
+                    "instances": [
+                        {
+                            "name": "Map",
+                            "type": "MapView",
+                            "attributes": {}
+                        },
+                        {
+                            "name": "List",
+                            "type": "ListView",
+                            "attributes": {}
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "AppsFolder",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Around",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Home",
+                    "type": "HomeApp"
+                }
+            ]
+        },
+        {
             "name": "Person",
             "attributes": {
                 "icon": "person"
@@ -231,87 +324,7 @@
                 },
                 {
                     "name": "Apps",
-                    "type": "Folder",
-                    "instances": [
-                        {
-                            "name": "Find",
-                            "type": "App",
-                            "instances": [
-                                {
-                                    "name": "Query",
-                                    "type": "Query",
-                                    "attributes": {}
-                                },
-                                {
-                                    "name": "Views",
-                                    "type": "List",
-                                    "instances": [
-                                        {
-                                            "name": "List",
-                                            "type": "ListView",
-                                            "attributes": {}
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Around",
-                            "type": "App",
-                            "instances": [
-                                {
-                                    "name": "Query",
-                                    "type": "Query",
-                                    "attributes": {}
-                                },
-                                {
-                                    "name": "Views",
-                                    "type": "List",
-                                    "instances": [
-                                        {
-                                            "name": "Map",
-                                            "type": "MapView",
-                                            "attributes": {}
-                                        },
-                                        {
-                                            "name": "List",
-                                            "type": "ListView",
-                                            "attributes": {}
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Home",
-                            "type": "App",
-                            "instances": [
-                                {
-                                    "name": "Query",
-                                    "type": "Query",
-                                    "attributes": {
-                                        "my_items": "true"
-                                    }
-                                },
-                                {
-                                    "name": "Views",
-                                    "type": "List",
-                                    "instances": [
-                                        {
-                                            "name": "Map",
-                                            "type": "MapView",
-                                            "attributes": {}
-                                        },
-                                        {
-                                            "name": "List",
-                                            "type": "ListView",
-                                            "attributes": {}
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
+                    "type": "AppsFolder"
                 }
             ]
         }
