@@ -12,7 +12,6 @@ from sqlalchemy_serializer import SerializerMixin
 import shapely
 import json
 
-
 from authlib.integrations.sqla_oauth2 import (
     OAuth2ClientMixin,
     OAuth2AuthorizationCodeMixin,
@@ -246,11 +245,12 @@ def build_item_type(type_name):
     pass
 
 def build_item( instance,
+                item_data,
                 owner_id,
                 group_id,
                 parent_item_id=None):
 
-    item = Item( id=str(uuid.uuid4()),
+    item = Item( id=instance.id,
                  name=instance.name,
                  owner_id=owner_id,
                  group_id=group_id,
@@ -262,6 +262,7 @@ def build_item( instance,
     
     for child_instance in instance.type.instances:
         child_item = build_item(  child_instance,
+                                  {},
                                   owner_id,
                                   group_id,
                                   item.id)
@@ -270,7 +271,7 @@ def build_item( instance,
 
 def create_item(db,
                 item_id,
-                item_type, 
+                item_type_name, 
                 item_name,
                 item_attributes,
                 item_location,
@@ -281,6 +282,15 @@ def create_item(db,
                 parent_item_id=None):
 
     item = None
+    item_type = Type.query.filter(Type.name == item_type_name).first()
+    if not item_type:
+        item_type = Type(id=str(uuid.uuid4()),
+                         name=item_type_name,
+                         owner_id=owner_id,
+                         group_id=group_id)
+        db.session.add(item_type)
+        db.session.commit()
+
     if item_type:
         instance = Instance(id=item_id,
                             name=item_name,
@@ -292,8 +302,12 @@ def create_item(db,
 
         db.session.add(instance)
         db.session.commit()
+
+        item_data = {"item_location": item_location, 
+                     "item_visibility": item_visibility,
+                     "item_tags": item_tags}
         
-        item = build_item(instance, owner_id, group_id)
+        item = build_item(instance, item_data, owner_id, group_id, parent_item_id)
     
     return item
 
@@ -377,6 +391,102 @@ def import_types(db, type_data, owner_id, group_id):
 
     return [dv['type'].to_dict() for dv in types.values()]
 
+
+def build_item_tree():
+    pass
+
+class TreeNode:
+    def __init__(self, item):
+        self.item = item
+        self.children = None
+
+def traverse_item(db, item_ids, items_by_id, children_by_id, item, owner_id, group_id):
+    parent_id = item.get('parent_id')
+    if parent_id:
+        create_item(db, 
+                        item_ids[item['id']], 
+                        item['type'], 
+                        item['name'],
+                        item.get('attributes'),
+                        item.get('location'),
+                        item.get('visibility'),
+                        item.get('tags'),
+                        owner_id,
+                        group_id,
+                        item_ids[parent_id])
+    else:
+        create_item(db, 
+                    item_ids[item['id']], 
+                    item['type'], 
+                    item['name'],
+                    item.get('attributes'),
+                    item.get('location'),
+                    item.get('visibility'),
+                    item.get('tags'),
+                    owner_id,
+                    group_id)
+    for child in children_by_id.get(item['id'], []):
+        traverse_item(db, item_ids, items_by_id, children_by_id, items_by_id.get(child), owner_id, group_id)
+
+def import_items(db, items, owner_id, group_id):
+    items_by_id = dict()
+    root_items = []
+    children_by_id = dict()
+    item_ids = dict()
+    all_items = []
+
+    for item in items:
+        item_attributes = dict()
+        item_parent_id = item[0]
+        item_id = item[1]
+        item_type = item[2]
+        item_name = item[3]
+        item_location = item[4]
+        item_visibility = item[5]
+        item_tags = item[6]
+        for av in item[7:]:
+            kv = av.split(':')
+            if kv and len(kv) > 1:
+                item_attributes[kv[0]] = kv[1]
+        item_data = dict()
+
+        if item_parent_id == item_id:
+            item_data = {"id": item_id,
+                        "type": item_type,
+                        "attributes": item_attributes,
+                        "name": item_name,
+                        "location": item_location,
+                        "visibility": item_visibility,
+                        "tags": item_tags}
+        else:
+            item_data = {"id": item_id,
+                        "type": item_type,
+                        "attributes": item_attributes,
+                        "name": item_name,
+                        "location": item_location,
+                        "visibility": item_visibility,
+                        "tags": item_tags,
+                        "parent_id": item_parent_id}
+        item_ids[item_id] = str(uuid.uuid4())
+
+        if item_parent_id:
+            if item_parent_id == item_id:
+                root_items.append(item_data)
+            else:
+                existingChildren = children_by_id.get(item_parent_id)
+                if not existingChildren:
+                    existingChildren = [item_id]
+                    children_by_id[item_parent_id] = existingChildren
+                else:
+                    existingChildren.append(item_id)
+        items_by_id[item_id] = item_data
+        all_items.append(item_data)
+
+    for item in root_items:
+        traverse_item(db, item_ids, items_by_id, children_by_id, item, owner_id, group_id)
+
+def import_items_from_file(db, file):
+    pass
 
 def create_basic_types(owner_id, group_id):
     realnet_json_path = "C:\\Users\\marko\\source\\repos\\realnet-server\\initialize\\realnet.json"
@@ -510,7 +620,7 @@ def create_account_dt(db, account, group):
         if not person_type:
             return None
         item = create_item(db,
-                            item_type=person_type,
+                            item_type=person_type.name,
                             item_id=account.id,
                             item_name=account.username,
                             item_attributes=dict(),
@@ -527,7 +637,7 @@ def create_account_dt(db, account, group):
         if not thing_type:
             return None
         item = create_item(db,
-                            item_type=thing_type,
+                            item_type=thing_type.name,
                             item_id=account.id,
                             item_name=account.username,
                             item_attributes=dict(),

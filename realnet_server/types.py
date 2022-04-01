@@ -6,6 +6,8 @@ from .models import db, Type, Instance, Group, Account, AccountGroup, GroupRoleT
 from sqlalchemy import or_
 import uuid
 
+from realnet_server import models
+
 
 def can_account_create_type(account, group):
     if account.group_id == group.id:
@@ -56,7 +58,7 @@ def types():
         if input_data:
             type_data = input_data['data']
             if type_data:
-                result_types = core.import_types(db, type_data, current_token.account.id, current_token.account.group_id)
+                result_types = models.import_types(db, type_data, current_token.account.id, current_token.account.group_id)
                 return jsonify(result_types), 201
 
             input_name = input_data['name']

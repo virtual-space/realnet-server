@@ -294,11 +294,6 @@
             "name": "HomeAppViews",
             "instances": [
                 {
-                    "name": "Map",
-                    "type": "MapView",
-                    "attributes": {}
-                },
-                {
                     "name": "List",
                     "type": "ListView",
                     "attributes": {}
@@ -311,11 +306,49 @@
                 {
                     "name": "Query",
                     "type": "Query",
-                    "attributes": {}
+                    "attributes": {
+                        "my_items": "true"
+                    }
                 },
                 {
                     "name": "HomeAppViews",
                     "type": "HomeAppViews"
+                }
+            ]
+        },
+        {
+            "name": "EventAppViews",
+            "instances": [
+                {
+                    "name": "Raja",
+                    "type": "CalendarView",
+                    "attributes": {}
+                },
+                {
+                    "name": "Gaja",
+                    "type": "MapView",
+                    "attributes": {}
+                },
+                {
+                    "name": "Vlaja",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "EventApp",
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true"
+                    }
+                },
+                {
+                    "name": "EventAppViews",
+                    "type": "EventAppViews"
                 }
             ]
         },
@@ -336,6 +369,10 @@
                 {
                     "name": "Home",
                     "type": "HomeApp"
+                },
+                {
+                    "name": "Events",
+                    "type": "EventsApp"
                 }
             ]
         },
@@ -348,6 +385,22 @@
                 {
                     "name": "Home",
                     "type": "Folder"
+                },
+                {
+                    "name": "Apps",
+                    "type": "Apps"
+                }
+            ]
+        },
+        {
+            "name": "Quest",
+            "attributes": {
+                "icon": "quest"
+            },
+            "instances": [
+                {
+                    "name": "Objective",
+                    "type": "Goal"
                 },
                 {
                     "name": "Apps",
