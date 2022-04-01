@@ -3,6 +3,7 @@ from unicodedata import name
 import uuid
 import time
 import os
+import sys
 from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2 import Geometry
 from geoalchemy2.elements import WKBElement
@@ -11,6 +12,7 @@ from werkzeug.security import generate_password_hash, check_password_hash, gen_s
 from sqlalchemy_serializer import SerializerMixin
 import shapely
 import json
+import csv
 
 from authlib.integrations.sqla_oauth2 import (
     OAuth2ClientMixin,
@@ -241,9 +243,6 @@ def traverse_instance(instances, instance, parent_type_name):
         instances.append({ "instance": inst, "parent_type_name": parent_type_name})
         traverse_instance(instances, inst, inst.get('type'))
 
-def build_item_type(type_name):
-    pass
-
 def build_item( instance,
                 item_data,
                 owner_id,
@@ -392,14 +391,6 @@ def import_types(db, type_data, owner_id, group_id):
     return [dv['type'].to_dict() for dv in types.values()]
 
 
-def build_item_tree():
-    pass
-
-class TreeNode:
-    def __init__(self, item):
-        self.item = item
-        self.children = None
-
 def traverse_item(db, item_ids, items_by_id, children_by_id, item, owner_id, group_id):
     parent_id = item.get('parent_id')
     if parent_id:
@@ -489,14 +480,23 @@ def import_items_from_file(db, file):
     pass
 
 def create_basic_types(owner_id, group_id):
-    realnet_json_path = "C:\\Users\\marko\\source\\repos\\realnet-server\\initialize\\realnet.json"
-    print(realnet_json_path)
-    with open(realnet_json_path, 'r') as f:
+    with open(os.path.join(os.path.dirname(sys.modules[__name__].__file__),
+                           "resources/types.json"), 'r') as f:
         data = json.load(f)
         if data:
             type_data = data.get('types')
             if type_data:
                 import_types(db, data,owner_id, group_id)
+
+def create_basic_items(owner_id, group_id):
+    with open(os.path.join(os.path.dirname(sys.modules[__name__].__file__),
+                           "resources/items.csv"), 'r') as f:
+        items = []
+        for row in csv.reader(f, dialect=csv.excel):
+            if row:
+                items.append(row)
+        if items:
+            results = import_items(db, items, owner_id, group_id)
 
 
 def create_account(tenant_name,
@@ -620,7 +620,7 @@ def create_account_dt(db, account, group):
         if not person_type:
             return None
         item = create_item(db,
-                            item_type=person_type.name,
+                            item_type_name=person_type.name,
                             item_id=account.id,
                             item_name=account.username,
                             item_attributes=dict(),
@@ -637,7 +637,7 @@ def create_account_dt(db, account, group):
         if not thing_type:
             return None
         item = create_item(db,
-                            item_type=thing_type.name,
+                            item_type_name=thing_type.name,
                             item_id=account.id,
                             item_name=account.username,
                             item_attributes=dict(),
@@ -719,6 +719,7 @@ def create_tenant(tenant_name, root_username, root_email, root_password, uri, we
     print('{} tenant root password: {}'.format(tenant_name, root_password))
 
     create_basic_types(root_account_id, root_group_id)
+    create_basic_items(root_account_id, root_group_id)
     account_dt = create_account_dt(db, root_account, root_group)
 
     result = root_group.to_dict()
