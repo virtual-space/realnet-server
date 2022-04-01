@@ -2,9 +2,11 @@ from flask import request, jsonify
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from .auth import require_oauth
-from .models import db, Type, Group, Account, AccountGroup, GroupRoleType
+from .models import db, Type, Instance, Group, Account, AccountGroup, GroupRoleType
 from sqlalchemy import or_
 import uuid
+
+from realnet_server import models
 
 
 def can_account_create_type(account, group):
@@ -45,6 +47,8 @@ def can_account_delete_type(account, type):
 
     return False
 
+
+
 @app.route('/types', methods=('GET', 'POST'))
 @require_oauth()
 def types():
@@ -52,6 +56,11 @@ def types():
         request.on_json_loading_failed = lambda x: print('json parsing error: ', x)
         input_data = request.get_json(force=True, silent=False)
         if input_data:
+            type_data = input_data['data']
+            if type_data:
+                result_types = models.import_types(db, type_data, current_token.account.id, current_token.account.group_id)
+                return jsonify(result_types), 201
+
             input_name = input_data['name']
             if input_name:
                 parent_id = None

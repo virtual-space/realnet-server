@@ -1,6 +1,9 @@
 import enum
+from unicodedata import name
 import uuid
 import time
+import os
+import sys
 from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2 import Geometry
 from geoalchemy2.elements import WKBElement
@@ -9,7 +12,7 @@ from werkzeug.security import generate_password_hash, check_password_hash, gen_s
 from sqlalchemy_serializer import SerializerMixin
 import shapely
 import json
-
+import csv
 
 from authlib.integrations.sqla_oauth2 import (
     OAuth2ClientMixin,
@@ -129,7 +132,23 @@ class Type(db.Model, SerializerMixin):
     attributes = db.Column(db.JSON)
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
+    base_id = db.Column(db.String(36), db.ForeignKey('type.id', ondelete='CASCADE'))
     module = db.Column(db.String(128))
+    base = db.relationship('Type')
+    instances = db.relationship('Instance', foreign_keys='[Instance.parent_type_id]')
+
+
+class Instance(db.Model, SerializerMixin):
+    id = db.Column(db.String(36), primary_key=True)
+    name = db.Column(db.String(128))
+    icon = db.Column(db.String(128))
+    attributes = db.Column(db.JSON)
+    owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
+    group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
+    type_id = db.Column(db.String(36), db.ForeignKey('type.id', ondelete='CASCADE'), nullable=False)
+    type = db.relationship('Type', foreign_keys='[Instance.type_id]')
+    parent_type_id = db.Column(db.String(36), db.ForeignKey('type.id'))
+
 
 class TypeId:
     person = 'b533fc2f-fcec-46d4-b3ff-5e8589a18ccb'
@@ -219,6 +238,267 @@ class Blob(db.Model):
     mime_type = db.Column(db.String(36), nullable=False)
     item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
 
+def traverse_instance(instances, instance, parent_type_name):
+    for inst in instance.get('instances', []):
+        instances.append({ "instance": inst, "parent_type_name": parent_type_name})
+        traverse_instance(instances, inst, inst.get('type'))
+
+def build_item( instance,
+                item_data,
+                owner_id,
+                group_id,
+                parent_item_id=None):
+
+    item = Item( id=instance.id,
+                 name=instance.name,
+                 owner_id=owner_id,
+                 group_id=group_id,
+                 type_id=instance.type.id,
+                 parent_id=parent_item_id)
+    
+    db.session.add(item)
+    db.session.commit()
+    
+    for child_instance in instance.type.instances:
+        child_item = build_item(  child_instance,
+                                  {},
+                                  owner_id,
+                                  group_id,
+                                  item.id)
+
+    return item
+
+def create_item(db,
+                item_id,
+                item_type_name, 
+                item_name,
+                item_attributes,
+                item_location,
+                item_visibility,
+                item_tags,
+                owner_id,
+                group_id,
+                parent_item_id=None):
+
+    item = None
+    item_type = Type.query.filter(Type.name == item_type_name).first()
+    if not item_type:
+        item_type = Type(id=str(uuid.uuid4()),
+                         name=item_type_name,
+                         owner_id=owner_id,
+                         group_id=group_id)
+        db.session.add(item_type)
+        db.session.commit()
+
+    if item_type:
+        instance = Instance(id=item_id,
+                            name=item_name,
+                            icon=item_attributes.get('icon'),
+                            attributes=item_attributes,
+                            owner_id=owner_id,
+                            group_id=group_id,
+                            type_id=item_type.id)
+
+        db.session.add(instance)
+        db.session.commit()
+
+        item_data = {"item_location": item_location, 
+                     "item_visibility": item_visibility,
+                     "item_tags": item_tags}
+        
+        item = build_item(instance, item_data, owner_id, group_id, parent_item_id)
+    
+    return item
+
+def import_types(db, type_data, owner_id, group_id):
+    types = dict()
+    instances = []
+    commit_needed = False
+    for td in type_data['types']:
+        existing_type = Type.query.filter(Type.name == td['name']).first()
+        base = td.get('base')
+        if not existing_type and not base:
+            attributes = td.get('attributes', dict())
+            existing_type = Type(id=str(uuid.uuid4()),
+                                        name=td['name'],
+                                        icon=attributes.get('icon'),
+                                        attributes=td.get('attributes'),
+                                        owner_id=owner_id,
+                                        group_id=group_id,
+                                        module=td.get('module'))
+            for instance in td.get('instances', []):
+                instances.append({ "instance": instance, "parent_type_name": existing_type.name})
+            db.session.add(existing_type)     
+            commit_needed = True                       
+        
+        types[existing_type.name] = {"type": existing_type, "instances": td.get('instances', []) }
+
+    for td in type_data['types']:
+        existing_type = Type.query.filter(Type.name == td['name']).first()
+        base = td.get('base')
+        if not existing_type and base:
+            attributes = td.get('attributes', dict())
+            existing_type = Type(id=str(uuid.uuid4()),
+                                        name=td['name'],
+                                        icon=attributes.get('icon'),
+                                        attributes=td.get('attributes'),
+                                        owner_id=owner_id,
+                                        group_id=group_id,
+                                        base_id=types[base]['type']['id'],
+                                        module=td.get('module'))
+            for instance in td.get('instances', []):
+                instances.append({ "instance": instance, "parent_type_name": existing_type.name})
+            db.session.add(existing_type)     
+            commit_needed = True                       
+        
+        types[existing_type.name] = {"type": existing_type, "instances": td.get('instances', []) }
+    
+    if commit_needed:
+        db.session.commit()
+        commit_needed = False
+    
+    subinstances = []
+
+    for ie in instances:
+        instance = ie['instance']
+        parent_type_name = ie['parent_type_name']
+        traverse_instance(subinstances, instance, parent_type_name)
+
+    instances.extend(subinstances)    
+
+    for ie in instances:
+        instance = ie['instance']
+        parent_type_name = ie['parent_type_name']
+        target = types.get(instance['type'], Type.query.filter(Type.name == instance['type']).first())
+        if target:
+            parent = types.get(parent_type_name, Type.query.filter(Type.name == parent_type_name).first())
+            attributes = instance.get('attributes', dict())
+            created_instance = Instance(id=str(uuid.uuid4()),
+                                        name=instance['name'],
+                                        icon=attributes.get('icon'),
+                                        attributes=instance.get('attributes'),
+                                        owner_id=owner_id,
+                                        group_id=group_id,
+                                        type_id=target['type'].id,
+                                        parent_type_id=parent['type'].id)
+            db.session.add(created_instance)
+            commit_needed = True
+            
+    
+    if commit_needed:
+        db.session.commit()
+
+    return [dv['type'].to_dict() for dv in types.values()]
+
+
+def traverse_item(db, item_ids, items_by_id, children_by_id, item, owner_id, group_id):
+    parent_id = item.get('parent_id')
+    if parent_id:
+        create_item(db, 
+                        item_ids[item['id']], 
+                        item['type'], 
+                        item['name'],
+                        item.get('attributes'),
+                        item.get('location'),
+                        item.get('visibility'),
+                        item.get('tags'),
+                        owner_id,
+                        group_id,
+                        item_ids[parent_id])
+    else:
+        create_item(db, 
+                    item_ids[item['id']], 
+                    item['type'], 
+                    item['name'],
+                    item.get('attributes'),
+                    item.get('location'),
+                    item.get('visibility'),
+                    item.get('tags'),
+                    owner_id,
+                    group_id)
+    for child in children_by_id.get(item['id'], []):
+        traverse_item(db, item_ids, items_by_id, children_by_id, items_by_id.get(child), owner_id, group_id)
+
+def import_items(db, items, owner_id, group_id):
+    items_by_id = dict()
+    root_items = []
+    children_by_id = dict()
+    item_ids = dict()
+    all_items = []
+
+    for item in items:
+        item_attributes = dict()
+        item_parent_id = item[0]
+        item_id = item[1]
+        item_type = item[2]
+        item_name = item[3]
+        item_location = item[4]
+        item_visibility = item[5]
+        item_tags = item[6]
+        for av in item[7:]:
+            kv = av.split(':')
+            if kv and len(kv) > 1:
+                item_attributes[kv[0]] = kv[1]
+        item_data = dict()
+
+        if item_parent_id == item_id:
+            item_data = {"id": item_id,
+                        "type": item_type,
+                        "attributes": item_attributes,
+                        "name": item_name,
+                        "location": item_location,
+                        "visibility": item_visibility,
+                        "tags": item_tags}
+        else:
+            item_data = {"id": item_id,
+                        "type": item_type,
+                        "attributes": item_attributes,
+                        "name": item_name,
+                        "location": item_location,
+                        "visibility": item_visibility,
+                        "tags": item_tags,
+                        "parent_id": item_parent_id}
+        item_ids[item_id] = str(uuid.uuid4())
+
+        if item_parent_id:
+            if item_parent_id == item_id:
+                root_items.append(item_data)
+            else:
+                existingChildren = children_by_id.get(item_parent_id)
+                if not existingChildren:
+                    existingChildren = [item_id]
+                    children_by_id[item_parent_id] = existingChildren
+                else:
+                    existingChildren.append(item_id)
+        items_by_id[item_id] = item_data
+        all_items.append(item_data)
+
+    for item in root_items:
+        traverse_item(db, item_ids, items_by_id, children_by_id, item, owner_id, group_id)
+
+def import_items_from_file(db, file):
+    pass
+
+def create_basic_types(owner_id, group_id):
+    with open(os.path.join(os.path.dirname(sys.modules[__name__].__file__),
+                           "resources/types.json"), 'r') as f:
+        data = json.load(f)
+        if data:
+            type_data = data.get('types')
+            if type_data:
+                import_types(db, data,owner_id, group_id)
+
+def create_basic_items(owner_id, group_id):
+    with open(os.path.join(os.path.dirname(sys.modules[__name__].__file__),
+                           "resources/items.csv"), 'r') as f:
+        items = []
+        for row in csv.reader(f, dialect=csv.excel):
+            if row:
+                items.append(row)
+        if items:
+            results = import_items(db, items, owner_id, group_id)
+
+
 def create_account(tenant_name,
                    account_type,
                    account_role,
@@ -238,83 +518,15 @@ def create_account(tenant_name,
 
     db.session.add(account)
 
-    db.session.add(AccountGroup(id=str(uuid.uuid4()),
+    group = AccountGroup(id=str(uuid.uuid4()),
                                 account_id=account.id,
                                 group_id=group.id,
-                                role_type=GroupRoleType[account_role]))
-    folder_type = db.session.query(Type).filter(Type.name == 'Folder').first()
-    if not folder_type:
-        return None
-
-    if account.type == AccountType.person:
-        person_type = db.session.query(Type).filter(Type.name == 'Person').first()
-        if not person_type:
-            return None
-
-        db.session.add(Item(id=account.id,
-                            name=account.username,
-                            owner_id=account.id,
-                            group_id=group.id,
-                            type_id=person_type.id))
-
-        home_folder_id = str(uuid.uuid4())
-        db.session.add(Item(id=home_folder_id,
-                            name='home',
-                            parent_id=account.id,
-                            owner_id=account.id,
-                            group_id=group.id,
-                            type_id=folder_type.id))
-
-        app_type = db.session.query(Type).filter(Type.name == 'App').first()
-        if not app_type:
-            return None
-
-        db.session.add(Item(id=uuid.uuid4(),
-                            name='Find',
-                            attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {'explore': 'true'}},
-                            parent_id=account.id,
-                            owner_id=account.id,
-                            group_id=group.id,
-                            type_id=app_type.id))
-
-        db.session.add(Item(id=uuid.uuid4(),
-                            name='Around',
-                            attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {'current_location': 'true'}},
-                            parent_id=account.id,
-                            owner_id=account.id,
-                            group_id=group.id,
-                            type_id=app_type.id))
-
-        db.session.add(Item(id=uuid.uuid4(),
-                            name='Home',
-                            attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {'my_items': 'true'}},
-                            parent_id=account.id,
-                            owner_id=account.id,
-                            group_id=group.id,
-                            type_id=app_type.id))
-    else:
-        thing_type = db.session.query(Type).filter(Type.name == 'Thing').first()
-        if not thing_type:
-            return None
-
-        db.session.add(Item(id=account.id,
-                            name=account.username,
-                            owner_id=account.id,
-                            group_id=group.id,
-                            type_id=thing_type.id))
-
-
-
-
+                                role_type=GroupRoleType[account_role])
+    db.session.add(group)
 
     db.session.commit()
 
-    adm = db.session.query(Account).filter(Account.id == account.id).first()
-    if adm:
-        print('setting user home folder id')
-        adm.home_id = home_folder_id
-
-    db.session.commit()
+    create_account_dt(account, group)
 
     return account
 
@@ -343,70 +555,16 @@ def get_or_create_delegated_account(tenant_name,
 
     db.session.add(account)
 
-    db.session.add(AccountGroup(id=str(uuid.uuid4()),
+    group = AccountGroup(id=str(uuid.uuid4()),
                                 account_id=account.id,
                                 group_id=group.id,
-                                role_type=GroupRoleType[account_role]))
+                                role_type=GroupRoleType[account_role])
+    db.session.add(group)
 
-    folder_type = db.session.query(Type).filter(Type.name == 'Folder').first()
-    if not folder_type:
-        return None
-
-    person_type = db.session.query(Type).filter(Type.name == 'Person').first()
-    if not person_type:
-        return None
-
-    app_type = db.session.query(Type).filter(Type.name == 'App').first()
-    if not app_type:
-        return None
-
-    db.session.add(Item(id=account.id,
-                        name=account.username,
-                        owner_id=account.id,
-                        group_id=group.id,
-                        type_id=person_type.id))
-
-    home_folder_id = str(uuid.uuid4())
-
-    db.session.add(Item(id=home_folder_id,
-                        name='home',
-                        owner_id=account.id,
-                        parent_id=account.id,
-                        group_id=group.id,
-                        type_id=folder_type.id))
-    db.session.add(Item(id=uuid.uuid4(),
-                        name='Find',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}],
-                                    'query': {'explore': 'true'}},
-                        parent_id=home_folder_id,
-                        owner_id=account.id,
-                        group_id=group.id,
-                        type_id=app_type.id))
-
-    db.session.add(Item(id=uuid.uuid4(),
-                        name='Around',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}],
-                                    'query': {'current_location': 'true'}},
-                        parent_id=home_folder_id,
-                        owner_id=account.id,
-                        group_id=group.id,
-                        type_id=app_type.id))
-
-    db.session.add(Item(id=uuid.uuid4(),
-                        name='Home',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}],
-                                    'query': {'my_items': 'true'}},
-                        parent_id=home_folder_id,
-                        owner_id=account.id,
-                        group_id=group.id,
-                        type_id=app_type.id))
     db.session.commit()
 
-    adm = db.session.query(Account).filter(Account.id == account.id).first()
-    if adm:
-        print('setting user home folder id')
-        adm.home_id = home_folder_id
-
+    create_account_dt(account, group)
+    
     db.session.commit()
 
     return account
@@ -454,6 +612,43 @@ def create_app(name,
     db.session.commit()
 
     return client
+
+def create_account_dt(db, account, group):
+    item = None
+    if account.type == AccountType.person:
+        person_type = db.session.query(Type).filter(Type.name == 'Person').first()
+        if not person_type:
+            return None
+        item = create_item(db,
+                            item_type_name=person_type.name,
+                            item_id=account.id,
+                            item_name=account.username,
+                            item_attributes=dict(),
+                            item_location=None,
+                            item_visibility=None,
+                            item_tags=None,
+                            owner_id=account.id,
+                            group_id=group.id
+                            )
+        db.session.add(item)
+        db.session.commit()
+    else:
+        thing_type = db.session.query(Type).filter(Type.name == 'Thing').first()
+        if not thing_type:
+            return None
+        item = create_item(db,
+                            item_type_name=thing_type.name,
+                            item_id=account.id,
+                            item_name=account.username,
+                            item_attributes=dict(),
+                            item_location=None,
+                            item_visibility=None,
+                            item_tags=None,
+                            owner_id=account.id,
+                            group_id=group.id)
+        db.session.add(item)
+        db.session.commit()
+    return item
 
 def create_tenant(tenant_name, root_username, root_email, root_password, uri, web_redirect_uri):
     
@@ -524,68 +719,9 @@ def create_tenant(tenant_name, root_username, root_email, root_password, uri, we
     print('{} tenant root password: {}'.format(tenant_name, root_password))
 
     create_basic_types(root_account_id, root_group_id)
+    create_basic_items(root_account_id, root_group_id)
+    account_dt = create_account_dt(db, root_account, root_group)
 
-    folder_type = db.session.query(Type).filter(Type.name == 'Folder').first()
-    if not folder_type:
-        return None
-
-    person_type = db.session.query(Type).filter(Type.name == 'Person').first()
-    if not person_type:
-        return None
-
-    app_type = db.session.query(Type).filter(Type.name == 'App').first()
-    if not app_type:
-        return None
-
-
-    db.session.add(Item(id=root_account_id, 
-                        name=root_username, 
-                        owner_id=root_account_id, 
-                        group_id=root_group_id, 
-                        type_id=person_type.id))
-
-    home_folder_id = str(uuid.uuid4())
-    db.session.add(Item(id=home_folder_id, 
-                        name='home',
-                        parent_id=root_account_id,
-                        owner_id=root_account_id, 
-                        group_id=root_group_id, 
-                        type_id=folder_type.id))
-
-    db.session.add(Item(id=uuid.uuid4(),
-                        name='Find',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
-                        parent_id=root_account_id,
-                        owner_id=root_account_id,
-                        group_id=root_group_id,
-                        type_id=app_type.id))
-
-    db.session.add(Item(id=uuid.uuid4(),
-                        name='Around',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
-                        parent_id=root_account_id,
-                        owner_id=root_account_id,
-                        group_id=root_group_id,
-                        type_id=app_type.id))
-
-    db.session.add(Item(id=uuid.uuid4(),
-                        name='Home',
-                        attributes={'views': [{'name': 'Items', 'type': 'List', 'icon': 'view_list'}], 'query': {}},
-                        parent_id=root_account_id,
-                        owner_id=root_account_id,
-                        group_id=root_group_id,
-                        type_id=app_type.id))
-
-    db.session.commit()
-    print('{} tenant root home folder id: {}'.format(tenant_name, home_folder_id))
-    adm = db.session.query(Account).filter(Account.id == root_account_id).first()
-    if adm:
-        print('setting admin home folder id')
-        adm.home_id = home_folder_id
-
-    db.session.commit()
-
-    create_basic_types(root_account_id, root_group_id)
     result = root_group.to_dict()
     result['client_id'] = cli_client.client_id
     result['client_secret'] = cli_client.client_secret
@@ -603,24 +739,6 @@ def get_or_create_type(name, icon, owner_id, group_id, module=None):
         db.session.commit()
 
     return res
-
-def create_basic_types(owner_id, group_id):
-    get_or_create_type(name='Person', owner_id=owner_id, group_id=group_id, module='person', icon='person')
-    get_or_create_type(name='Thing', owner_id=owner_id, group_id=group_id, icon='graphic_eq')
-
-    get_or_create_type(name='Folder', owner_id=owner_id, group_id=group_id, icon='folder')
-    get_or_create_type(name='Document', owner_id=owner_id, group_id=group_id, icon='description')
-    get_or_create_type(name='Image', owner_id=owner_id, group_id=group_id, icon='image')
-    get_or_create_type(name='Video', owner_id=owner_id, group_id=group_id, icon='ondemand_video')
-    get_or_create_type(name='Drawing', owner_id=owner_id, group_id=group_id, icon='gesture')
-    get_or_create_type(name='Scene', owner_id=owner_id, group_id=group_id, icon='view_in_ar')
-
-    get_or_create_type(name='App', owner_id=owner_id, group_id=group_id, icon='apps')
-
-    get_or_create_type(name='Place', owner_id=owner_id, group_id=group_id, icon='other_houses')
-    get_or_create_type(name='Event', owner_id=owner_id, group_id=group_id, icon='event')
-    get_or_create_type(name='Task', owner_id=owner_id, group_id=group_id, icon='assignment_turned_in')
-    get_or_create_type(name='Job', owner_id=owner_id, group_id=group_id, icon='trending_up')
 
 def initialize_server(root_tenant_name,
                root_username,
