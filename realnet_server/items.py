@@ -128,8 +128,8 @@ def perform_search(request, account, public=False):
 
     if parent_id:
         conditions.append(Item.parent_id == parent_id)
-    elif my_items:
-        conditions.append(Item.owner_id == current_token.account.id)
+    elif my_items and account:
+        conditions.append(Item.owner_id == account.id)
     else:
         root_item_name = app.config.get('ROOT_ITEM')
         if root_item_name:
@@ -149,7 +149,8 @@ def perform_search(request, account, public=False):
     if type_names:
         print(type_names)
         type_ids = [ti.id for ti in Type.query.filter(Type.name.in_(type_names)).all()]
-        conditions.append(Item.type_id.in_(type_ids))
+        derived_type_ids = [ti.id for ti in Type.query.filter(Type.base_id.in_(type_ids)).all()]
+        conditions.append(Item.type_id.in_(list(set(type_ids + derived_type_ids))))
 
     keys = request.args.getlist('key')
 

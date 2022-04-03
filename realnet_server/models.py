@@ -244,6 +244,7 @@ def traverse_instance(instances, instance, parent_type_name):
         traverse_instance(instances, inst, inst.get('type'))
 
 def build_item( instance,
+                attributes,
                 item_data,
                 owner_id,
                 group_id,
@@ -251,6 +252,7 @@ def build_item( instance,
 
     item = Item( id=instance.id,
                  name=instance.name,
+                 attributes=attributes,
                  owner_id=owner_id,
                  group_id=group_id,
                  type_id=instance.type.id,
@@ -260,7 +262,15 @@ def build_item( instance,
     db.session.commit()
     
     for child_instance in instance.type.instances:
+        attributes = child_instance.type.attributes
+        if attributes:
+            if child_instance.attributes:
+                attributes =  attributes | child_instance.attributes
+        elif child_instance.attributes:
+            attributes = child_instance.attributes
+        
         child_item = build_item(  child_instance,
+                                  attributes,
                                   {},
                                   owner_id,
                                   group_id,
@@ -291,10 +301,16 @@ def create_item(db,
         db.session.commit()
 
     if item_type:
+        # attributes = item_attributes | item_type.attributes
+        attributes = item_type.attributes
+        if attributes:
+            if item_attributes:
+                attributes =  attributes | item_attributes
+        elif item_attributes:
+            attributes = item_attributes 
+
         instance = Instance(id=item_id,
                             name=item_name,
-                            icon=item_attributes.get('icon'),
-                            attributes=item_attributes,
                             owner_id=owner_id,
                             group_id=group_id,
                             type_id=item_type.id)
@@ -306,7 +322,7 @@ def create_item(db,
                      "item_visibility": item_visibility,
                      "item_tags": item_tags}
         
-        item = build_item(instance, item_data, owner_id, group_id, parent_item_id)
+        item = build_item(instance, attributes, item_data, owner_id, group_id, parent_item_id)
     
     return item
 
@@ -316,8 +332,13 @@ def import_types(db, type_data, owner_id, group_id):
     commit_needed = False
     for td in type_data['types']:
         existing_type = Type.query.filter(Type.name == td['name']).first()
-        base = td.get('base')
-        if not existing_type and not base:
+        if not existing_type:
+            base_id = None
+            base_name = td.get('base')
+            if base_name:
+                base_type = Type.query.filter(Type.name == base_name).first()
+                if base_type:
+                    base_id = base_type.id
             attributes = td.get('attributes', dict())
             existing_type = Type(id=str(uuid.uuid4()),
                                         name=td['name'],
@@ -325,7 +346,8 @@ def import_types(db, type_data, owner_id, group_id):
                                         attributes=td.get('attributes'),
                                         owner_id=owner_id,
                                         group_id=group_id,
-                                        module=td.get('module'))
+                                        module=td.get('module'),
+                                        base_id=base_id)
             for instance in td.get('instances', []):
                 instances.append({ "instance": instance, "parent_type_name": existing_type.name})
             db.session.add(existing_type)     
