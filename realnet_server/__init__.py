@@ -1,4 +1,4 @@
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 from flask import Flask
 from flask_cors import CORS
@@ -58,6 +58,7 @@ import realnet_server.accounts
 import realnet_server.authenticators
 import realnet_server.tenants
 import realnet_server.mobile
+import realnet_server.import_file
 
 
 

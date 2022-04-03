@@ -128,8 +128,8 @@ def perform_search(request, account, public=False):
 
     if parent_id:
         conditions.append(Item.parent_id == parent_id)
-    elif my_items:
-        conditions.append(Item.parent_id == current_token.account.home_id)
+    elif my_items and account:
+        conditions.append(Item.owner_id == account.id)
     else:
         root_item_name = app.config.get('ROOT_ITEM')
         if root_item_name:
@@ -147,8 +147,10 @@ def perform_search(request, account, public=False):
     type_names = request.args.getlist('types')
 
     if type_names:
-        type_ids = [ti.id for ti in Type.query.filter(Type.name in {t for t in type_names}).all()]
-        conditions.append(Item.type_id.in_(type_ids))
+        print(type_names)
+        type_ids = [ti.id for ti in Type.query.filter(Type.name.in_(type_names)).all()]
+        derived_type_ids = [ti.id for ti in Type.query.filter(Type.base_id.in_(type_ids)).all()]
+        conditions.append(Item.type_id.in_(list(set(type_ids + derived_type_ids))))
 
     keys = request.args.getlist('key')
 
@@ -158,12 +160,12 @@ def perform_search(request, account, public=False):
         conditions.append(Item.attributes[kv[0]].astext == kv[1])
 
     lat = request.args.get('lat')
-
     lng = request.args.get('lng')
+    radius = request.args.get('radius', 100.00)
 
     if lat and lng:
-        range = request.args.get('range', 100.00)
-        conditions.append(func.ST_DWithin(Item.location, 'SRID=4326;POINT({} {})'.format(lat, lng), range))
+        range = (0.00001) * float(radius)
+        conditions.append(func.ST_DWithin(Item.location, 'SRID=4326;POINT({} {})'.format(lng, lat), range))
 
     visibility = request.args.get('visibility')
 

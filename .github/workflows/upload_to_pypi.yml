@@ -27,7 +27,21 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7 
-      
+      # bump version
+      - name: "bump version -patch"
+        run: |
+          # install bump
+          python3 -m pip install bump
+          # bump version 
+          bump
+        # commit the change
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "bumped_version"
+          commit_user_name: Nitharsan
+          commit_user_email: nitharsan.puwanendran@l33tsystems.com
+          commit_author: Nitharsan <nitharsan.puwanendran@l33tsystems.com> 
+
       # Installs and upgrades pip, installs other dependencies and installs the package from setup.py
       - name: "Installs and upgrades pip, installs other dependencies and installs the package from setup.py"
         run: |

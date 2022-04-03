@@ -1,0 +1,673 @@
+{
+    "types": [
+        {
+            "name": "Type",
+            "attributes": {
+                "name": "Type",
+                "type": "Type",
+                "base": "Type",
+                "attributes": {
+                    "icon": "",
+                    "module": ""
+                },
+                "instances": []
+            }
+        },
+        {
+            "name": "Instance",
+            "attributes" : {
+                "icon": "approval"
+            }
+        },
+        {
+            "name": "List",
+            "attributes": {
+                "icon": "list",
+                "module": "list",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Document",
+            "attributes": {
+                "icon": "description",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Link",
+            "attributes": {
+                "icon": "link",
+                "creatable": "true"
+            }
+
+        },
+        {
+            "name": "Page",
+            "attributes": {
+                "icon": "web_asset",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Image",
+            "attributes": {
+                "icon": "image",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Video",
+            "attributes": {
+                "icon": "ondemand_video",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Drawing",
+            "attributes": {
+                "icon": "gesture",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Scene",
+            "attributes": {
+                "icon": "view_in_ar",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Thing",
+            "attributes": {
+                "icon": "graphic_eq"
+            }
+        },
+        {
+            "name": "Place",
+            "attributes": {
+                "icon": "other_houses"
+            }
+        },
+        {
+            "name": "Event",
+            "attributes": {
+                "icon": "event"
+            }
+        },
+        {
+            "name": "Task",
+            "attributes": {
+                "icon": "assignment_turned_in"
+            }
+        },
+        {
+            "name": "Job",
+            "attributes": {
+                "icon": "trending_up"
+            }
+        },
+        {
+            "name": "Topic",
+            "attributes": {
+                "icon": "forum"
+            }
+        },
+        {
+            "name": "Runner",
+            "attributes": {
+                "icon": "memory"
+            }
+        },
+        {
+            "name": "Folder",
+            "attributes": {
+                "icon": "folder",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Query",
+            "attributes": {
+                "icon": "search",
+                "parent_id": "",
+                "name": "",
+                "my_items": "",
+                "public": "",
+                "types": [],
+                "tags": [],
+                "location": {},
+                "visibility": ""
+            }
+        },
+        {
+            "name": "ListView",
+            "attributes": {
+                "icon": "view_list"
+            }
+        },
+        {
+            "name": "CardsView",
+            "attributes": {
+                "icon": "view_module"
+            }
+        },
+        {
+            "name": "MapView",
+            "attributes": {
+                "icon": "map"
+            }
+        },
+        {
+            "name": "CalendarView",
+            "attributes": {
+                "icon": "calendar_today"
+            }
+        },
+        {
+            "name": "BoardView",
+            "attributes": {
+                "icon": "assignment"
+            }
+        },
+        {
+            "name": "Button",
+            "attributes": {
+                "icon": "radio_button_checked"
+            }
+        },
+        {
+            "name": "Label",
+            "attributes": {
+                "icon": "label"
+            }
+        },
+        {
+            "name": "PanelView",
+            "attributes": {
+                "icon": "dashboard"
+            }
+        },
+        {
+            "name": "SceneView",
+            "attributes": {
+                "icon": "nature_people"
+            }
+        },
+        {
+            "name": "ContentView",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "PropertiesView",
+            "attributes": {
+                "icon": "ballot"
+            }
+        },
+        {
+            "name": "TreeView",
+            "attributes": {
+                "icon": "account_tree"
+            }
+        },
+        {
+            "name": "App",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query"
+                },
+                {
+                    "name": "Views",
+                    "type": "List"
+                }
+            ]
+        },
+        {
+            "name": "FindAppViews",
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "FindApp",
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {}
+                },
+                {
+                    "name": "FindAppViews",
+                    "type": "FindAppViews"
+                }
+                
+            ]
+        },
+        {
+            "name": "AroundAppViews",
+            "instances": [
+                {
+                    "name": "Map",
+                    "type": "MapView",
+                    "attributes": {}
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "AroundApp",
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {}
+                },
+                {
+                    "name": "AroundAppViews",
+                    "type": "AroundAppViews"
+                }
+                
+            ]
+        },
+        {
+            "name": "HomeAppViews",
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "HomeApp",
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true"
+                    }
+                },
+                {
+                    "name": "HomeAppViews",
+                    "type": "HomeAppViews"
+                }
+            ]
+        },
+        {
+            "name": "EventAppViews",
+            "instances": [
+                {
+                    "name": "Timeline",
+                    "type": "CalendarView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "EventApp",
+            "attributes": {
+                "creatable_types": ["Event"]
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Event"]
+                    }
+                },
+                {
+                    "name": "EventAppViews",
+                    "type": "EventAppViews"
+                }
+            ]
+        },
+        {
+            "name": "VenueAppViews",
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "VenueApp",
+            "attributes": {
+                "creatable_types": ["Venue"]
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Venue"]
+                    }
+                },
+                {
+                    "name": "VenueAppViews",
+                    "type": "VenueAppViews"
+                }
+            ]
+        },
+        {
+            "name": "GameAppViews",
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "GameApp",
+            "attributes": {
+                "creatable_types": ["Game"]
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Game"]
+                    }
+                },
+                {
+                    "name": "GameAppViews",
+                    "type": "GameAppViews"
+                }
+            ]
+        },
+        {
+            "name": "Apps",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Around",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Home",
+                    "type": "HomeApp"
+                },
+                {
+                    "name": "Events",
+                    "type": "EventApp"
+                },
+                {
+                    "name": "Venues",
+                    "type": "VenueApp"
+                },
+                {
+                    "name": "Games",
+                    "type": "GameApp"
+                }
+            ]
+        },
+        {
+            "name": "Person",
+            "attributes": {
+                "icon": "person"
+            },
+            "instances": [
+                {
+                    "name": "Home",
+                    "type": "Folder"
+                },
+                {
+                    "name": "Apps",
+                    "type": "Apps"
+                }
+            ]
+        },
+        {
+            "name": "MenuItem",
+            "attributes": {
+                "icon": "drag_handle",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Menu",
+            "attributes": {
+                "icon": "restaurant_menu",
+                "creatable_types": ["MenuItem"],
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Conference",
+            "base": "Event",
+            "attributes": {
+                "icon": "reduce_capacity",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Tradeshow",
+            "base": "Event",
+            "attributes": {
+                "icon": "hail",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Fair",
+            "base": "Event",
+            "attributes": {
+                "icon": "storefront",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Meeting",
+            "base": "Event",
+            "attributes": {
+                "icon": "groups",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Promotion",
+            "base": "Event",
+            "attributes": {
+                "icon": "add_shopping_cart",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Wedding",
+            "base": "Event",
+            "attributes": {
+                "icon": "celebration",
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "Menu",
+                    "type": "Menu"
+                },
+                {
+                    "name": "Contract",
+                    "type": "Document"
+                }
+            ]
+        },
+        {
+            "name": "Festival",
+            "base": "Event",
+            "attributes": {
+                "icon": "festival",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Concert",
+            "base": "Event",
+            "attributes": {
+                "icon": "music_video",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Venue",
+            "attributes": {
+                "icon": "other_houses"
+            }
+        },
+        {
+            "name": "Club",
+            "base": "Venue",
+            "attributes": {
+                "icon": "nightlife",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Theatre",
+            "base": "Venue",
+            "attributes": {
+                "icon": "theater_comedy",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Restaurant",
+            "base": "Venue",
+            "attributes": {
+                "icon": "restaurant",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Hotel",
+            "base": "Venue",
+            "attributes": {
+                "icon": "hotel",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "ConferenceCentre",
+            "base": "Venue",
+            "attributes": {
+                "icon": "festival",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "BusinessCentre",
+            "base": "Venue",
+            "attributes": {
+                "icon": "buysiness_center",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "CommunityCentre",
+            "base": "Venue",
+            "attributes": {
+                "icon": "local_library",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "SportsClub",
+            "base": "Venue",
+            "attributes": {
+                "icon": "sports_kabaddi",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "ArtGallery",
+            "base": "Venue",
+            "attributes": {
+                "icon": "collections",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Villa",
+            "base": "Venue",
+            "attributes": {
+                "icon": "villa",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Stadium",
+            "base": "Venue",
+            "attributes": {
+                "icon": "stadium",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Park",
+            "base": "Venue",
+            "attributes": {
+                "icon": "park",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Game",
+            "attributes": {
+                "icon": "sports_esports"
+            }
+        },
+        {
+            "name": "Quest",
+            "base": "Game",
+            "attributes": {
+                "icon": "task_alt",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Race",
+            "base": "Game",
+            "attributes": {
+                "icon": "timer",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Battle",
+            "base": "Game",
+            "attributes": {
+                "icon": "sports_martial_arts",
+                "creatable": "true"
+            }
+        }
+       
+    ]
+}
