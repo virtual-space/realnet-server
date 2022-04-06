@@ -137,27 +137,29 @@ class Type(db.Model, SerializerMixin):
     base = db.relationship('Type')
     instances = db.relationship('Instance', foreign_keys='[Instance.parent_type_id]')
 
+class VisibilityType(enum.Enum):
+    visible = 1
+    hidden = 2
+    restricted = 3
 
 class Instance(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(128))
     icon = db.Column(db.String(128))
     attributes = db.Column(db.JSON)
+    public = db.Column(db.Boolean)
+    visibility = db.Column(db.Enum(VisibilityType))
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
     type_id = db.Column(db.String(36), db.ForeignKey('type.id', ondelete='CASCADE'), nullable=False)
     type = db.relationship('Type', foreign_keys='[Instance.type_id]')
     parent_type_id = db.Column(db.String(36), db.ForeignKey('type.id'))
 
-
 class TypeId:
     person = 'b533fc2f-fcec-46d4-b3ff-5e8589a18ccb'
     folder = '962587e1-9900-435f-a7df-16c10e5f584a'
 
-class VisibilityType(enum.Enum):
-    visible = 1
-    hidden = 2
-    restricted = 3
+
 
 def jsonize_geometry(g):
     return json.loads(json.dumps(shapely.geometry.mapping(to_shape(g))))
@@ -260,6 +262,17 @@ def build_item( instance,
     
     db.session.add(item)
     db.session.commit()
+
+    create_public_acl = instance.public
+
+    if item_data and 'item_is_public' in item_data:
+        if item_data['item_is_public'] == 'true':
+            create_public_acl = True
+
+    if create_public_acl:
+        acl = Acl(id=str(uuid.uuid4()),type=AclType.public,item_id=instance.id)
+        db.session.add(acl)
+        db.session.commit()
     
     for child_instance in instance.type.instances:
         attributes = child_instance.type.attributes
@@ -286,6 +299,7 @@ def create_item(db,
                 item_location,
                 item_visibility,
                 item_tags,
+                item_is_public,
                 owner_id,
                 group_id,
                 parent_item_id=None):
@@ -311,6 +325,7 @@ def create_item(db,
 
         instance = Instance(id=item_id,
                             name=item_name,
+                            public=item_is_public == "true",
                             owner_id=owner_id,
                             group_id=group_id,
                             type_id=item_type.id)
@@ -320,7 +335,8 @@ def create_item(db,
 
         item_data = {"item_location": item_location, 
                      "item_visibility": item_visibility,
-                     "item_tags": item_tags}
+                     "item_tags": item_tags,
+                     "item_is_public": item_is_public}
         
         item = build_item(instance, attributes, item_data, owner_id, group_id, parent_item_id)
     
@@ -395,10 +411,15 @@ def import_types(db, type_data, owner_id, group_id):
         if target:
             parent = types.get(parent_type_name, Type.query.filter(Type.name == parent_type_name).first())
             attributes = instance.get('attributes', dict())
+            is_public = instance.get('public')
+            if is_public:
+                is_public = is_public.lower() in ['true', 'True', '1']
+            
             created_instance = Instance(id=str(uuid.uuid4()),
                                         name=instance['name'],
                                         icon=attributes.get('icon'),
                                         attributes=instance.get('attributes'),
+                                        public=is_public,
                                         owner_id=owner_id,
                                         group_id=group_id,
                                         type_id=target['type'].id,
@@ -424,6 +445,7 @@ def traverse_item(db, item_ids, items_by_id, children_by_id, item, owner_id, gro
                         item.get('location'),
                         item.get('visibility'),
                         item.get('tags'),
+                        item.get('public'),
                         owner_id,
                         group_id,
                         item_ids[parent_id])
@@ -436,6 +458,7 @@ def traverse_item(db, item_ids, items_by_id, children_by_id, item, owner_id, gro
                     item.get('location'),
                     item.get('visibility'),
                     item.get('tags'),
+                    item.get('public'),
                     owner_id,
                     group_id)
     for child in children_by_id.get(item['id'], []):
@@ -454,10 +477,12 @@ def import_items(db, items, owner_id, group_id):
         item_id = item[1]
         item_type = item[2]
         item_name = item[3]
-        item_location = item[4]
+        item_is_public = item[4]
         item_visibility = item[5]
-        item_tags = item[6]
-        for av in item[7:]:
+        item_location = item[6]
+        item_tags = item[7]
+        
+        for av in item[8:]:
             kv = av.split(':')
             if kv and len(kv) > 1:
                 item_attributes[kv[0]] = kv[1]
@@ -470,7 +495,8 @@ def import_items(db, items, owner_id, group_id):
                         "name": item_name,
                         "location": item_location,
                         "visibility": item_visibility,
-                        "tags": item_tags}
+                        "tags": item_tags,
+                        "public": item_is_public}
         else:
             item_data = {"id": item_id,
                         "type": item_type,
@@ -479,7 +505,8 @@ def import_items(db, items, owner_id, group_id):
                         "location": item_location,
                         "visibility": item_visibility,
                         "tags": item_tags,
-                        "parent_id": item_parent_id}
+                        "parent_id": item_parent_id,
+                        "public": item_is_public}
         item_ids[item_id] = str(uuid.uuid4())
 
         if item_parent_id:
@@ -649,6 +676,7 @@ def create_account_dt(db, account, group):
                             item_location=None,
                             item_visibility=None,
                             item_tags=None,
+                            item_is_public=None,
                             owner_id=account.id,
                             group_id=group.id
                             )
@@ -666,6 +694,7 @@ def create_account_dt(db, account, group):
                             item_location=None,
                             item_visibility=None,
                             item_tags=None,
+                            item_is_public=None,
                             owner_id=account.id,
                             group_id=group.id)
         db.session.add(item)

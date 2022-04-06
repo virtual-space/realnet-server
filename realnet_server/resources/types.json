@@ -28,11 +28,89 @@
             }
         },
         {
+            "name": "ListView",
+            "attributes": {
+                "icon": "view_list"
+            }
+        },
+        {
+            "name": "CardsView",
+            "attributes": {
+                "icon": "view_module"
+            }
+        },
+        {
+            "name": "MapView",
+            "attributes": {
+                "icon": "map"
+            }
+        },
+        {
+            "name": "CalendarView",
+            "attributes": {
+                "icon": "calendar_today"
+            }
+        },
+        {
+            "name": "BoardView",
+            "attributes": {
+                "icon": "assignment"
+            }
+        },
+        {
+            "name": "PanelView",
+            "attributes": {
+                "icon": "dashboard"
+            }
+        },
+        {
+            "name": "SceneView",
+            "attributes": {
+                "icon": "nature_people"
+            }
+        },
+        {
+            "name": "ImageView",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "VideoView",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "DocumentView",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "PropertiesView",
+            "attributes": {
+                "icon": "ballot"
+            }
+        },
+        {
+            "name": "TreeView",
+            "attributes": {
+                "icon": "account_tree"
+            }
+        },
+        {
             "name": "Document",
             "attributes": {
                 "icon": "description",
                 "creatable": "true"
-            }
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "DocumentView"
+                }
+            ]
         },
         {
             "name": "Link",
@@ -47,35 +125,65 @@
             "attributes": {
                 "icon": "web_asset",
                 "creatable": "true"
-            }
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "PageView"
+                }
+            ]
         },
         {
             "name": "Image",
             "attributes": {
                 "icon": "image",
                 "creatable": "true"
-            }
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "ImageView"
+                }
+            ]
         },
         {
             "name": "Video",
             "attributes": {
                 "icon": "ondemand_video",
                 "creatable": "true"
-            }
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "VideoView"
+                }
+            ]
         },
         {
             "name": "Drawing",
             "attributes": {
                 "icon": "gesture",
                 "creatable": "true"
-            }
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "DrawingView"
+                }
+            ]
         },
         {
             "name": "Scene",
             "attributes": {
                 "icon": "view_in_ar",
                 "creatable": "true"
-            }
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "SceneView"
+                }
+            ]
         },
         {
             "name": "Thing",
@@ -140,36 +248,7 @@
                 "visibility": ""
             }
         },
-        {
-            "name": "ListView",
-            "attributes": {
-                "icon": "view_list"
-            }
-        },
-        {
-            "name": "CardsView",
-            "attributes": {
-                "icon": "view_module"
-            }
-        },
-        {
-            "name": "MapView",
-            "attributes": {
-                "icon": "map"
-            }
-        },
-        {
-            "name": "CalendarView",
-            "attributes": {
-                "icon": "calendar_today"
-            }
-        },
-        {
-            "name": "BoardView",
-            "attributes": {
-                "icon": "assignment"
-            }
-        },
+        
         {
             "name": "Button",
             "attributes": {
@@ -183,63 +262,17 @@
             }
         },
         {
-            "name": "PanelView",
-            "attributes": {
-                "icon": "dashboard"
-            }
-        },
-        {
-            "name": "SceneView",
-            "attributes": {
-                "icon": "nature_people"
-            }
-        },
-        {
-            "name": "ContentView",
-            "attributes": {
-                "icon": "preview"
-            }
-        },
-        {
-            "name": "PropertiesView",
-            "attributes": {
-                "icon": "ballot"
-            }
-        },
-        {
-            "name": "TreeView",
-            "attributes": {
-                "icon": "account_tree"
-            }
-        },
-        {
             "name": "App",
             "attributes": {
                 "icon": "apps"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query"
-                },
-                {
-                    "name": "Views",
-                    "type": "List"
-                }
-            ]
-        },
-        {
-            "name": "FindAppViews",
-            "instances": [
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+            }
         },
         {
             "name": "FindApp",
+            "base": "App",
+            "attributes": {
+                "icon": "search"
+            },
             "instances": [
                 {
                     "name": "Query",
@@ -247,15 +280,24 @@
                     "attributes": {}
                 },
                 {
-                    "name": "FindAppViews",
-                    "type": "FindAppViews"
+                    "name": "List",
+                    "type": "ListView"
                 }
                 
             ]
         },
         {
-            "name": "AroundAppViews",
+            "name": "AroundApp",
+            "base": "App",
+            "attributes":{
+                "icon": "local_pizza"
+            },
             "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {}
+                },
                 {
                     "name": "Map",
                     "type": "MapView",
@@ -266,35 +308,15 @@
                     "type": "ListView",
                     "attributes": {}
                 }
-            ]
-        },
-        {
-            "name": "AroundApp",
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {}
-                },
-                {
-                    "name": "AroundAppViews",
-                    "type": "AroundAppViews"
-                }
                 
             ]
         },
         {
-            "name": "HomeAppViews",
-            "instances": [
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
-        },
-        {
             "name": "HomeApp",
+            "attributes": {
+                "initial": "true",
+                "icon": "home"
+            },
             "instances": [
                 {
                     "name": "Query",
@@ -304,25 +326,16 @@
                     }
                 },
                 {
-                    "name": "HomeAppViews",
-                    "type": "HomeAppViews"
-                }
-            ]
-        },
-        {
-            "name": "EventAppViews",
-            "instances": [
-                {
-                    "name": "Timeline",
-                    "type": "CalendarView",
-                    "attributes": {}
+                    "name": "List",
+                    "type": "ListView"
                 }
             ]
         },
         {
             "name": "EventApp",
             "attributes": {
-                "creatable_types": ["Event"]
+                "creatable_types": ["Event"],
+                "icon": "event"
             },
             "instances": [
                 {
@@ -334,17 +347,8 @@
                     }
                 },
                 {
-                    "name": "EventAppViews",
-                    "type": "EventAppViews"
-                }
-            ]
-        },
-        {
-            "name": "VenueAppViews",
-            "instances": [
-                {
-                    "name": "List",
-                    "type": "ListView",
+                    "name": "Timeline",
+                    "type": "CalendarView",
                     "attributes": {}
                 }
             ]
@@ -352,7 +356,8 @@
         {
             "name": "VenueApp",
             "attributes": {
-                "creatable_types": ["Venue"]
+                "creatable_types": ["Venue"],
+                "icon": "other_houses"
             },
             "instances": [
                 {
@@ -364,15 +369,6 @@
                     }
                 },
                 {
-                    "name": "VenueAppViews",
-                    "type": "VenueAppViews"
-                }
-            ]
-        },
-        {
-            "name": "GameAppViews",
-            "instances": [
-                {
                     "name": "List",
                     "type": "ListView",
                     "attributes": {}
@@ -382,7 +378,8 @@
         {
             "name": "GameApp",
             "attributes": {
-                "creatable_types": ["Game"]
+                "creatable_types": ["Game"],
+                "icon": "sports_esports"
             },
             "instances": [
                 {
@@ -394,8 +391,41 @@
                     }
                 },
                 {
-                    "name": "GameAppViews",
-                    "type": "GameAppViews"
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "LoginApp",
+            "attributes": {
+                "icon": "key",
+                "api": "https://api.realnet.io",
+                "client_id": "UGPjNavCMkMZUt21O5EZld6n",
+                "authenticator_name": "password",
+                "authenticator_type": "password"
+            }
+        },
+        {
+            "name": "PublicApp",
+            "attributes": {
+                "icon": "public"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "public": "true"
+                    }
+                },
+                {
+                    "name": "Items",
+                    "type": "ListView",
+                    "attributes": {
+                        "public": "true"
+                    }
                 }
             ]
         },
@@ -408,10 +438,6 @@
                 {
                     "name": "Find",
                     "type": "FindApp"
-                },
-                {
-                    "name": "Around",
-                    "type": "AroundApp"
                 },
                 {
                     "name": "Home",
@@ -428,6 +454,21 @@
                 {
                     "name": "Games",
                     "type": "GameApp"
+                },
+                {
+                    "name": "Public",
+                    "public": "true",
+                    "type": "PublicApp"
+                },
+                {
+                    "name": "Around",
+                    "public": "true",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Login",
+                    "public": "true",
+                    "type": "LoginApp"
                 }
             ]
         },
@@ -443,6 +484,7 @@
                 },
                 {
                     "name": "Apps",
+                    "public": "true",
                     "type": "Apps"
                 }
             ]
@@ -517,6 +559,10 @@
                 {
                     "name": "Contract",
                     "type": "Document"
+                },
+                {
+                    "name": "List",
+                    "type": "ListView"
                 }
             ]
         },
@@ -540,7 +586,14 @@
             "name": "Venue",
             "attributes": {
                 "icon": "other_houses"
-            }
+            },
+            "instances": [
+                {
+                    "name": "Timeline",
+                    "type": "CalendarView",
+                    "attributes": {}
+                }
+            ]
         },
         {
             "name": "Club",
