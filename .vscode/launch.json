@@ -23,7 +23,7 @@
                 "PYTHONPATH":"${PYTHONPATH}:${workspaceRoot}"
             },
             "args": [
-                "initialize"
+                "serve"
             ],
             "jinja": true
         }
