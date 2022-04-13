@@ -130,7 +130,7 @@ class Default(Module):
                 return {'created': True, 'updated': False}
             elif cfg.get_storage_type() == BlobType.s3:
                 basepath = cfg.get_storage_path()
-                path = os.path.join(basepath, storage.filename)
+                #path = os.path.join(basepath, storage.filename)
                 s3 = session.resource('s3')
                 bucket = s3.Bucket(cfg.get_s3_bucket())
                 blob_id = str(uuid.uuid4())
