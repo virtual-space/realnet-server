@@ -85,6 +85,7 @@ class Default(Module):
         return None
 
     def update_item_data(self, item, storage):
+        cfg = Config()
         blob = Blob.query.filter(Blob.item_id == item.id).first()
 
         content_type = storage.content_type
@@ -112,7 +113,6 @@ class Default(Module):
                 db.session.commit()
                 return {'created': False, 'updated': True}
         else:
-            cfg = Config()
             if cfg.get_storage_type() == BlobType.local:
                 basepath = cfg.get_storage_path()
                 path = os.path.join(basepath, storage.filename)
