@@ -137,7 +137,7 @@ class Default(Module):
                 res = bucket.Object(blob_id).put(Body=storage)
                 blob = Blob(id=blob_id,
                             type=BlobType.s3,
-                            data={},
+                            data=storage,
                             content_length=storage.content_length,
                             content_type=content_type,
                             filename=storage.filename,
