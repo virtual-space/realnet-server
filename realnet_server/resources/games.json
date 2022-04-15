@@ -1,0 +1,48 @@
+{
+    "types": [
+        {
+            "name": "Game",
+            "attributes": {
+                "icon": "sports_esports"
+            },
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView"
+                },
+                {
+                    "name": "Edit",
+                    "type": "ItemEditView"
+                },
+                {
+                    "name": "Hierarchy",
+                    "type": "TreeView"
+                }
+            ]
+        },
+        {
+            "name": "Quest",
+            "base": "Game",
+            "attributes": {
+                "icon": "task_alt",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Race",
+            "base": "Game",
+            "attributes": {
+                "icon": "timer",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Battle",
+            "base": "Game",
+            "attributes": {
+                "icon": "sports_martial_arts",
+                "creatable": "true"
+            }
+        }
+    ]
+}

@@ -1,0 +1,70 @@
+{
+    "types": [
+        {
+            "name": "Thing",
+            "attributes": {
+                "icon": "graphic_eq"
+            }
+        },
+        {
+            "name": "Place",
+            "attributes": {
+                "icon": "other_houses"
+            }
+        },
+        {
+            "name": "Task",
+            "attributes": {
+                "icon": "assignment_turned_in"
+            }
+        },
+        {
+            "name": "Job",
+            "attributes": {
+                "icon": "trending_up"
+            }
+        },
+        {
+            "name": "Topic",
+            "attributes": {
+                "icon": "forum"
+            }
+        },
+        {
+            "name": "Runner",
+            "attributes": {
+                "icon": "memory"
+            }
+        },
+        {
+            "name": "Group",
+            "attributes": {
+                "icon": "groups",
+                "createable": "true"
+            },
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "Person",
+            "attributes": {
+                "icon": "person"
+            },
+            "instances": [
+                {
+                    "name": "Home",
+                    "type": "Folder"
+                },
+                {
+                    "name": "Apps",
+                    "public": "true",
+                    "type": "Apps"
+                }
+            ]
+        }
+    ]
+}

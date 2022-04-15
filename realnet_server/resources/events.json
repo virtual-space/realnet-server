@@ -1,0 +1,113 @@
+{
+    "types": [
+        {
+            "name": "MenuItem",
+            "attributes": {
+                "icon": "drag_handle",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Menu",
+            "attributes": {
+                "icon": "restaurant_menu",
+                "creatable_types": ["MenuItem"],
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Event",
+            "attributes": {
+                "icon": "event"
+            },
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView"
+                },
+                {
+                    "name": "Edit",
+                    "type": "ItemEditView"
+                },
+                {
+                    "name": "Hierarchy",
+                    "type": "TreeView"
+                }
+            ]
+        },
+        {
+            "name": "Conference",
+            "base": "Event",
+            "attributes": {
+                "icon": "reduce_capacity",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Tradeshow",
+            "base": "Event",
+            "attributes": {
+                "icon": "hail",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Fair",
+            "base": "Event",
+            "attributes": {
+                "icon": "storefront",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Meeting",
+            "base": "Event",
+            "attributes": {
+                "icon": "groups",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Promotion",
+            "base": "Event",
+            "attributes": {
+                "icon": "add_shopping_cart",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Wedding",
+            "base": "Event",
+            "attributes": {
+                "icon": "celebration",
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "Menu",
+                    "type": "Menu"
+                },
+                {
+                    "name": "Contract",
+                    "type": "Document"
+                }
+            ]
+        },
+        {
+            "name": "Festival",
+            "base": "Event",
+            "attributes": {
+                "icon": "festival",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Concert",
+            "base": "Event",
+            "attributes": {
+                "icon": "music_video",
+                "creatable": "true"
+            }
+        }
+    ]
+}

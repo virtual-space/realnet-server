@@ -1,0 +1,56 @@
+{
+    "types": [
+        {
+            "name": "ItemEditView",
+            "base": "CtrlView",
+            "attributes": {
+                "icon": "pencil",
+                "layout": "column"
+            },
+            "instances": [
+                {
+                    "name": "Name",
+                    "type": "EditCtrl",
+                    "attributes": {
+                        "target": "item.name"
+                    }
+                },
+                {
+                    "name": "Attributes",
+                    "type": "AttrsCtrl",
+                    "attributes": {
+                        "target": "item.attributes"
+                    }
+                },
+                {
+                    "name": "Location",
+                    "type": "LocationCtrl",
+                    "attributes": {
+                        "target": "item.location"
+                    }
+                },
+                {
+                    "name": "Tags",
+                    "type": "TagsCtrl",
+                    "attributes": {
+                        "target": "item.tags"
+                    }
+                },
+                {
+                    "name": "From",
+                    "type": "DateCtrl",
+                    "attributes": {
+                        "target": "item.valid_from"
+                    }
+                },
+                {
+                    "name": "To",
+                    "type": "DateCtrl",
+                    "attributes": {
+                        "target": "item.valid_to"
+                    }
+                }
+            ]
+        }
+    ]
+}

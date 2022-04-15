@@ -1,0 +1,31 @@
+{
+    "types": [
+        {
+            "name": "Type",
+            "attributes": {
+                "name": "Type",
+                "type": "Type",
+                "base": "Type",
+                "attributes": {
+                    "icon": "",
+                    "module": ""
+                },
+                "instances": []
+            }
+        },
+        {
+            "name": "Instance",
+            "attributes" : {
+                "icon": "approval"
+            }
+        },
+        {
+            "name": "List",
+            "attributes": {
+                "icon": "list",
+                "module": "list",
+                "creatable": "true"
+            }
+        }
+    ]
+}

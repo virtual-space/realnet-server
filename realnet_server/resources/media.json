@@ -1,0 +1,103 @@
+{
+    "types": [
+        {
+            "name": "Folder",
+            "attributes": {
+                "icon": "folder",
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "Document",
+            "attributes": {
+                "icon": "description",
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "DocumentView"
+                }
+            ]
+        },
+        {
+            "name": "Link",
+            "attributes": {
+                "icon": "link",
+                "creatable": "true"
+            }
+
+        },
+        {
+            "name": "Page",
+            "attributes": {
+                "icon": "web_asset",
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "PageView"
+                }
+            ]
+        },
+        {
+            "name": "Image",
+            "attributes": {
+                "icon": "image",
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "ImageView"
+                }
+            ]
+        },
+        {
+            "name": "Video",
+            "attributes": {
+                "icon": "ondemand_video",
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "VideoView"
+                }
+            ]
+        },
+        {
+            "name": "Drawing",
+            "attributes": {
+                "icon": "gesture",
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "DrawingView"
+                }
+            ]
+        },
+        {
+            "name": "Scene",
+            "attributes": {
+                "icon": "view_in_ar",
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "SceneView"
+                }
+            ]
+        }
+    ]
+}

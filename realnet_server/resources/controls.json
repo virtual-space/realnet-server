@@ -1,0 +1,61 @@
+{
+    "types": [
+        {
+            "name": "LocationCtrl"
+        },
+        {
+            "name": "DateCtrl"
+        },
+        {
+            "name": "EditCtrl"
+        },
+        {
+            "name": "SelectCtrl"
+        },
+        {
+            "name": "ButtonCtrl",
+            "attributes": {
+                "icon": "radio_button_checked"
+            }
+        },
+        {
+            "name": "LabelCtrl",
+            "attributes": {
+                "icon": "label"
+            }
+        },
+        {
+            "name": "LinkCtrl"
+        },
+        {
+            "name": "CodeCtrl"
+        },
+        {
+            "name": "TagsCtrl"
+        },
+        {
+            "name": "TagCtrl"
+        },
+        {
+            "name": "BarCtrl"
+        },
+        {
+            "name": "ViewCtrl"
+        },
+        {
+            "name": "ColCtrl"
+        },
+        {
+            "name": "QueryCtrl"
+        },
+        {
+            "name": "TreeCtrl"
+        },
+        {
+            "name": "ItemCtrl"
+        },
+        {
+            "name": "AttrsCtrl"
+        }
+    ]
+}

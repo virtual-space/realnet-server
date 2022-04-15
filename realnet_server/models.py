@@ -134,7 +134,7 @@ class Type(db.Model, SerializerMixin):
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
     base_id = db.Column(db.String(36), db.ForeignKey('type.id', ondelete='CASCADE'))
     module = db.Column(db.String(128))
-    base = db.relationship('Type')
+    base = db.relationship('Type', remote_side='[Type.id]')
     instances = db.relationship('Instance', foreign_keys='[Instance.parent_type_id]')
 
 class VisibilityType(enum.Enum):
@@ -252,7 +252,8 @@ def build_item( instance,
                 group_id,
                 parent_item_id=None):
 
-    item = Item( id=instance.id,
+    item_id = str(uuid.uuid4())
+    item = Item( id=item_id,
                  name=instance.name,
                  attributes=attributes,
                  owner_id=owner_id,
@@ -270,7 +271,7 @@ def build_item( instance,
             create_public_acl = True
 
     if create_public_acl:
-        acl = Acl(id=str(uuid.uuid4()),type=AclType.public,item_id=instance.id)
+        acl = Acl(id=str(uuid.uuid4()),type=AclType.public,item_id=item_id)
         db.session.add(acl)
         db.session.commit()
     
@@ -342,19 +343,56 @@ def create_item(db,
     
     return item
 
+def collect_inheritance_hierarchy(children, td, instances):
+    name = td.get('name')
+    derived_types = children.get(name)
+    if derived_types:
+        for derived_type in derived_types:
+            for instance in td.get('instances', []):
+                instances.append({ "instance": instance, "parent_type_name": derived_type['name']})
+            collect_inheritance_hierarchy(children, derived_type, instances)
+
+
 def import_types(db, type_data, owner_id, group_id):
     types = dict()
     instances = []
     commit_needed = False
+    
+    primitive_types = []
+    derived = dict()
+    children = dict()
+    base_types = dict()
+
+
+    for td in type_data['types']:
+        name = td.get('name')
+        if name:
+            base_types[name] = td
+
+        base_name = td.get('base')
+        if base_name:
+            if base_name in derived:
+                derived[base_name].append(td)
+            else:
+                derived[base_name] = [td]
+        else:
+            primitive_types.append(td)
+
+    
+#    for (name,td) in derived_types.items():
+
+
     for td in type_data['types']:
         existing_type = Type.query.filter(Type.name == td['name']).first()
         if not existing_type:
             base_id = None
+            base_instances = []
             base_name = td.get('base')
             if base_name:
                 base_type = Type.query.filter(Type.name == base_name).first()
                 if base_type:
                     base_id = base_type.id
+
             attributes = td.get('attributes', dict())
             existing_type = Type(id=str(uuid.uuid4()),
                                         name=td['name'],
@@ -364,8 +402,12 @@ def import_types(db, type_data, owner_id, group_id):
                                         group_id=group_id,
                                         module=td.get('module'),
                                         base_id=base_id)
+            
             for instance in td.get('instances', []):
                 instances.append({ "instance": instance, "parent_type_name": existing_type.name})
+            for base_instance in base_instances:
+                instances.append({ "instance": base_instance, "parent_type_name": existing_type.name})
+
             db.session.add(existing_type)     
             commit_needed = True                       
         
@@ -402,7 +444,10 @@ def import_types(db, type_data, owner_id, group_id):
         parent_type_name = ie['parent_type_name']
         traverse_instance(subinstances, instance, parent_type_name)
 
-    instances.extend(subinstances)    
+    instances.extend(subinstances)   
+
+    for pt in primitive_types:
+        collect_inheritance_hierarchy(derived, pt, instances) 
 
     for ie in instances:
         instance = ie['instance']
@@ -415,6 +460,8 @@ def import_types(db, type_data, owner_id, group_id):
             if is_public:
                 is_public = is_public.lower() in ['true', 'True', '1']
             
+            type_id = target.id if isinstance(target, Type) else target['type'].id 
+            parent_type_id = parent.id if isinstance(parent, Type) else parent['type'].id  
             created_instance = Instance(id=str(uuid.uuid4()),
                                         name=instance['name'],
                                         icon=attributes.get('icon'),
@@ -422,10 +469,14 @@ def import_types(db, type_data, owner_id, group_id):
                                         public=is_public,
                                         owner_id=owner_id,
                                         group_id=group_id,
-                                        type_id=target['type'].id,
-                                        parent_type_id=parent['type'].id)
+                                        type_id= type_id,
+                                        parent_type_id=parent_type_id)
             db.session.add(created_instance)
             commit_needed = True
+
+    # connect base class instances to derived types
+
+
             
     
     if commit_needed:
@@ -528,14 +579,28 @@ def import_items(db, items, owner_id, group_id):
 def import_items_from_file(db, file):
     pass
 
-def create_basic_types(owner_id, group_id):
+def load_types(resource, owner_id, group_id):
     with open(os.path.join(os.path.dirname(sys.modules[__name__].__file__),
-                           "resources/types.json"), 'r') as f:
+                           resource), 'r') as f:
         data = json.load(f)
         if data:
             type_data = data.get('types')
             if type_data:
                 import_types(db, data,owner_id, group_id)
+
+def create_basic_types(owner_id, group_id):
+    load_types("resources/core.json", owner_id, group_id)
+    load_types("resources/views.json", owner_id, group_id)
+    load_types("resources/controls.json", owner_id, group_id)
+    load_types("resources/items.json", owner_id, group_id)
+    load_types("resources/media.json", owner_id, group_id)
+    load_types("resources/apps.json", owner_id, group_id)
+    load_types("resources/dt.json", owner_id, group_id)
+    load_types("resources/venues.json", owner_id, group_id)
+    load_types("resources/events.json", owner_id, group_id)
+    load_types("resources/games.json", owner_id, group_id)
+
+        
 
 def create_basic_items(owner_id, group_id):
     with open(os.path.join(os.path.dirname(sys.modules[__name__].__file__),

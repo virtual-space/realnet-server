@@ -1,0 +1,82 @@
+{
+    "types": [
+        {
+            "name": "ListView",
+            "attributes": {
+                "icon": "view_list"
+            }
+        },
+        {
+            "name": "CardsView",
+            "attributes": {
+                "icon": "view_module"
+            }
+        },
+        {
+            "name": "MapView",
+            "attributes": {
+                "icon": "map"
+            }
+        },
+        {
+            "name": "CalendarView",
+            "attributes": {
+                "icon": "calendar_today"
+            }
+        },
+        {
+            "name": "BoardView",
+            "attributes": {
+                "icon": "assignment"
+            }
+        },
+        {
+            "name": "PanelView",
+            "attributes": {
+                "icon": "dashboard"
+            }
+        },
+        {
+            "name": "SceneView",
+            "attributes": {
+                "icon": "nature_people"
+            }
+        },
+        {
+            "name": "ImageView",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "VideoView",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "DocumentView",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "PropertiesView",
+            "attributes": {
+                "icon": "ballot"
+            }
+        },
+        {
+            "name": "CtrlView",
+            "attributes": {
+                "icon": "widgets"
+            }
+        },
+        {
+            "name": "TreeView",
+            "attributes": {
+                "icon": "account_tree"
+            }
+        }
+    ]
+}

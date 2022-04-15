@@ -1,0 +1,120 @@
+{
+    "types": [
+        {
+            "name": "Venue",
+            "attributes": {
+                "icon": "other_houses"
+            },
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView"
+                },
+                {
+                    "name": "Edit",
+                    "type": "ItemEditView"
+                },
+                {
+                    "name": "Hierarchy",
+                    "type": "TreeView"
+                }
+            ]
+        },
+        {
+            "name": "Club",
+            "base": "Venue",
+            "attributes": {
+                "icon": "nightlife",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Theatre",
+            "base": "Venue",
+            "attributes": {
+                "icon": "theater_comedy",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Restaurant",
+            "base": "Venue",
+            "attributes": {
+                "icon": "restaurant",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Hotel",
+            "base": "Venue",
+            "attributes": {
+                "icon": "hotel",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "ConferenceCentre",
+            "base": "Venue",
+            "attributes": {
+                "icon": "festival",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "BusinessCentre",
+            "base": "Venue",
+            "attributes": {
+                "icon": "buysiness_center",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "CommunityCentre",
+            "base": "Venue",
+            "attributes": {
+                "icon": "local_library",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "SportsClub",
+            "base": "Venue",
+            "attributes": {
+                "icon": "sports_kabaddi",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "ArtGallery",
+            "base": "Venue",
+            "attributes": {
+                "icon": "collections",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Villa",
+            "base": "Venue",
+            "attributes": {
+                "icon": "villa",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Stadium",
+            "base": "Venue",
+            "attributes": {
+                "icon": "stadium",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Park",
+            "base": "Venue",
+            "attributes": {
+                "icon": "park",
+                "creatable": "true"
+            }
+        }
+    ]
+}

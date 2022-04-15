@@ -1,0 +1,230 @@
+{
+    "types": [
+        {
+            "name": "Query",
+            "attributes": {
+                "icon": "search",
+                "parent_id": "",
+                "name": "",
+                "my_items": "",
+                "public": "",
+                "types": [],
+                "tags": [],
+                "location": {},
+                "visibility": ""
+            }
+        },
+        
+        {
+            "name": "App",
+            "attributes": {
+                "icon": "apps"
+            }
+        },
+        {
+            "name": "FindApp",
+            "base": "App",
+            "attributes": {
+                "icon": "search"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {}
+                },
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+                
+            ]
+        },
+        {
+            "name": "AroundApp",
+            "base": "App",
+            "attributes":{
+                "icon": "local_pizza"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {}
+                },
+                {
+                    "name": "Map",
+                    "type": "MapView",
+                    "attributes": {}
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+                
+            ]
+        },
+        {
+            "name": "HomeApp",
+            "attributes": {
+                "initial": "true",
+                "icon": "home"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true"
+                    }
+                },
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "EventApp",
+            "attributes": {
+                "creatable_types": ["Event"],
+                "icon": "event"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Event"]
+                    }
+                },
+                {
+                    "name": "Timeline",
+                    "type": "CalendarView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "VenueApp",
+            "attributes": {
+                "creatable_types": ["Venue"],
+                "icon": "other_houses"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Venue"]
+                    }
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "GameApp",
+            "attributes": {
+                "creatable_types": ["Game"],
+                "icon": "sports_esports"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Game"]
+                    }
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "LoginApp",
+            "attributes": {
+                "icon": "key",
+                "api": "http://localhost:8080",
+                "client_id": "IEmf5XYQJXIHvWcQtZ5FXbLM",
+                "authenticator_name": "password",
+                "authenticator_type": "password"
+            }
+        },
+        {
+            "name": "PublicApp",
+            "attributes": {
+                "icon": "public"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "public": "true"
+                    }
+                },
+                {
+                    "name": "Items",
+                    "type": "ListView",
+                    "attributes": {
+                        "public": "true"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Apps",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Home",
+                    "type": "HomeApp"
+                },
+                {
+                    "name": "Events",
+                    "type": "EventApp"
+                },
+                {
+                    "name": "Venues",
+                    "type": "VenueApp"
+                },
+                {
+                    "name": "Games",
+                    "type": "GameApp"
+                },
+                {
+                    "name": "Public",
+                    "public": "true",
+                    "type": "PublicApp"
+                },
+                {
+                    "name": "Around",
+                    "public": "true",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Login",
+                    "public": "true",
+                    "type": "LoginApp"
+                }
+            ]
+        }
+    ]
+}
