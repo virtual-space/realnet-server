@@ -1,0 +1,36 @@
+{
+    "types": [
+        {
+            "name": "Chair",
+            "base": "Thing",
+            "attributes": {
+                "icon": "event_seat",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Table",
+            "base": "Thing",
+            "attributes": {
+                "icon": "deck",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "TV",
+            "base": "Thing",
+            "attributes": {
+                "icon": "desktop_windows",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Fridge",
+            "base": "Thing",
+            "attributes": {
+                "icon": "kitchen",
+                "creatable": "true"
+            }
+        }
+    ]
+}

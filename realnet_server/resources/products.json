@@ -1,0 +1,29 @@
+{
+    "types": [
+        {
+            "name": "Product",
+            "attributes" : {
+                "icon": "shopping_cart"
+            }
+        },
+        {
+            "name": "Supplier",
+            "attributes" : {
+                "icon": "store"
+            }
+        },
+        {
+            "name": "Client",
+            "attributes" : {
+                "icon": "account_circle"
+            }
+        },
+        {
+            "name": "Order",
+            "attributes" : {
+                "icon": "local_shipping"
+            }
+        }
+        
+    ]
+}

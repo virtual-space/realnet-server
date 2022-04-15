@@ -77,6 +77,12 @@
             "attributes": {
                 "icon": "account_tree"
             }
+        },
+        {
+            "name": "ItemView",
+            "attributes": {
+                "icon": "view_array"
+            }
         }
     ]
 }

@@ -115,6 +115,28 @@
                 "icon": "park",
                 "creatable": "true"
             }
+        },
+        {
+            "name": "VenueApp",
+            "attributes": {
+                "creatable_types": ["Venue"],
+                "icon": "other_houses"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Venue"]
+                    }
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
         }
     ]
 }

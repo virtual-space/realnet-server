@@ -1,27 +1,6 @@
 {
     "types": [
         {
-            "name": "Query",
-            "attributes": {
-                "icon": "search",
-                "parent_id": "",
-                "name": "",
-                "my_items": "",
-                "public": "",
-                "types": [],
-                "tags": [],
-                "location": {},
-                "visibility": ""
-            }
-        },
-        
-        {
-            "name": "App",
-            "attributes": {
-                "icon": "apps"
-            }
-        },
-        {
             "name": "FindApp",
             "base": "App",
             "attributes": {
@@ -86,72 +65,6 @@
             ]
         },
         {
-            "name": "EventApp",
-            "attributes": {
-                "creatable_types": ["Event"],
-                "icon": "event"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Event"]
-                    }
-                },
-                {
-                    "name": "Timeline",
-                    "type": "CalendarView",
-                    "attributes": {}
-                }
-            ]
-        },
-        {
-            "name": "VenueApp",
-            "attributes": {
-                "creatable_types": ["Venue"],
-                "icon": "other_houses"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Venue"]
-                    }
-                },
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
-        },
-        {
-            "name": "GameApp",
-            "attributes": {
-                "creatable_types": ["Game"],
-                "icon": "sports_esports"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Game"]
-                    }
-                },
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
-        },
-        {
             "name": "LoginApp",
             "attributes": {
                 "icon": "key",
@@ -190,14 +103,6 @@
             },
             "instances": [
                 {
-                    "name": "Find",
-                    "type": "FindApp"
-                },
-                {
-                    "name": "Home",
-                    "type": "HomeApp"
-                },
-                {
                     "name": "Events",
                     "type": "EventApp"
                 },
@@ -206,8 +111,20 @@
                     "type": "VenueApp"
                 },
                 {
+                    "name": "Suppliers",
+                    "type": "SuppliersApp"
+                },
+                {
                     "name": "Games",
                     "type": "GameApp"
+                },
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Home",
+                    "type": "HomeApp"
                 },
                 {
                     "name": "Public",
@@ -223,6 +140,23 @@
                     "name": "Login",
                     "public": "true",
                     "type": "LoginApp"
+                }
+            ]
+        },
+        {
+            "name": "Person",
+            "attributes": {
+                "icon": "person"
+            },
+            "instances": [
+                {
+                    "name": "Home",
+                    "type": "Folder"
+                },
+                {
+                    "name": "Apps",
+                    "public": "true",
+                    "type": "Apps"
                 }
             ]
         }

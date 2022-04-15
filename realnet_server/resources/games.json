@@ -43,6 +43,28 @@
                 "icon": "sports_martial_arts",
                 "creatable": "true"
             }
+        },
+        {
+            "name": "GameApp",
+            "attributes": {
+                "creatable_types": ["Game"],
+                "icon": "sports_esports"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Game"]
+                    }
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
         }
     ]
 }

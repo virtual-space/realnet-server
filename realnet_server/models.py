@@ -245,14 +245,14 @@ def traverse_instance(instances, instance, parent_type_name):
         instances.append({ "instance": inst, "parent_type_name": parent_type_name})
         traverse_instance(instances, inst, inst.get('type'))
 
-def build_item( instance,
+def build_item( item_id,
+                instance,
                 attributes,
                 item_data,
                 owner_id,
                 group_id,
                 parent_item_id=None):
 
-    item_id = str(uuid.uuid4())
     item = Item( id=item_id,
                  name=instance.name,
                  attributes=attributes,
@@ -283,7 +283,8 @@ def build_item( instance,
         elif child_instance.attributes:
             attributes = child_instance.attributes
         
-        child_item = build_item(  child_instance,
+        child_item = build_item(  str(uuid.uuid4()),
+                                  child_instance,
                                   attributes,
                                   {},
                                   owner_id,
@@ -339,7 +340,7 @@ def create_item(db,
                      "item_tags": item_tags,
                      "item_is_public": item_is_public}
         
-        item = build_item(instance, attributes, item_data, owner_id, group_id, parent_item_id)
+        item = build_item(item_id, instance, attributes, item_data, owner_id, group_id, parent_item_id)
     
     return item
 
@@ -594,11 +595,14 @@ def create_basic_types(owner_id, group_id):
     load_types("resources/controls.json", owner_id, group_id)
     load_types("resources/items.json", owner_id, group_id)
     load_types("resources/media.json", owner_id, group_id)
-    load_types("resources/apps.json", owner_id, group_id)
     load_types("resources/dt.json", owner_id, group_id)
+    load_types("resources/buildings.json", owner_id, group_id)
+    load_types("resources/things.json", owner_id, group_id)
+    load_types("resources/products.json", owner_id, group_id)
     load_types("resources/venues.json", owner_id, group_id)
     load_types("resources/events.json", owner_id, group_id)
     load_types("resources/games.json", owner_id, group_id)
+    load_types("resources/apps.json", owner_id, group_id)
 
         
 

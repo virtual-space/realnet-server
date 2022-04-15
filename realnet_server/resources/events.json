@@ -9,6 +9,7 @@
         },
         {
             "name": "Menu",
+            "base": "Thing",
             "attributes": {
                 "icon": "restaurant_menu",
                 "creatable_types": ["MenuItem"],
@@ -108,6 +109,28 @@
                 "icon": "music_video",
                 "creatable": "true"
             }
+        },
+        {
+            "name": "EventApp",
+            "attributes": {
+                "creatable_types": ["Event"],
+                "icon": "event"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Event"]
+                    }
+                },
+                {
+                    "name": "Timeline",
+                    "type": "CalendarView",
+                    "attributes": {}
+                }
+            ]
         }
     ]
 }

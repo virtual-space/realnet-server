@@ -48,23 +48,6 @@
                     "type": "ListView"
                 }
             ]
-        },
-        {
-            "name": "Person",
-            "attributes": {
-                "icon": "person"
-            },
-            "instances": [
-                {
-                    "name": "Home",
-                    "type": "Folder"
-                },
-                {
-                    "name": "Apps",
-                    "public": "true",
-                    "type": "Apps"
-                }
-            ]
         }
     ]
 }

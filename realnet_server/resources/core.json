@@ -26,6 +26,27 @@
                 "module": "list",
                 "creatable": "true"
             }
+        },
+        {
+            "name": "Query",
+            "attributes": {
+                "icon": "search",
+                "parent_id": "",
+                "name": "",
+                "my_items": "",
+                "public": "",
+                "types": [],
+                "tags": [],
+                "location": {},
+                "visibility": ""
+            }
+        },
+        
+        {
+            "name": "App",
+            "attributes": {
+                "icon": "apps"
+            }
         }
     ]
 }

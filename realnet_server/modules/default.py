@@ -2,9 +2,11 @@ import uuid
 import os
 import json
 
-from sqlalchemy import null
+from sqlalchemy import false, null
+
+import realnet_server
 from .module import Module
-from realnet_server.models import db, Item, Blob, BlobType
+from realnet_server.models import db, Item, Blob, BlobType, Type, create_item
 from realnet_server.config import Config
 import mimetypes
 
@@ -29,6 +31,8 @@ class Default(Module):
         item_parent_id = None
         item_location = None
         item_visibility = None
+        item_tags = None
+        item_is_public = False
 
         for key, value in kwargs.items():
             # print("%s == %s" % (key, value))
@@ -42,6 +46,8 @@ class Default(Module):
                 item_type_id = value
             elif key == 'attributes':
                 item_attributes = value
+            elif key == 'tags':
+                item_tags = value
             elif key == 'location':
                 if value['type'] == 'Point':
                     item_location = 'SRID=4326;POINT({0} {1})'.format(value['coordinates'][0], value['coordinates'][1])
@@ -52,19 +58,28 @@ class Default(Module):
                     item_location = item_location[0:-1] + '))'
             elif key == 'visibility':
                 item_visibility = value
+            elif key == 'public':
+                item_is_public = (value.lower() == "true")
 
         if parent_item:
             item_parent_id = parent_item.id
 
-        item = Item(id=str(uuid.uuid4()),
-                    name=item_name,
-                    owner_id=item_owner_id,
-                    group_id=item_group_id,
-                    type_id=item_type_id,
-                    parent_id=item_parent_id,
-                    attributes=item_attributes,
-                    visibility=item_visibility,
-                    location=item_location)
+        target_type = Type.query.filter(Type.id == item_type_id).first()
+
+        item = realnet_server.models.create_item(
+            db=db,
+            item_id=str(uuid.uuid4()),
+            item_type_name=target_type.name,
+            item_name=item_name,
+            item_tags=item_tags,
+            owner_id=item_owner_id,
+            group_id=item_group_id,
+            parent_item_id=item_parent_id,
+            item_attributes=item_attributes,
+            item_visibility=item_visibility,
+            item_location=item_location,
+            item_is_public=item_is_public)
+
         db.session.add(item)
         db.session.commit()
         return json.dumps(item.to_dict())
