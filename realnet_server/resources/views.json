@@ -1,85 +1,105 @@
 {
     "types": [
         {
+            "name": "View",
+            "attributes": {
+                "icon": "fullscreen"
+            }
+        },
+        {
             "name": "ListView",
+            "base": "View",
             "attributes": {
                 "icon": "view_list"
             }
         },
         {
             "name": "CardsView",
+            "base": "View",
             "attributes": {
                 "icon": "view_module"
             }
         },
         {
             "name": "MapView",
+            "base": "View",
             "attributes": {
                 "icon": "map"
             }
         },
         {
             "name": "CalendarView",
+            "base": "View",
             "attributes": {
                 "icon": "calendar_today"
             }
         },
         {
             "name": "BoardView",
+            "base": "View",
             "attributes": {
                 "icon": "assignment"
             }
         },
         {
             "name": "PanelView",
+            "base": "View",
             "attributes": {
                 "icon": "dashboard"
             }
         },
         {
             "name": "SceneView",
+            "base": "View",
             "attributes": {
                 "icon": "nature_people"
             }
         },
         {
             "name": "ImageView",
+            "base": "View",
             "attributes": {
                 "icon": "preview"
             }
         },
         {
             "name": "VideoView",
+            "base": "View",
             "attributes": {
                 "icon": "preview"
             }
         },
         {
             "name": "DocumentView",
+            "base": "View",
             "attributes": {
                 "icon": "preview"
             }
         },
         {
             "name": "PropertiesView",
+            "base": "View",
             "attributes": {
                 "icon": "ballot"
             }
         },
         {
             "name": "CtrlView",
+            "base": "View",
             "attributes": {
                 "icon": "widgets"
             }
         },
         {
             "name": "TreeView",
+            "base": "View",
             "attributes": {
                 "icon": "account_tree"
             }
         },
         {
             "name": "ItemView",
+            "base": "View",
             "attributes": {
                 "icon": "view_array"
             }

@@ -3,14 +3,21 @@
         {
             "name": "Product",
             "attributes" : {
-                "icon": "shopping_cart"
+                "icon": "shopping_cart",
+                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
             }
         },
         {
             "name": "Supplier",
             "attributes" : {
                 "icon": "store"
-            }
+            },
+            "instances":[
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+            ]
         },
         {
             "name": "Client",
@@ -23,6 +30,80 @@
             "attributes" : {
                 "icon": "local_shipping"
             }
+        },
+        {
+            "name": "SupplierApp",
+            "base": "App",
+            "attributes": {
+                "creatable_types": ["Supplier"],
+                "icon": "store"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Supplier"]
+                    }
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "OrderApp",
+            "base": "App",
+            "attributes": {
+                "creatable_types": ["Order"],
+                "icon": "local_shipping"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Order"]
+                    }
+                },
+                {
+                    "name": "Board",
+                    "type": "BoardView",
+                    "attributes": {}
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "ProductApp",
+            "base": "App",
+            "attributes": {
+                "creatable_types": ["Product"],
+                "icon": "shopping_cart"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Product"]
+                    }
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
         }
         
     ]

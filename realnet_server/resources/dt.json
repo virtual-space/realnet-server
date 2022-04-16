@@ -1,24 +1,6 @@
 {
     "types": [
         {
-            "name": "Thing",
-            "attributes": {
-                "icon": "graphic_eq"
-            }
-        },
-        {
-            "name": "Place",
-            "attributes": {
-                "icon": "other_houses"
-            }
-        },
-        {
-            "name": "Task",
-            "attributes": {
-                "icon": "assignment_turned_in"
-            }
-        },
-        {
             "name": "Job",
             "attributes": {
                 "icon": "trending_up"

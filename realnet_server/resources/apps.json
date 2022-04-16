@@ -46,6 +46,7 @@
         },
         {
             "name": "HomeApp",
+            "base": "App",
             "attributes": {
                 "initial": "true",
                 "icon": "home"
@@ -66,6 +67,7 @@
         },
         {
             "name": "LoginApp",
+            "base": "App",
             "attributes": {
                 "icon": "key",
                 "api": "http://localhost:8080",
@@ -76,6 +78,7 @@
         },
         {
             "name": "PublicApp",
+            "base": "App",
             "attributes": {
                 "icon": "public"
             },
@@ -111,8 +114,28 @@
                     "type": "VenueApp"
                 },
                 {
+                    "name": "Products",
+                    "type": "ProductApp"
+                },
+                {
+                    "name": "Orders",
+                    "type": "OrderApp"
+                },
+                {
                     "name": "Suppliers",
-                    "type": "SuppliersApp"
+                    "type": "SupplierApp"
+                },
+                {
+                    "name": "Things",
+                    "type": "ThingApp"
+                },
+                {
+                    "name": "Places",
+                    "type": "PlaceApp"
+                },
+                {
+                    "name": "Tasks",
+                    "type": "TaskApp"
                 },
                 {
                     "name": "Games",
@@ -157,6 +180,10 @@
                     "name": "Apps",
                     "public": "true",
                     "type": "Apps"
+                },
+                {
+                    "name": "List",
+                    "type": "ListView"
                 }
             ]
         }

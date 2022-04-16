@@ -4,7 +4,7 @@
             "name": "ItemEditView",
             "base": "CtrlView",
             "attributes": {
-                "icon": "pencil",
+                "icon": "edit",
                 "layout": "column"
             },
             "instances": [
@@ -12,42 +12,33 @@
                     "name": "Name",
                     "type": "EditCtrl",
                     "attributes": {
-                        "target": "item.name"
+                        "target": "name"
                     }
                 },
                 {
                     "name": "Attributes",
-                    "type": "AttrsCtrl",
-                    "attributes": {
-                        "target": "item.attributes"
-                    }
+                    "type": "AttrsCtrl"
                 },
                 {
                     "name": "Location",
-                    "type": "LocationCtrl",
-                    "attributes": {
-                        "target": "item.location"
-                    }
+                    "type": "LocationCtrl"
                 },
                 {
                     "name": "Tags",
-                    "type": "TagsCtrl",
-                    "attributes": {
-                        "target": "item.tags"
-                    }
+                    "type": "TagsCtrl"
                 },
                 {
                     "name": "From",
                     "type": "DateCtrl",
                     "attributes": {
-                        "target": "item.valid_from"
+                        "target": "valid_from"
                     }
                 },
                 {
                     "name": "To",
                     "type": "DateCtrl",
                     "attributes": {
-                        "target": "item.valid_to"
+                        "target": "valid_to"
                     }
                 }
             ]

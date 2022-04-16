@@ -14,14 +14,43 @@
                 "icon": "restaurant_menu",
                 "creatable_types": ["MenuItem"],
                 "creatable": "true"
-            }
+            },
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "EventView",
+            "base": "CtrlView",
+            "attributes": {
+                "icon": "calendar",
+                "layout": "column"
+            },
+            "instances": [
+                {
+                    "name": "Venue",
+                    "type": "SelectCtrl"
+                },
+                {
+                    "name": "Timeline",
+                    "type": "CalendarCtrl"
+                }
+            ]
         },
         {
             "name": "Event",
             "attributes": {
-                "icon": "event"
+                "icon": "event",
+                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
             },
             "instances": [
+                {
+                    "name": "Timeline",
+                    "type": "CalendarView"
+                },
                 {
                     "name": "List",
                     "type": "ListView"
@@ -86,11 +115,19 @@
             "instances": [
                 {
                     "name": "Menu",
-                    "type": "Menu"
+                    "type": "ItemView",
+                    "attributes": {
+                        "select_name": "Menu",
+                        "select_type": "Menu"
+                    }
                 },
                 {
                     "name": "Contract",
-                    "type": "Document"
+                    "type": "ItemView",
+                    "attributes": {
+                        "select_name": "Contract",
+                        "select_type": "Document"
+                    }
                 }
             ]
         },
@@ -112,6 +149,7 @@
         },
         {
             "name": "EventApp",
+            "base": "App",
             "attributes": {
                 "creatable_types": ["Event"],
                 "icon": "event"
@@ -127,7 +165,12 @@
                 },
                 {
                     "name": "Timeline",
-                    "type": "CalendarView",
+                    "type": "EventView",
+                    "attributes": {}
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
                     "attributes": {}
                 }
             ]

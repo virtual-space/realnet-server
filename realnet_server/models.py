@@ -276,7 +276,7 @@ def build_item( item_id,
         db.session.commit()
     
     for child_instance in instance.type.instances:
-        attributes = child_instance.type.attributes
+        attributes = get_type_attributes(child_instance.type)
         if attributes:
             if child_instance.attributes:
                 attributes =  attributes | child_instance.attributes
@@ -292,6 +292,16 @@ def build_item( item_id,
                                   item.id)
 
     return item
+
+def get_type_attributes(item_type):
+    attributes = item_type.attributes
+    if item_type.base_id:
+        base_attributes = get_type_attributes(item_type.base)
+        if base_attributes and attributes:
+            attributes = base_attributes | attributes
+        elif base_attributes:
+            attributes = base_attributes
+    return attributes
 
 def create_item(db,
                 item_id,
@@ -318,7 +328,7 @@ def create_item(db,
 
     if item_type:
         # attributes = item_attributes | item_type.attributes
-        attributes = item_type.attributes
+        attributes = get_type_attributes(item_type)
         if attributes:
             if item_attributes:
                 attributes =  attributes | item_attributes
@@ -596,10 +606,11 @@ def create_basic_types(owner_id, group_id):
     load_types("resources/items.json", owner_id, group_id)
     load_types("resources/media.json", owner_id, group_id)
     load_types("resources/dt.json", owner_id, group_id)
-    load_types("resources/buildings.json", owner_id, group_id)
+    load_types("resources/places.json", owner_id, group_id)
     load_types("resources/things.json", owner_id, group_id)
     load_types("resources/products.json", owner_id, group_id)
     load_types("resources/venues.json", owner_id, group_id)
+    load_types("resources/tasks.json", owner_id, group_id)
     load_types("resources/events.json", owner_id, group_id)
     load_types("resources/games.json", owner_id, group_id)
     load_types("resources/apps.json", owner_id, group_id)

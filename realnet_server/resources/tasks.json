@@ -1,9 +1,9 @@
 {
     "types": [
         {
-            "name": "Thing",
+            "name": "Task",
             "attributes": {
-                "icon": "graphic_eq",
+                "icon": "assignment_turned_in",
                 "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
             },
             "instances": [
@@ -22,43 +22,11 @@
             ]
         },
         {
-            "name": "Chair",
-            "base": "Thing",
-            "attributes": {
-                "icon": "event_seat",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Table",
-            "base": "Thing",
-            "attributes": {
-                "icon": "deck",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "TV",
-            "base": "Thing",
-            "attributes": {
-                "icon": "desktop_windows",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Fridge",
-            "base": "Thing",
-            "attributes": {
-                "icon": "kitchen",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "ThingApp",
+            "name": "TaskApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Thing"],
-                "icon": "graphic_eq"
+                "creatable_types": ["Task"],
+                "icon": "assignment_turned_in"
             },
             "instances": [
                 {
@@ -66,8 +34,13 @@
                     "type": "Query",
                     "attributes": {
                         "my_items": "true",
-                        "types": ["Thing"]
+                        "types": ["Task"]
                     }
+                },
+                {
+                    "name": "Board",
+                    "type": "BoardView",
+                    "attributes": {}
                 },
                 {
                     "name": "List",

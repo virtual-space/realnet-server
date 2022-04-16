@@ -1,9 +1,9 @@
 {
     "types": [
         {
-            "name": "Thing",
+            "name": "Place",
             "attributes": {
-                "icon": "graphic_eq",
+                "icon": "other_houses",
                 "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
             },
             "instances": [
@@ -22,43 +22,47 @@
             ]
         },
         {
-            "name": "Chair",
-            "base": "Thing",
+            "name": "Area",
+            "base": "Place",
             "attributes": {
-                "icon": "event_seat",
+                "icon": "zoom_out_map",
+                "creatable_types": ["Area", "Building"],
                 "creatable": "true"
             }
         },
         {
-            "name": "Table",
-            "base": "Thing",
+            "name": "Building",
+            "base": "Place",
             "attributes": {
-                "icon": "deck",
+                "icon": "home_work",
+                "creatable_types": ["Floor", "Room"],
                 "creatable": "true"
             }
         },
         {
-            "name": "TV",
-            "base": "Thing",
+            "name": "Floor",
+            "base": "Place",
             "attributes": {
-                "icon": "desktop_windows",
+                "icon": "layers",
+                "creatable_types": ["Room"],
                 "creatable": "true"
             }
         },
         {
-            "name": "Fridge",
-            "base": "Thing",
+            "name": "Room",
+            "base": "Place",
             "attributes": {
-                "icon": "kitchen",
+                "icon": "meeting_room",
+                "creatable_types": ["Thing"],
                 "creatable": "true"
             }
         },
         {
-            "name": "ThingApp",
+            "name": "PlaceApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Thing"],
-                "icon": "graphic_eq"
+                "creatable_types": ["Place"],
+                "icon": "place"
             },
             "instances": [
                 {
@@ -66,7 +70,7 @@
                     "type": "Query",
                     "attributes": {
                         "my_items": "true",
-                        "types": ["Thing"]
+                        "types": ["Place"]
                     }
                 },
                 {
@@ -76,5 +80,6 @@
                 }
             ]
         }
+
     ]
 }

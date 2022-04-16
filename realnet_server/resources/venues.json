@@ -3,7 +3,8 @@
         {
             "name": "Venue",
             "attributes": {
-                "icon": "other_houses"
+                "icon": "other_houses",
+                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
             },
             "instances": [
                 {
@@ -118,6 +119,7 @@
         },
         {
             "name": "VenueApp",
+            "base": "App",
             "attributes": {
                 "creatable_types": ["Venue"],
                 "icon": "other_houses"

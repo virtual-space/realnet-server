@@ -1,61 +1,88 @@
 {
     "types": [
         {
-            "name": "LocationCtrl"
+            "name": "Control",
+            "attributes": {
+                "icon": "widgets"
+            }
         },
         {
-            "name": "DateCtrl"
+            "name": "LocationCtrl",
+            "base": "Control"
         },
         {
-            "name": "EditCtrl"
+            "name": "DateCtrl",
+            "base": "Control"
         },
         {
-            "name": "SelectCtrl"
+            "name": "EditCtrl",
+            "base": "Control"
+        },
+        {
+            "name": "SelectCtrl",
+            "base": "Control"
+        },
+        {
+            "name": "CalendarCtrl",
+            "base": "Control"
         },
         {
             "name": "ButtonCtrl",
+            "base": "Control",
             "attributes": {
                 "icon": "radio_button_checked"
             }
         },
         {
             "name": "LabelCtrl",
+            "base": "Control",
             "attributes": {
                 "icon": "label"
             }
         },
         {
-            "name": "LinkCtrl"
+            "name": "LinkCtrl",
+            "base": "Control"
         },
         {
-            "name": "CodeCtrl"
+            "name": "CodeCtrl",
+            "base": "Control"
         },
         {
-            "name": "TagsCtrl"
+            "name": "TagsCtrl",
+            "base": "Control"
         },
         {
-            "name": "TagCtrl"
+            "name": "TagCtrl",
+            "base": "Control"
         },
         {
-            "name": "BarCtrl"
+            "name": "BarCtrl",
+            "base": "Control"
         },
         {
-            "name": "ViewCtrl"
+            "name": "ViewCtrl",
+            "base": "Control"
         },
         {
-            "name": "ColCtrl"
+            "name": "ColCtrl",
+            "base": "Control"
         },
         {
-            "name": "QueryCtrl"
+            "name": "QueryCtrl",
+            "base": "Control"
         },
         {
-            "name": "TreeCtrl"
+            "name": "TreeCtrl",
+            "base": "Control"
         },
         {
-            "name": "ItemCtrl"
+            "name": "ItemCtrl",
+            "base": "Control"
         },
         {
-            "name": "AttrsCtrl"
+            "name": "AttrsCtrl",
+            "base": "Control"
         }
     ]
 }

@@ -1,7 +1,14 @@
 {
     "types": [
         {
+            "name": "Media",
+            "attributes": {
+                "icon": "collections"
+            }
+        },
+        {
             "name": "Folder",
+            "base": "Media",
             "attributes": {
                 "icon": "folder",
                 "creatable": "true"
@@ -15,6 +22,7 @@
         },
         {
             "name": "Document",
+            "base": "Media",
             "attributes": {
                 "icon": "description",
                 "creatable": "true"
@@ -28,6 +36,7 @@
         },
         {
             "name": "Link",
+            "base": "Media",
             "attributes": {
                 "icon": "link",
                 "creatable": "true"
@@ -36,6 +45,7 @@
         },
         {
             "name": "Page",
+            "base": "Media",
             "attributes": {
                 "icon": "web_asset",
                 "creatable": "true"
@@ -49,6 +59,7 @@
         },
         {
             "name": "Image",
+            "base": "Media",
             "attributes": {
                 "icon": "image",
                 "creatable": "true"
@@ -62,6 +73,7 @@
         },
         {
             "name": "Video",
+            "base": "Media",
             "attributes": {
                 "icon": "ondemand_video",
                 "creatable": "true"
@@ -75,6 +87,7 @@
         },
         {
             "name": "Drawing",
+            "base": "Media",
             "attributes": {
                 "icon": "gesture",
                 "creatable": "true"
@@ -88,6 +101,7 @@
         },
         {
             "name": "Scene",
+            "base": "Media",
             "attributes": {
                 "icon": "view_in_ar",
                 "creatable": "true"
