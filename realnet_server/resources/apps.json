@@ -138,6 +138,10 @@
                     "type": "TaskApp"
                 },
                 {
+                    "name": "Automation",
+                    "type": "LogicApp"
+                },
+                {
                     "name": "Games",
                     "type": "GameApp"
                 },

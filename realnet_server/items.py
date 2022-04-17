@@ -272,7 +272,7 @@ def items():
         request.on_json_loading_failed = lambda x: print('json parsing error: ', x)
         input_data = request.get_json(force=True, silent=False)
         if input_data:
-            input_type = Type.query.filter(Type.name == input_data['type'].capitalize()).first()
+            input_type = Type.query.filter(Type.name == input_data['type']).first()
             if input_type:
 
                 module_name = input_type.module

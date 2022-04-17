@@ -21,52 +21,39 @@
             ]
         },
         {
-            "name": "Sensor"
-        },
-        {
-            "name": "Actuator"
-        },
-        {
-            "name": "Controller",
-            "attributes": {
-                "comment": "Sets up Sensor/Controller/Actuator"
-            },
-            "instances": [
-                {
-                    "name": "Sensor",
-                    "type": "Sensor",
-                    "attributes": {
-                        "comment": "Sensors detect input signals"
-                    }
-                },
-                {
-                    "name": "Actuator",
-                    "type": "Actuator"
-                }
-            ]
-           
-
-        },
-        {
             "name": "Goal",
+            "base": "Controller",
             "attributes": {
                 "icon": "flag_circle"
             }
         },
         {
             "name": "Award",
+            "base": "Controller",
             "attributes": {
                 "icon": "emoji_events"
             }
         },
         {
             "name": "Progress",
+            "base": "Controller",
             "attributes": {
                 "icon": "pending"
             }
         },
         {
-            "name": "Collectable"
+            "name": "Artifact",
+            "type": "Thing",
+            "attributes": {
+                "icon": "build"
+            }
+        },
+        {
+            "name": "Creature",
+            "type": "Thing",
+            "attributes": {
+                "icon": "smart_toy"
+            }
         },
         {
             "name": "QuestView",
@@ -80,14 +67,14 @@
                     "name": "Title",
                     "type": "LabelCtrl",
                     "attributes": {
-                        "value": "This is the title"
+                        "target": "title"
                     }
                 },
                 {
                     "name": "Description",
                     "type": "LabelCtrl",
                     "attributes": {
-                        "value": "This is the description"
+                        "target": "description"
                     }
                 },
                 {
@@ -118,7 +105,9 @@
             "base": "Game",
             "attributes": {
                 "icon": "task_alt",
-                "creatable": "true"
+                "creatable": "true",
+                "title": "My cool quest",
+                "description": "Something about the quest"
             },
             "instances": [
                 {
@@ -151,6 +140,41 @@
                     "attributes": {
                         "select_name": "Award",
                         "select_type": "Award"
+                    }
+                },
+                {
+                    "name": "Places",
+                    "type": "ListView",
+                    "attributes": {
+                        "icon": "other_houses"
+                    }
+                },
+                {
+                    "name": "Artifacts",
+                    "type": "ListView",
+                    "attributes": {
+                        "icon": "build"
+                    }
+                },
+                {
+                    "name": "Creatures",
+                    "type": "ListView",
+                    "attributes": {
+                        "icon": "smart_toy"
+                    }
+                },
+                {
+                    "name": "Players",
+                    "type": "ListView",
+                    "attributes": {
+                        "icon": "groups"
+                    }
+                },
+                {
+                    "name": "Map",
+                    "type": "MapView",
+                    "attributes": {
+                        "icon": "map"
                     }
                 }
             ]
