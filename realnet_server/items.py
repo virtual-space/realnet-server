@@ -537,6 +537,7 @@ def item_data(id):
             if file and allowed_file(file.filename):
                 print('request data')
                 print('request', request)
+                print('files', request.files)
                 print('file', file)
                 print('item', item)
                 result = module_instance.update_item_data(item, file)
