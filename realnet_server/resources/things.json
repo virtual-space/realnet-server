@@ -2,24 +2,11 @@
     "types": [
         {
             "name": "Thing",
+            "base": "Item",
             "attributes": {
                 "icon": "graphic_eq",
                 "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
-            },
-            "instances": [
-                {
-                    "name": "List",
-                    "type": "ListView"
-                },
-                {
-                    "name": "Edit",
-                    "type": "ItemEditView"
-                },
-                {
-                    "name": "Hierarchy",
-                    "type": "TreeView"
-                }
-            ]
+            }
         },
         {
             "name": "Chair",

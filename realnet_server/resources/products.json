@@ -2,6 +2,7 @@
     "types": [
         {
             "name": "Product",
+            "base": "Item",
             "attributes" : {
                 "icon": "shopping_cart",
                 "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
@@ -9,24 +10,21 @@
         },
         {
             "name": "Supplier",
+            "base": "Item",
             "attributes" : {
                 "icon": "store"
-            },
-            "instances":[
-                {
-                    "name": "List",
-                    "type": "ListView"
-                }
-            ]
+            }
         },
         {
             "name": "Client",
+            "base": "Item",
             "attributes" : {
                 "icon": "account_circle"
             }
         },
         {
             "name": "Order",
+            "base": "Item",
             "attributes" : {
                 "icon": "local_shipping"
             }
@@ -48,7 +46,7 @@
                     }
                 },
                 {
-                    "name": "List",
+                    "name": "All",
                     "type": "ListView",
                     "attributes": {}
                 }
@@ -76,7 +74,7 @@
                     "attributes": {}
                 },
                 {
-                    "name": "List",
+                    "name": "All",
                     "type": "ListView",
                     "attributes": {}
                 }
@@ -99,7 +97,7 @@
                     }
                 },
                 {
-                    "name": "List",
+                    "name": "All",
                     "type": "ListView",
                     "attributes": {}
                 }

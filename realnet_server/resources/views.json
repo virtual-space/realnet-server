@@ -103,6 +103,49 @@
             "attributes": {
                 "icon": "view_array"
             }
+        },
+        {
+            "name": "DialogView",
+            "base": "View",
+            "attributes": {
+                "icon": "web_asset"
+            }
+        },
+        {
+            "name": "EditView",
+            "base": "CtrlView",
+            "attributes": {
+                "icon": "edit"
+            }
+        },
+        {
+            "name": "CreateView",
+            "base": "CtrlView",
+            "attributes": {
+                "icon": "add_circle_outline"
+            }
+        },
+        {
+            "name": "DeleteView",
+            "base": "CtrlView",
+            "attributes": {
+                "icon": "remove_circle_outline"
+            }
+        },
+        {
+            "name": "ContentView",
+            "base": "CtrlView",
+            "attributes": {
+                "icon": "center_focus_weak"
+            }
+        },
+        {
+            "name": "QueryView",
+            "base": "CtrlView",
+            "attributes": {
+                "icon": "search"
+            }
         }
+
     ]
 }

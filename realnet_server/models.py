@@ -180,6 +180,7 @@ class Item(db.Model, SerializerMixin):
     tags = db.Column(db.ARRAY(db.String()))
     type = db.relationship('Type')
     acls = db.relationship('Acl', passive_deletes=True)
+    items = db.relationship('Item')
     # parent = db.relationship('Item')
 
 
@@ -245,6 +246,14 @@ def traverse_instance(instances, instance, parent_type_name):
         instances.append({ "instance": inst, "parent_type_name": parent_type_name})
         traverse_instance(instances, inst, inst.get('type'))
 
+def get_type_instances(type):
+    instances = []
+    if type.instances:
+        instances.extend(type.instances)
+    if type.base:
+        instances.extend(get_type_instances(type.base))
+    return instances
+
 def build_item( item_id,
                 instance,
                 attributes,
@@ -275,7 +284,8 @@ def build_item( item_id,
         db.session.add(acl)
         db.session.commit()
     
-    for child_instance in instance.type.instances:
+    instances = get_type_instances(instance.type)
+    for child_instance in instances:
         attributes = get_type_attributes(child_instance.type)
         if attributes:
             if child_instance.attributes:
@@ -600,10 +610,10 @@ def load_types(resource, owner_id, group_id):
                 import_types(db, data,owner_id, group_id)
 
 def create_basic_types(owner_id, group_id):
-    load_types("resources/core.json", owner_id, group_id)
     load_types("resources/views.json", owner_id, group_id)
     load_types("resources/controls.json", owner_id, group_id)
     load_types("resources/items.json", owner_id, group_id)
+    load_types("resources/core.json", owner_id, group_id)
     load_types("resources/media.json", owner_id, group_id)
     load_types("resources/dt.json", owner_id, group_id)
     load_types("resources/logic.json", owner_id, group_id)

@@ -472,7 +472,6 @@ def single_item(id):
                                statusCode=403,
                                data='Account not authorized to read this item'), 403
             retrieved_item = module_instance.get_item(item)
-
         if retrieved_item:
             return retrieved_item
         else:

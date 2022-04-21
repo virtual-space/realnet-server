@@ -2,24 +2,26 @@
     "types": [
         {
             "name": "Task",
+            "base": "Item",
             "attributes": {
                 "icon": "assignment_turned_in",
                 "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
-            },
-            "instances": [
-                {
-                    "name": "List",
-                    "type": "ListView"
-                },
-                {
-                    "name": "Edit",
-                    "type": "ItemEditView"
-                },
-                {
-                    "name": "Hierarchy",
-                    "type": "TreeView"
-                }
-            ]
+            }
+        },
+        {
+            "name": "Job",
+            "base": "Task",
+            "attributes": {
+                "icon": "assignment",
+                "creatable_types": ["Task"]
+            }
+        },
+        {
+            "name": "Runner",
+            "base": "Task",
+            "attributes": {
+                "icon": "settings_applications"
+            }
         },
         {
             "name": "TaskApp",
@@ -43,7 +45,7 @@
                     "attributes": {}
                 },
                 {
-                    "name": "List",
+                    "name": "All",
                     "type": "ListView",
                     "attributes": {}
                 }

@@ -154,6 +154,10 @@
                     "type": "HomeApp"
                 },
                 {
+                    "name": "Media",
+                    "type": "MediaApp"
+                },
+                {
                     "name": "Public",
                     "public": "true",
                     "type": "PublicApp"

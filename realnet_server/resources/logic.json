@@ -1,86 +1,5 @@
 {
-    "types": [
-        
-        {
-            "name": "Sensor",
-            "attributes": {
-                "icon": "sensors",
-                "creatable_types": ["Sensor", "Actuator"]
-            }
-        },
-        {
-            "name": "WhenItemProperty",
-            "base": "Sensor",
-            "attributes": {
-                "icon": "sensors",
-                "target": "name",
-                "creatable": "true",
-                "expression": "False",
-                "module": "when_item_property",
-                "comment": ["The WhenItemProperty sensor will evaluate its python expression on the item property designated by its target attribute",
-                            "and if that expression evaluates to true it will invoke all its actuator children"]
-            }
-        },
-        {
-            "name": "Actuator",
-            "attributes": {
-                "icon": "rocket_launch",
-                "comment": ["The Actuator will be triggered along any of it's actuator children "],
-                "creatable_types": ["Actuator"]
-            }
-        },
-        {
-            "name": "SetItemProperty",
-            "base": "Actuator",
-            "attributes": {
-                "icon": "tune",
-                "target": "name",
-                "creatable": "true",
-                "module": "set_item_property",
-                "value": "",
-                "comment": ["The SetItemProperty actuator will set the item property designated by its target attribute to the value specified by its value attribute"]
-            }
-        },
-        {
-            "name": "CreateItem",
-            "base": "Actuator",
-            "attributes": {
-                "icon": "add_circle",
-                "target": "name",
-                "creatable": "true",
-                "target_type": "Folder",
-                "module": "create_item",
-                "value": "",
-                "comment": ["The CreateItem actuator will create a new item of type designated by its target_type attribute to the parent item specified by its target attribute"]
-            }
-        },
-        {
-            "name": "DestroyItem",
-            "base": "Actuator",
-            "attributes": {
-                "icon": "remove_circle",
-                "target": "name",
-                "creatable": "true",
-                "module": "destroy_item",
-                "value": "",
-                "comment": ["The DestroyItem actuator will the item specified by its target attribute"]
-            }
-        },
-        {
-            "name": "Controller",
-            "attributes": {
-                "icon": "memory",
-                "comment": ["The Controller will trigger selected actuators based on information received via sensors "],
-                "creatable_types": ["Actuator", "Sensor", "Controller"]
-            },
-            "instances": [
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
-        },
+    "types": [        
         {
             "name": "LogicApp",
             "base": "App",
@@ -98,7 +17,7 @@
                     }
                 },
                 {
-                    "name": "List",
+                    "name": "All",
                     "type": "ListView",
                     "attributes": {}
                 }

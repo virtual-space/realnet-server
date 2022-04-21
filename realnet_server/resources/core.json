@@ -1,34 +1,8 @@
 {
     "types": [
         {
-            "name": "Type",
-            "attributes": {
-                "name": "Type",
-                "type": "Type",
-                "base": "Type",
-                "attributes": {
-                    "icon": "",
-                    "module": ""
-                },
-                "instances": []
-            }
-        },
-        {
-            "name": "Instance",
-            "attributes" : {
-                "icon": "approval"
-            }
-        },
-        {
-            "name": "List",
-            "attributes": {
-                "icon": "list",
-                "module": "list",
-                "creatable": "true"
-            }
-        },
-        {
             "name": "Query",
+            "base": "Item",
             "attributes": {
                 "icon": "search",
                 "parent_id": "",
@@ -43,9 +17,59 @@
         },
         {
             "name": "App",
+            "base": "Item",
             "attributes": {
                 "icon": "apps"
             }
+        },
+        {
+            "name": "Type",
+            "base": "Item"
+        },
+        {
+            "name": "Func",
+            "base": "Item",
+            "module": "func",
+            "attributes": {
+                "icon": "functions",
+                "creatable": "true",
+                "code": "# Python 3 code goes here..."
+            }
+        },
+        {
+            "name": "Op",
+            "base": "Func",
+            "instances": [
+                {
+                    "name": "Lambda",
+                    "type": "Func"
+                }
+            ]
+        },
+        {
+            "name": "Monoid",
+            "base": "Type",
+            "instances": [
+                {
+                    "name": "Type",
+                    "type": "Type"
+                },
+                {
+                    "name": "Op",
+                    "type": "Op"
+                }
+            ]
+        },
+        {
+            "name": "Functor",
+            "base": "Func",
+            "instances": [
+                {
+                    "name": "Lambda",
+                    "type": "Func"
+                }
+            ]
         }
+
     ]
 }

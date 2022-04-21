@@ -2,12 +2,13 @@
     "types": [
         {
             "name": "Game",
+            "base": "Item",
             "attributes": {
                 "icon": "sports_esports"
             },
             "instances": [
                 {
-                    "name": "List",
+                    "name": "All",
                     "type": "ListView"
                 },
                 {
@@ -15,10 +16,27 @@
                     "type": "ItemEditView"
                 },
                 {
+                    "name": "Create",
+                    "type": "ItemCreateView"
+                },
+                {
+                    "name": "Query",
+                    "type": "ItemQueryView"
+                },
+                {
                     "name": "Hierarchy",
                     "type": "TreeView"
                 }
             ]
+        },
+        {
+            "name": "Controller",
+            "base": "Item",
+            "attributes": {
+                "icon": "memory",
+                "comment": ["The Controller will trigger selected actuators based on information received via sensors "],
+                "creatable_types": ["Actuator", "Sensor", "Controller"]
+            }
         },
         {
             "name": "Goal",
@@ -43,14 +61,14 @@
         },
         {
             "name": "Artifact",
-            "type": "Thing",
+            "type": "Item",
             "attributes": {
                 "icon": "build"
             }
         },
         {
             "name": "Creature",
-            "type": "Thing",
+            "type": "Item",
             "attributes": {
                 "icon": "smart_toy"
             }
@@ -212,7 +230,7 @@
                     }
                 },
                 {
-                    "name": "List",
+                    "name": "All",
                     "type": "ListView",
                     "attributes": {}
                 }

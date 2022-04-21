@@ -216,7 +216,8 @@ class Default(Module):
         db.session.commit()
 
     def get_items(self, item):
-        return json.dumps([i.to_dict() for i in Item.query.filter(Item.parent_id == item['id'])])
+        id = item.id if isinstance(item, Item) else item['id']
+        return json.dumps([i.to_dict() for i in Item.query.filter(Item.parent_id == id)])
 
     def get_item(self, item):
         retrieved_item = Item.query.filter(Item.id == item.id).first()
@@ -225,6 +226,7 @@ class Default(Module):
                             'name': retrieved_item.name,
                             'attributes': retrieved_item.attributes,
                             'type': retrieved_item.type.to_dict(),
-                            'parent_id': retrieved_item.parent_id})
+                            'parent_id': retrieved_item.parent_id,
+                            'items': [i.to_dict() for i in retrieved_item.items]})
 
         return None

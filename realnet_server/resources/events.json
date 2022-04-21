@@ -2,6 +2,7 @@
     "types": [
         {
             "name": "MenuItem",
+            "base": "Item",
             "attributes": {
                 "icon": "drag_handle",
                 "creatable": "true"
@@ -9,18 +10,12 @@
         },
         {
             "name": "Menu",
-            "base": "Thing",
+            "base": "Item",
             "attributes": {
                 "icon": "restaurant_menu",
                 "creatable_types": ["MenuItem"],
                 "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "List",
-                    "type": "ListView"
-                }
-            ]
+            }
         },
         {
             "name": "EventView",
@@ -32,7 +27,7 @@
             "instances": [
                 {
                     "name": "Venue",
-                    "type": "SelectCtrl"
+                    "type": "ItemSelectCtrl"
                 },
                 {
                     "name": "Timeline",
@@ -42,6 +37,7 @@
         },
         {
             "name": "Event",
+            "base": "Item",
             "attributes": {
                 "icon": "event",
                 "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
@@ -50,18 +46,6 @@
                 {
                     "name": "Timeline",
                     "type": "CalendarView"
-                },
-                {
-                    "name": "List",
-                    "type": "ListView"
-                },
-                {
-                    "name": "Edit",
-                    "type": "ItemEditView"
-                },
-                {
-                    "name": "Hierarchy",
-                    "type": "TreeView"
                 }
             ]
         },

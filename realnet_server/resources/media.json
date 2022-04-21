@@ -2,23 +2,10 @@
     "types": [
         {
             "name": "Media",
+            "base": "Item",
             "attributes": {
                 "icon": "collections"
             }
-        },
-        {
-            "name": "Folder",
-            "base": "Media",
-            "attributes": {
-                "icon": "folder",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "ListView"
-                }
-            ]
         },
         {
             "name": "Document",
@@ -40,7 +27,13 @@
             "attributes": {
                 "icon": "link",
                 "creatable": "true"
-            }
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "LinkView"
+                }
+            ]
 
         },
         {
@@ -100,6 +93,14 @@
             ]
         },
         {
+            "name": "Folder",
+            "base": "Media",
+            "attributes": {
+                "icon": "folder",
+                "creatable": "true"
+            }
+        },
+        {
             "name": "Scene",
             "base": "Media",
             "attributes": {
@@ -110,6 +111,29 @@
                 {
                     "name": "View",
                     "type": "SceneView"
+                }
+            ]
+        },
+        {
+            "name": "MediaApp",
+            "base": "App",
+            "attributes": {
+                "creatable_types": ["Media"],
+                "icon": "perm_media"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Media"]
+                    }
+                },
+                {
+                    "name": "All",
+                    "type": "ListView",
+                    "attributes": {}
                 }
             ]
         }

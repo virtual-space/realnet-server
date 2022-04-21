@@ -1,21 +1,9 @@
 {
     "types": [
         {
-            "name": "Job",
-            "attributes": {
-                "icon": "trending_up"
-            }
-        },
-        {
             "name": "Topic",
             "attributes": {
                 "icon": "forum"
-            }
-        },
-        {
-            "name": "Runner",
-            "attributes": {
-                "icon": "settings_applications"
             }
         },
         {

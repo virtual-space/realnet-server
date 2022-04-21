@@ -1,44 +1,141 @@
 {
     "types": [
         {
-            "name": "ItemEditView",
-            "base": "CtrlView",
+            "name": "Actuator",
             "attributes": {
-                "icon": "edit",
-                "layout": "column"
+                "icon": "rocket_launch",
+                "comment": ["The Actuator will be triggered along any of it's actuator children "]
+            }
+        },
+        {
+            "name": "SetItemProperty",
+            "base": "Actuator",
+            "attributes": {
+                "icon": "tune",
+                "target": "name",
+                "creatable": "true",
+                "module": "set_item_property",
+                "value": "",
+                "comment": ["The SetItemProperty actuator will set the item property designated by its target attribute to the value specified by its value attribute"]
+            }
+        },
+        {
+            "name": "CreateItem",
+            "base": "Actuator",
+            "attributes": {
+                "icon": "add_circle",
+                "target": "name",
+                "creatable": "true",
+                "target_type": "Folder",
+                "module": "create_item",
+                "value": "MyFolder",
+                "comment": ["The CreateItem actuator will create a new item of type designated by its target_type attribute to the parent item specified by its target attribute"]
+            }
+        },
+        {
+            "name": "SaveItem",
+            "base": "Actuator",
+            "attributes": {
+                "icon": "save",
+                "item": {
+                    "id": "The id of the existing item to be updated. If there is no id a new item will be created",
+                    "name": "The name of the item to be saved",
+                    "attributes": {
+                        "icon": "send_and_archive"
+                    }
+                },
+                "creatable": "true",
+                "module": "save_item",
+                "comment": ["The SaveItem actuator will save the item passed in under its 'item' attribute"]
+            }
+        },
+        {
+            "name": "DeleteItem",
+            "base": "Actuator",
+            "attributes": {
+                "icon": "remove_circle",
+                "id": "The ID of the item to be deleted",
+                "creatable": "true",
+                "module": "delete_item",
+                "value": "",
+                "comment": ["The DeleteItem actuator will the item specified by its target attribute"]
+            }
+        },
+        {
+            "name": "Sensor",
+            "attributes": {
+                "icon": "sensors",
+                "creatable_types": ["Sensor", "Actuator"]
+            }
+        },
+        {
+            "name": "WhenItemProperty",
+            "base": "Sensor",
+            "attributes": {
+                "icon": "sensors",
+                "target": "name",
+                "creatable": "true",
+                "expression": "False",
+                "module": "when_item_property",
+                "comment": ["The WhenItemProperty sensor will evaluate its python expression on the item property designated by its target attribute",
+                            "and if that expression evaluates to true it will invoke all its actuator children"]
+            }
+        },
+        {
+            "name": "SaveButton",
+            "base": "ButtonCtrl",
+            "attributes": {
+                "value": "something"
             },
             "instances": [
                 {
-                    "name": "Name",
-                    "type": "EditCtrl",
+                    "name": "Save",
+                    "type": "SaveItem"
+                }
+            ]
+        },
+        {
+            "name": "DeleteButton",
+            "base": "ButtonCtrl",
+            "attributes": {
+                "value": "something"
+            },
+            "instances": [
+                {
+                    "name": "Delete",
+                    "type": "DeleteItem"
+                }
+            ]
+        },
+        {
+            "name": "Item",
+            "instances": [
+                {
+                    "name": "Edit",
+                    "type": "EditView",
                     "attributes": {
-                        "target": "name"
+                        "hidden": "true"
                     }
                 },
                 {
-                    "name": "Attributes",
-                    "type": "AttrsCtrl"
-                },
-                {
-                    "name": "Location",
-                    "type": "LocationCtrl"
-                },
-                {
-                    "name": "Tags",
-                    "type": "TagsCtrl"
-                },
-                {
-                    "name": "From",
-                    "type": "DateCtrl",
+                    "name": "Create",
+                    "type": "CreateView",
                     "attributes": {
-                        "target": "valid_from"
+                        "hidden": "true"
                     }
                 },
                 {
-                    "name": "To",
-                    "type": "DateCtrl",
+                    "name": "CurrentQuery",
+                    "type": "QueryView",
                     "attributes": {
-                        "target": "valid_to"
+                        "hidden": "true"
+                    }
+                },
+                {
+                    "name": "Hierarchy",
+                    "type": "TreeView",
+                    "attributes": {
+                        "hidden": "true"
                     }
                 }
             ]

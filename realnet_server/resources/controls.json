@@ -19,8 +19,20 @@
             "base": "Control"
         },
         {
+            "name": "FormCtrl",
+            "base": "Control"
+        },
+        {
             "name": "SelectCtrl",
             "base": "Control"
+        },
+        {
+            "name": "ItemSelectCtrl",
+            "base": "SelectControl"
+        },
+        {
+            "name": "TypeSelectCtrl",
+            "base": "SelectControl"
         },
         {
             "name": "CalendarCtrl",
@@ -30,7 +42,11 @@
             "name": "ButtonCtrl",
             "base": "Control",
             "attributes": {
-                "icon": "radio_button_checked"
+                "icon": "radio_button_checked",
+                "is_ok_button": "false",
+                "is_cancel_button": "false",
+                "color": "primary",
+                "disabled": "false"
             }
         },
         {
