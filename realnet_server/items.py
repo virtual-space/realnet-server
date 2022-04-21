@@ -534,6 +534,11 @@ def item_data(id):
                                data='Account not authorized to write data into this item'), 403
 
             if file and allowed_file(file.filename):
+                print('request data')
+                print('request', request)
+                print('files', request.files)
+                print('file', file)
+                print('item', item)
                 result = module_instance.update_item_data(item, file)
                 if result['created'] or result['updated']:
                     code = 201

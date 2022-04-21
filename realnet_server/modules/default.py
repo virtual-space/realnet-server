@@ -121,6 +121,7 @@ class Default(Module):
                 s3 = session.resource('s3')
                 bucket = s3.Bucket(cfg.get_s3_bucket())
                 bucket.Object(blob.id).put(Body=storage)
+                blob.data = storage
                 blob.content_length = storage.content_length,
                 blob.content_type = content_type,
                 blob.filename = storage.filename,
