@@ -98,7 +98,13 @@
             "attributes": {
                 "icon": "folder",
                 "creatable": "true"
-            }
+            },
+            "instances": [
+                {
+                    "name": "Children",
+                    "type": "ListView"
+                }
+            ]
         },
         {
             "name": "Scene",

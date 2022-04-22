@@ -122,11 +122,19 @@ def filter_readable_items(account, items_json):
 def perform_search(request, account, public=False):
     conditions = []
 
+    home = request.args.get('home')
+
     parent_id = request.args.get('parent_id')
 
     my_items = request.args.get('my_items')
 
-    if parent_id:
+    if home:
+        folder = Item.query.filter(Item.parent_id == account.id, Item.name == 'Home').first()
+        if folder:
+            conditions.append(Item.parent_id == folder.id)
+        else:
+            conditions.append(Item.parent_id == None)
+    elif parent_id:
         conditions.append(Item.parent_id == parent_id)
     elif my_items and account:
         conditions.append(Item.owner_id == account.id)
@@ -288,7 +296,12 @@ def items():
                 if input_name:
                     parent_id = None
 
-                    if 'parent_id' in input_data:
+                    if 'home' in input_data:
+                        folder = Item.query.filter(Item.parent_id == current_token.account.id, Item.name == 'Home').first()
+                        if folder:
+                            parent_id = folder.id
+
+                    if not parent_id and 'parent_id' in input_data:
                         parent_id = input_data['parent_id']
 
                         parent = Item.query.filter(Item.id == parent_id).first()

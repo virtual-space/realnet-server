@@ -149,7 +149,7 @@
                 },
                 {
                     "name": "Timeline",
-                    "type": "EventView",
+                    "type": "CalendarView",
                     "attributes": {}
                 },
                 {

@@ -56,7 +56,7 @@
                     "name": "Query",
                     "type": "Query",
                     "attributes": {
-                        "my_items": "true"
+                        "home": "true"
                     }
                 },
                 {
