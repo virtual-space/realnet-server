@@ -108,37 +108,125 @@
             ]
         },
         {
-            "name": "Item",
+            "name": "ItemCreateForm",
+            "base": "FormCtrl",
+            "attributes": {
+                "value": "something"
+            },
+            "instances": [
+                {
+                    "name": "Type",
+                    "type": "TypeSelectCtrl"
+                },
+                {
+                    "name": "Name",
+                    "type": "EditCtrl"
+                },
+                {
+                    "name": "Attributes",
+                    "type": "AttrsCtrl"
+                },
+                {
+                    "name": "Location",
+                    "type": "LocationCtrl"
+                },
+                {
+                    "name": "From",
+                    "type": "DateCtrl"
+                },
+                {
+                    "name": "To",
+                    "type": "DateCtrl"
+                },
+                {
+                    "name": "Status",
+                    "type": "SelectCtrl"
+                },
+                {
+                    "name": "Save",
+                    "type": "SaveButton"
+                }
+            ]
+        },
+        {
+            "name": "ItemCreateDialog",
+            "base": "Dialog",
+            "attributes": {
+                "value": "something"
+            },
+            "instances": [
+                {
+                    "name": "Create",
+                    "type": "ItemCreateForm"
+                }
+            ]
+        },
+        {
+            "name": "ItemEditForm",
+            "base": "FormCtrl",
+            "attributes": {
+                "value": "something"
+            },
+            "instances": [
+                {
+                    "name": "Name",
+                    "type": "EditCtrl"
+                },
+                {
+                    "name": "Attributes",
+                    "type": "AttrsCtrl"
+                },
+                {
+                    "name": "Location",
+                    "type": "LocationCtrl"
+                },
+                {
+                    "name": "From",
+                    "type": "DateCtrl"
+                },
+                {
+                    "name": "To",
+                    "type": "DateCtrl"
+                },
+                {
+                    "name": "Status",
+                    "type": "SelectCtrl"
+                },
+                {
+                    "name": "Save",
+                    "type": "SaveButton"
+                }
+            ]
+        },
+        {
+            "name": "ItemEditDialog",
+            "base": "Dialog",
+            "attributes": {
+                "value": "something"
+            },
             "instances": [
                 {
                     "name": "Edit",
-                    "type": "EditView",
-                    "attributes": {
-                        "hidden": "true"
-                    }
-                },
-                {
-                    "name": "Create",
-                    "type": "CreateView",
-                    "attributes": {
-                        "hidden": "true"
-                    }
-                },
-                {
-                    "name": "CurrentQuery",
-                    "type": "QueryView",
-                    "attributes": {
-                        "hidden": "true"
-                    }
-                },
-                {
-                    "name": "Hierarchy",
-                    "type": "TreeView",
-                    "attributes": {
-                        "hidden": "true"
-                    }
+                    "type": "ItemEditForm"
                 }
             ]
+        },
+        {
+            "name": "ItemQueryDialog",
+            "base": "Dialog",
+            "attributes": {
+                "value": "something"
+            }
+        },
+        {
+            "name": "ItemHierarchyDialog",
+            "base": "Dialog",
+            "attributes": {
+                "value": "something"
+            }
+        },
+        {
+            "name": "Item"
         }
     ]
 }

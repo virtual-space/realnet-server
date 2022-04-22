@@ -28,11 +28,11 @@
         },
         {
             "name": "ItemSelectCtrl",
-            "base": "SelectControl"
+            "base": "SelectCtrl"
         },
         {
             "name": "TypeSelectCtrl",
-            "base": "SelectControl"
+            "base": "SelectCtrl"
         },
         {
             "name": "CalendarCtrl",
@@ -99,6 +99,12 @@
         {
             "name": "AttrsCtrl",
             "base": "Control"
+        },
+        {
+            "name": "Dialog",
+            "attributes": {
+                "icon": "call_to_action"
+            }
         }
     ]
 }

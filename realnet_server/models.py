@@ -126,7 +126,7 @@ class App(db.Model, OAuth2ClientMixin, SerializerMixin):
 
 
 class Type(db.Model, SerializerMixin):
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.String(36), primary_key=True, index=True)
     name = db.Column(db.String(128))
     icon = db.Column(db.String(128))
     attributes = db.Column(db.JSON)
@@ -143,7 +143,7 @@ class VisibilityType(enum.Enum):
     restricted = 3
 
 class Instance(db.Model, SerializerMixin):
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.String(36), primary_key=True, index=True)
     name = db.Column(db.String(128))
     icon = db.Column(db.String(128))
     attributes = db.Column(db.JSON)
@@ -168,7 +168,7 @@ class Item(db.Model, SerializerMixin):
     serialize_types = (
         (WKBElement, lambda x: jsonize_geometry(x)),
     )
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.String(36), primary_key=True, index=True)
     name = db.Column(db.String(128))
     attributes = db.Column(db.JSON)
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)

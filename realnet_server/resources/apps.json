@@ -175,6 +175,30 @@
             ]
         },
         {
+            "name": "Dialogs",
+            "attributes": {
+                "icon": "filter_none"
+            },
+            "instances": [
+                {
+                    "name": "Create",
+                    "type": "ItemCreateDialog"
+                },
+                {
+                    "name": "Edit",
+                    "type": "ItemEditDialog"
+                },
+                {
+                    "name": "Query",
+                    "type": "ItemQueryDialog"
+                },
+                {
+                    "name": "Hierarchy",
+                    "type": "ItemHierarchyDialog"
+                }
+            ]
+        },
+        {
             "name": "Person",
             "attributes": {
                 "icon": "person"
@@ -188,6 +212,10 @@
                     "name": "Apps",
                     "public": "true",
                     "type": "Apps"
+                },
+                {
+                    "name": "Dialogs",
+                    "type": "Dialogs"
                 },
                 {
                     "name": "List",
