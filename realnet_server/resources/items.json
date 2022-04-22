@@ -85,7 +85,7 @@
             "name": "SaveButton",
             "base": "ButtonCtrl",
             "attributes": {
-                "value": "something"
+                "default": "true"
             },
             "instances": [
                 {
@@ -93,6 +93,13 @@
                     "type": "SaveItem"
                 }
             ]
+        },
+        {
+            "name": "CancelButton",
+            "base": "ButtonCtrl",
+            "attributes": {
+                "close": "true"
+            }
         },
         {
             "name": "DeleteButton",
@@ -120,7 +127,10 @@
                 },
                 {
                     "name": "Name",
-                    "type": "EditCtrl"
+                    "type": "EditCtrl",
+                    "attributes": {
+                        "value": "New item"
+                    }
                 },
                 {
                     "name": "Attributes",
@@ -139,11 +149,11 @@
                     "type": "DateCtrl"
                 },
                 {
-                    "name": "Status",
-                    "type": "SelectCtrl"
+                    "name": "Cancel",
+                    "type": "CancelButton"
                 },
                 {
-                    "name": "Save",
+                    "name": "Create",
                     "type": "SaveButton"
                 }
             ]
@@ -189,8 +199,8 @@
                     "type": "DateCtrl"
                 },
                 {
-                    "name": "Status",
-                    "type": "SelectCtrl"
+                    "name": "Cancel",
+                    "type": "CancelButton"
                 },
                 {
                     "name": "Save",
