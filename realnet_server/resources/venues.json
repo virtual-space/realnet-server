@@ -2,11 +2,18 @@
     "types": [
         {
             "name": "Venue",
-            "base": "Item",
+            "base": "Place",
             "attributes": {
                 "icon": "other_houses",
                 "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
-            }
+            },
+            "instances": [
+                {
+                    "name": "Calendar",
+                    "type": "CalendarView",
+                    "attributes": {}
+                }
+            ]
         },
         {
             "name": "Club",

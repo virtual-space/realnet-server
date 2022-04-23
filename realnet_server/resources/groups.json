@@ -1,0 +1,51 @@
+{
+    "types": [
+        {
+            "name": "Contact",
+            "attributes": {
+                "icon": "person_outline",
+                "createable": "true"
+            }
+        },
+        {
+            "name": "Group",
+            "base": "Item",
+            "module": "group",
+            "attributes": {
+                "icon": "groups",
+                "createable": "true",
+                "creatable_types": ["Contact"]
+            },
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "GroupApp",
+            "base": "App",
+            "attributes": {
+                "creatable_types": ["Group"],
+                "icon": "groups"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Group"]
+                    }
+                },
+                {
+                    "name": "All",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        }
+
+    ]
+}

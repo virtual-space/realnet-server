@@ -1,19 +1,20 @@
 {
     "types": [
         {
-            "name": "Task",
-            "base": "Item",
+            "name": "Type",
+            "module": "type",
             "attributes": {
-                "icon": "assignment_turned_in",
-                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
+                "creatable": "true",
+                "creatable_types": ["Type"],
+                "icon": "approval"
             }
         },
         {
-            "name": "TaskApp",
+            "name": "TypeApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Task"],
-                "icon": "assignment_turned_in"
+                "creatable_types": ["Type"],
+                "icon": "approval"
             },
             "instances": [
                 {
@@ -21,13 +22,8 @@
                     "type": "Query",
                     "attributes": {
                         "my_items": "true",
-                        "types": ["Task"]
+                        "types": ["Type"]
                     }
-                },
-                {
-                    "name": "Board",
-                    "type": "BoardView",
-                    "attributes": {}
                 },
                 {
                     "name": "All",
@@ -36,5 +32,6 @@
                 }
             ]
         }
+
     ]
 }

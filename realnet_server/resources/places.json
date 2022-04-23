@@ -6,7 +6,19 @@
             "attributes": {
                 "icon": "other_houses",
                 "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
-            }
+            },
+            "instances": [
+                {
+                    "name": "All",
+                    "type": "ListView",
+                    "attributes": {}
+                },
+                {
+                    "name": "Map",
+                    "type": "MapView",
+                    "attributes": {}
+                }
+            ]
         },
         {
             "name": "Area",

@@ -35,3 +35,7 @@ class Module(ABC):
     def delete_item_data(self, item):
         pass
 
+    @abstractmethod
+    def perform_search(self, account, data, public):
+        pass
+

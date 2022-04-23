@@ -15,7 +15,13 @@
                 "icon": "restaurant_menu",
                 "creatable_types": ["MenuItem"],
                 "creatable": "true"
-            }
+            },
+            "instances": [
+                {
+                    "name": "Items",
+                    "type": "CardsView"
+                }
+            ]
         },
         {
             "name": "EventView",
@@ -46,6 +52,10 @@
                 {
                     "name": "Timeline",
                     "type": "CalendarView"
+                },
+                {
+                    "name": "All",
+                    "type": "ListView"
                 }
             ]
         },

@@ -1,33 +1,48 @@
 {
     "types": [
         {
-            "name": "Game",
-            "base": "Item",
+            "name": "Player",
+            "type": "Func",
             "attributes": {
-                "icon": "sports_esports"
-            },
-            "instances": [
-                {
-                    "name": "All",
-                    "type": "ListView"
-                },
-                {
-                    "name": "Edit",
-                    "type": "ItemEditView"
-                },
-                {
-                    "name": "Create",
-                    "type": "ItemCreateView"
-                },
-                {
-                    "name": "Query",
-                    "type": "ItemQueryView"
-                },
-                {
-                    "name": "Hierarchy",
-                    "type": "TreeView"
-                }
-            ]
+                "icon": "snowshoeing",
+                "creatable_types": ["Creature", "Resource", "Tool", "Player", "Place", "Thing", "Event", "Media", "Task", "Level"],
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Trait",
+            "type": "Item",
+            "attributes": {
+                "icon": "snowshoeing",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Tool",
+            "type": "Item",
+            "attributes": {
+                "icon": "build",
+                "creatable": "true",
+                "creatable_types": ["Creature", "Resource", "Tool", "Player", "Place", "Thing", "Event", "Media", "Task", "Level"]
+            }
+        },
+        {
+            "name": "Resource",
+            "type": "Item",
+            "attributes": {
+                "icon": "diamond",
+                "creatable": "true",
+                "creatable_types": ["Creature", "Resource", "Tool", "Player", "Place", "Thing", "Event", "Media", "Task", "Level"]
+            }
+        },
+        {
+            "name": "Creature",
+            "type": "Func",
+            "attributes": {
+                "icon": "smart_toy",
+                "creatable": "true",
+                "creatable_types": ["Creature", "Resource", "Tool", "Player", "Place", "Thing", "Event", "Media", "Task", "Level"]
+            }
         },
         {
             "name": "Controller",
@@ -35,43 +50,92 @@
             "attributes": {
                 "icon": "memory",
                 "comment": ["The Controller will trigger selected actuators based on information received via sensors "],
-                "creatable_types": ["Actuator", "Sensor", "Controller"]
+                "creatable_types": ["Actuator", "Sensor", "Controller"],
+                "creatable": "true"
             }
         },
         {
             "name": "Goal",
             "base": "Controller",
             "attributes": {
-                "icon": "flag_circle"
+                "icon": "flag_circle",
+                "creatable": "true"
             }
         },
         {
             "name": "Award",
             "base": "Controller",
             "attributes": {
-                "icon": "emoji_events"
+                "icon": "emoji_events",
+                "creatable": "true"
             }
         },
         {
             "name": "Progress",
             "base": "Controller",
             "attributes": {
-                "icon": "pending"
+                "icon": "pending",
+                "creatable": "true"
             }
         },
         {
-            "name": "Artifact",
-            "type": "Item",
+            "name": "Level",
+            "type": "Func",
             "attributes": {
-                "icon": "build"
+                "icon": "smart_toy",
+                "creatable_types": ["Creature", "Resource", "Tool", "Player", "Place", "Thing", "Event", "Media", "Task", "Level"],
+                "creatable": "true"
             }
         },
         {
-            "name": "Creature",
+            "name": "Clip",
+            "type": "Media",
+            "attributes": {
+                "icon": "smart_toy",
+                "creatable_types": ["Media"],
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Chapter",
             "type": "Item",
             "attributes": {
-                "icon": "smart_toy"
+                "icon": "smart_toy",
+                "creatable_types": ["Clip", "Level"],
+                "creatable": "true"
             }
+        },
+        {
+            "name": "Story",
+            "type": "Item",
+            "attributes": {
+                "icon": "smart_toy",
+                "creatable_types": ["Chapter"],
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Game",
+            "base": "Item",
+            "attributes": {
+                "icon": "sports_esports",
+                "creatable_types": ["Story"],
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "Main",
+                    "type": "Story"
+                },
+                {
+                    "name": "Story",
+                    "type": "ItemView",
+                    "attributes": {
+                        "select_name": "Main",
+                        "select_type": "Story"
+                    }
+                }
+            ]
         },
         {
             "name": "QuestView",

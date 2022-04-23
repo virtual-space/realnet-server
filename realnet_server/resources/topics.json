@@ -1,19 +1,21 @@
 {
     "types": [
         {
-            "name": "Task",
+            "name": "Topic",
             "base": "Item",
+            "module": "topic",
             "attributes": {
-                "icon": "assignment_turned_in",
-                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
+                "icon": "forum",
+                "creatable": "true"
             }
         },
         {
-            "name": "TaskApp",
+            "name": "TopicApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Task"],
-                "icon": "assignment_turned_in"
+                "creatable_types": ["Topic"],
+                "creatable": "true",
+                "icon": "forum"
             },
             "instances": [
                 {
@@ -21,13 +23,8 @@
                     "type": "Query",
                     "attributes": {
                         "my_items": "true",
-                        "types": ["Task"]
+                        "types": ["Topic"]
                     }
-                },
-                {
-                    "name": "Board",
-                    "type": "BoardView",
-                    "attributes": {}
                 },
                 {
                     "name": "All",
@@ -36,5 +33,6 @@
                 }
             ]
         }
+
     ]
 }

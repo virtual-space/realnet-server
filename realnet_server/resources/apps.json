@@ -158,6 +158,22 @@
                     "type": "MediaApp"
                 },
                 {
+                    "name": "Types",
+                    "type": "TypeApp"
+                },
+                {
+                    "name": "Groups",
+                    "type": "GroupApp"
+                },
+                {
+                    "name": "Topics",
+                    "type": "TopicApp"
+                },
+                {
+                    "name": "Jobs",
+                    "type": "JobsApp"
+                },
+                {
                     "name": "Public",
                     "public": "true",
                     "type": "PublicApp"

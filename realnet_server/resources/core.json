@@ -24,10 +24,6 @@
             }
         },
         {
-            "name": "Type",
-            "base": "Item"
-        },
-        {
             "name": "Func",
             "base": "Item",
             "module": "func",
@@ -44,20 +40,6 @@
                 {
                     "name": "Lambda",
                     "type": "Func"
-                }
-            ]
-        },
-        {
-            "name": "Monoid",
-            "base": "Type",
-            "instances": [
-                {
-                    "name": "Type",
-                    "type": "Type"
-                },
-                {
-                    "name": "Op",
-                    "type": "Op"
                 }
             ]
         },

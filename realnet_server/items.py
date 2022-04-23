@@ -118,88 +118,85 @@ def can_account_delete_item(account, item):
 def filter_readable_items(account, items_json):
     return [i for i in json.loads(items_json) if can_account_read_item(account, Item(**i))] if items_json else []
 
+def extract_search_data(request):
 
-def perform_search(request, account, public=False):
-    conditions = []
-
+    data = dict()
+        
     home = request.args.get('home')
+    if home:
+        data['home'] = home
 
     parent_id = request.args.get('parent_id')
+    if parent_id:
+        data['parent_id'] = parent_id
 
     my_items = request.args.get('my_items')
-
-    if home:
-        folder = Item.query.filter(Item.parent_id == account.id, Item.name == 'Home').first()
-        if folder:
-            conditions.append(Item.parent_id == folder.id)
-        else:
-            conditions.append(Item.parent_id == None)
-    elif parent_id:
-        conditions.append(Item.parent_id == parent_id)
-    elif my_items and account:
-        conditions.append(Item.owner_id == account.id)
-    else:
-        root_item_name = app.config.get('ROOT_ITEM')
-        if root_item_name:
-            root_item = Item.query.filter(Item.name == root_item_name).first()
-            if root_item:
-                conditions.append(Item.parent_id == root_item.id)
-            else:
-                conditions.append(Item.parent_id == None)
+    if my_items:
+        data['my_items'] = my_items
 
     name = request.args.get('name')
-
     if name:
-        conditions.append(Item.name.ilike('{}%'.format(unquote(name))))
+        data['name'] = name
 
     type_names = request.args.getlist('types')
 
     if type_names:
-        print(type_names)
-        type_ids = [ti.id for ti in Type.query.filter(Type.name.in_(type_names)).all()]
-        derived_type_ids = [ti.id for ti in Type.query.filter(Type.base_id.in_(type_ids)).all()]
-        conditions.append(Item.type_id.in_(list(set(type_ids + derived_type_ids))))
+        data['type_names'] = type_names
 
     keys = request.args.getlist('key')
 
+    if keys:
+        data['keys'] = keys
+
     values = request.args.getlist('value')
 
-    for kv in zip(keys, values):
-        conditions.append(Item.attributes[kv[0]].astext == kv[1])
+    if values:
+        data['values'] = values
 
     lat = request.args.get('lat')
+
+    if lat:
+        data['lat'] = lat
+
     lng = request.args.get('lng')
+
+    if lng:
+        data['lng'] = lng
+    
     radius = request.args.get('radius', 100.00)
 
-    if lat and lng:
-        range = (0.00001) * float(radius)
-        conditions.append(func.ST_DWithin(Item.location, 'SRID=4326;POINT({} {})'.format(lng, lat), range))
+    if radius:
+        data['radius'] = radius
 
     visibility = request.args.get('visibility')
 
     if visibility:
-        conditions.append(Item.visibility == VisibilityType[visibility])
+        data['visibility'] = visibility
 
     tags = request.args.getlist('tags')
 
     if tags:
-        conditions.append(Item.tags.contains(tags))
+        data['tags'] = tags
 
+    return data
+
+def perform_search(request, account, module, public=False):
+    data = extract_search_data(request)
+    
     if public:
-        if not conditions:
-            return jsonify([])
-        else:
-            return jsonify([i.to_dict() for i in Item.query.filter(*conditions) if is_item_public(i)]), 200
+        return jsonify([i.to_dict() for i in module.perform_search(account, data, public) if is_item_public(i)]), 200
     else:
-        if not conditions:
-            conditions.append(Item.parent_id == current_token.account.home_id)
-        return jsonify([i.to_dict() for i in Item.query.filter(*conditions) if can_account_read_item(account, i)]), 200
+        return jsonify([i.to_dict() for i in module.perform_search(account, data, public) if can_account_read_item(account, i)]), 200
 
 
 
 @app.route('/public/items', methods=['GET'])
 def public_items():
-    return perform_search(request, None, True)
+    module_name = 'default'
+    module = importlib.import_module('realnet_server.modules.{}'.format(module_name))
+    module_class = getattr(module, module_name.capitalize())
+    module_instance = module_class()
+    return perform_search(request, None, module_instance, True)
 
 @app.route('/public/items/<id>', methods=['GET'])
 def public_single_item(id):
@@ -396,7 +393,41 @@ def items():
                                statusCode=400,
                                data='Bad request'), 400
     else:
-        return perform_search(request, current_token.account, False)
+        data = extract_search_data(request)
+        type_names = request.args.getlist('types')
+        public = request.args.getlist('public')
+        account = current_token.account
+        results = []
+        if type_names:
+            types = Type.query.filter(Type.name.in_(type_names)).all()
+            for extended_type in  [t for t in types if t.module]:
+                module_name = extended_type.module
+
+                if not module_name:
+                    module_name = 'default'
+
+                module = importlib.import_module('realnet_server.modules.{}'.format(module_name))
+                module_class = getattr(module, module_name.capitalize())
+                module_instance = module_class()
+                results.extend(module_instance.perform_search(account, data, public))
+            if [t for t in types if not t.module]:
+                module_name = 'default'
+                module = importlib.import_module('realnet_server.modules.{}'.format(module_name))
+                module_class = getattr(module, module_name.capitalize())
+                module_instance = module_class()   
+                results.extend(module_instance.perform_search(account, data, public))
+        else:
+            module_name = 'default'
+            module = importlib.import_module('realnet_server.modules.{}'.format(module_name))
+            module_class = getattr(module, module_name.capitalize())
+            module_instance = module_class()   
+            results.extend(module_instance.perform_search(account, data, public))
+
+        if public:
+            return jsonify([i.to_dict() for i in results if is_item_public(i)]), 200
+        else:
+            return jsonify([i.to_dict() for i in results if can_account_read_item(account, i)]), 200
+
 
 
 @app.route('/items/<id>', methods=['GET', 'PUT', 'DELETE'])
