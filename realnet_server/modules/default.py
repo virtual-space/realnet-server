@@ -2,7 +2,7 @@ import uuid
 import os
 import json
 
-from sqlalchemy import false, null
+from sqlalchemy import false, null, func
 
 from sqlalchemy.sql import func, and_, or_, not_, functions
 try:
