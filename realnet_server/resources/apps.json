@@ -1,6 +1,12 @@
 {
     "types": [
         {
+            "name": "Apps",
+            "attributes": {
+                "icon": "apps"
+            }
+        },
+        {
             "name": "FindApp",
             "base": "App",
             "attributes": {
@@ -48,17 +54,10 @@
             "name": "HomeApp",
             "base": "App",
             "attributes": {
-                "initial": "true",
-                "icon": "home"
+                "icon": "home",
+                "show_children": "true"
             },
             "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "home": "true"
-                    }
-                },
                 {
                     "name": "List",
                     "type": "ListView"
@@ -80,7 +79,8 @@
             "name": "PublicApp",
             "base": "App",
             "attributes": {
-                "icon": "public"
+                "icon": "public",
+                "initial": "true"
             },
             "instances": [
                 {
@@ -100,83 +100,24 @@
             ]
         },
         {
-            "name": "Apps",
+            "name": "PublicApps",
+            "base": "Apps",
             "attributes": {
                 "icon": "apps"
             },
             "instances": [
                 {
-                    "name": "Events",
-                    "type": "EventApp"
-                },
-                {
-                    "name": "Venues",
-                    "type": "VenueApp"
-                },
-                {
-                    "name": "Products",
-                    "type": "ProductApp"
-                },
-                {
-                    "name": "Orders",
-                    "type": "OrderApp"
-                },
-                {
-                    "name": "Suppliers",
-                    "type": "SupplierApp"
-                },
-                {
-                    "name": "Things",
-                    "type": "ThingApp"
-                },
-                {
-                    "name": "Places",
-                    "type": "PlaceApp"
-                },
-                {
-                    "name": "Tasks",
-                    "type": "TaskApp"
-                },
-                {
-                    "name": "Automation",
-                    "type": "LogicApp"
-                },
-                {
-                    "name": "Games",
-                    "type": "GameApp"
-                },
-                {
                     "name": "Find",
+                    "public": "true",
                     "type": "FindApp"
-                },
-                {
-                    "name": "Home",
-                    "type": "HomeApp"
-                },
-                {
-                    "name": "Media",
-                    "type": "MediaApp"
-                },
-                {
-                    "name": "Types",
-                    "type": "TypeApp"
-                },
-                {
-                    "name": "Groups",
-                    "type": "GroupApp"
-                },
-                {
-                    "name": "Topics",
-                    "type": "TopicApp"
-                },
-                {
-                    "name": "Jobs",
-                    "type": "JobsApp"
                 },
                 {
                     "name": "Public",
                     "public": "true",
-                    "type": "PublicApp"
+                    "type": "PublicApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
                 },
                 {
                     "name": "Around",
@@ -211,31 +152,6 @@
                 {
                     "name": "Hierarchy",
                     "type": "ItemHierarchyDialog"
-                }
-            ]
-        },
-        {
-            "name": "Person",
-            "attributes": {
-                "icon": "person"
-            },
-            "instances": [
-                {
-                    "name": "Home",
-                    "type": "Folder"
-                },
-                {
-                    "name": "Apps",
-                    "public": "true",
-                    "type": "Apps"
-                },
-                {
-                    "name": "Dialogs",
-                    "type": "Dialogs"
-                },
-                {
-                    "name": "List",
-                    "type": "ListView"
                 }
             ]
         }

@@ -24,14 +24,32 @@
             }
         },
         {
+            "name": "FuncView",
+            "base": "CtrlView",
+            "attributes": {
+                "icon": "functions"
+            },
+            "instances": [
+                {
+                    "name": "FuncCtrl",
+                    "type": "FuncCtrl"
+                }
+            ]
+        },
+        {
             "name": "Func",
             "base": "Item",
-            "module": "func",
             "attributes": {
                 "icon": "functions",
                 "creatable": "true",
                 "code": "# Python 3 code goes here..."
-            }
+            },
+            "instances": [
+                {
+                    "name": "FuncView",
+                    "type": "FuncView"
+                }
+            ]
         },
         {
             "name": "Op",

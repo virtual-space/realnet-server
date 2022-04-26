@@ -2,29 +2,29 @@
     "types": [
         {
             "name": "Type",
-            "module": "type",
+            "base": "Item",
             "attributes": {
-                "creatable": "true",
-                "creatable_types": ["Type"],
-                "icon": "approval"
-            }
+                "icon": "approval",
+                "createable": "true",
+                "creatable_types": ["Type"]
+            },
+            "instances": [
+                {
+                    "name": "All",
+                    "type": "ListView"
+                }
+            ]
         },
         {
             "name": "TypeApp",
             "base": "App",
+            "module": "types",
             "attributes": {
                 "creatable_types": ["Type"],
-                "icon": "approval"
+                "icon": "approval",
+                "show_children": "true"
             },
             "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Type"]
-                    }
-                },
                 {
                     "name": "All",
                     "type": "ListView",

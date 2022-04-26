@@ -101,6 +101,14 @@
             "base": "Control"
         },
         {
+            "name": "FuncCtrl",
+            "base": "Control"
+        },
+        {
+            "name": "UploadCtrl",
+            "base": "Control"
+        },
+        {
             "name": "Dialog",
             "attributes": {
                 "icon": "call_to_action"

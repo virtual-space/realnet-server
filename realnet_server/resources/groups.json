@@ -1,20 +1,32 @@
 {
     "types": [
         {
-            "name": "Contact",
+            "name": "Account",
+            "module": "groups",
             "attributes": {
-                "icon": "person_outline",
-                "createable": "true"
+                "icon": "account_circle",
+                "role_name": "Visitor",
+                "account_type": "person",
+                "creatable": "true",
+                "email": "a@b.com",
+                "password": ""
+            }
+        },
+        {
+            "name": "Role",
+            "attributes": {
+                "icon": "badge"
             }
         },
         {
             "name": "Group",
             "base": "Item",
-            "module": "group",
+            "module": "groups",
             "attributes": {
                 "icon": "groups",
-                "createable": "true",
-                "creatable_types": ["Contact"]
+                "creatable": "true",
+                "creatable_types": ["Account"],
+                "show_children": "true"
             },
             "instances": [
                 {
@@ -26,9 +38,26 @@
         {
             "name": "GroupApp",
             "base": "App",
+            "module": "groups",
             "attributes": {
                 "creatable_types": ["Group"],
-                "icon": "groups"
+                "icon": "groups",
+                "show_children": "true"
+            },
+            "instances": [
+                {
+                    "name": "All",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "ContactApp",
+            "base": "App",
+            "attributes": {
+                "creatable_types": ["Contact", "Role"],
+                "icon": "person_outline"
             },
             "instances": [
                 {
@@ -36,7 +65,7 @@
                     "type": "Query",
                     "attributes": {
                         "my_items": "true",
-                        "types": ["Group"]
+                        "types": ["Contact", "Role"]
                     }
                 },
                 {
@@ -46,6 +75,7 @@
                 }
             ]
         }
+
 
     ]
 }

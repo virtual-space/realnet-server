@@ -1,0 +1,130 @@
+{
+    "types": [
+        {
+            "name": "AdminApps",
+            "base": "Apps",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Home",
+                    "type": "HomeApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
+                },
+                {
+                    "name": "Types",
+                    "type": "TypeApp"
+                },
+                {
+                    "name": "Groups",
+                    "type": "GroupApp"
+                },
+                {
+                    "name": "Accounts",
+                    "type": "AccountApp"
+                },
+                {
+                    "name": "Topics",
+                    "type": "TopicApp"
+                },
+                {
+                    "name": "Jobs",
+                    "type": "JobsApp"
+                },
+                {
+                    "name": "Public",
+                    "type": "PublicApp"
+                },
+                {
+                    "name": "Around",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Login",
+                    "type": "LoginApp"
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "base": "Role",
+            "attributes": {
+                "icon": "person"
+            },
+            "instances": [
+                {
+                    "name": "Apps",
+                    "type": "AdminApps"
+                },
+                {
+                    "name": "Dialogs",
+                    "type": "Dialogs"
+                },
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "VisitorApps",
+            "base": "Apps",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Home",
+                    "type": "HomeApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
+                },
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Public",
+                    "type": "PublicApp"
+                },
+                {
+                    "name": "Around",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Login",
+                    "type": "LoginApp"
+                }
+            ]
+        },
+        {
+            "name": "Visitor",
+            "base": "Role",
+            "attributes": {
+                "icon": "person"
+            },
+            "instances": [
+                {
+                    "name": "Apps",
+                    "type": "VisitorApps"
+                },
+                {
+                    "name": "Dialogs",
+                    "type": "Dialogs"
+                },
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+            ]
+        }
+    ]
+}

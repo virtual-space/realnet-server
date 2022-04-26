@@ -168,6 +168,160 @@
                     "attributes": {}
                 }
             ]
+        },
+        {
+            "name": "EventStaffApps",
+            "base": "Apps",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Events",
+                    "type": "EventApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
+                },
+                {
+                    "name": "Venues",
+                    "type": "VenueApp"
+                },
+                {
+                    "name": "Products",
+                    "type": "ProductApp"
+                },
+                {
+                    "name": "Orders",
+                    "type": "OrderApp"
+                },
+                {
+                    "name": "Suppliers",
+                    "type": "SupplierApp"
+                },
+                {
+                    "name": "Tasks",
+                    "type": "TaskApp"
+                },
+                {
+                    "name": "Games",
+                    "type": "GameApp"
+                },
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Home",
+                    "type": "HomeApp"
+                },
+                {
+                    "name": "Groups",
+                    "type": "GroupApp"
+                },
+                {
+                    "name": "Topics",
+                    "type": "TopicApp"
+                },
+                {
+                    "name": "Contacts",
+                    "type": "ContactApp"
+                },
+                {
+                    "name": "Around",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Login",
+                    "type": "LoginApp"
+                }
+            ]
+        },
+        {
+            "name": "EventStaff",
+            "base": "Role",
+            "attributes": {
+                "icon": "manager_accounts"
+            },
+            "instances": [
+                {
+                    "name": "Apps",
+                    "type": "EventStaffApps"
+                },
+                {
+                    "name": "Dialogs",
+                    "type": "Dialogs"
+                },
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "EventStaffApps",
+            "base": "Apps",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Events",
+                    "type": "EventApp"
+                },
+                {
+                    "name": "Venues",
+                    "type": "VenueApp"
+                },
+                {
+                    "name": "Products",
+                    "type": "ProductApp"
+                },
+                {
+                    "name": "Orders",
+                    "type": "OrderApp"
+                },
+                {
+                    "name": "Suppliers",
+                    "type": "SupplierApp"
+                },
+                {
+                    "name": "Tasks",
+                    "type": "TaskApp"
+                },
+                {
+                    "name": "Games",
+                    "type": "GameApp"
+                },
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Home",
+                    "type": "HomeApp"
+                },
+                {
+                    "name": "Groups",
+                    "type": "GroupApp"
+                },
+                {
+                    "name": "Topics",
+                    "type": "TopicApp"
+                },
+                {
+                    "name": "Contacts",
+                    "type": "ContactApp"
+                },
+                {
+                    "name": "Around",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Login",
+                    "type": "LoginApp"
+                }
+            ]
         }
     ]
 }

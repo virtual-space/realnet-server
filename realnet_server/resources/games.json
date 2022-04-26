@@ -299,6 +299,67 @@
                     "attributes": {}
                 }
             ]
+        },
+        {
+            "name": "GameMakerApps",
+            "base": "Apps",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Home",
+                    "type": "HomeApp"
+                },
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Public",
+                    "type": "PublicApp"
+                },
+                {
+                    "name": "Game",
+                    "type": "GameApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
+                },
+                {
+                    "name": "Media",
+                    "type": "MediaApp"
+                },
+                {
+                    "name": "Around",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Login",
+                    "type": "LoginApp"
+                }
+            ]
+        },
+        {
+            "name": "GameMaker",
+            "base": "Role",
+            "attributes": {
+                "icon": "manage_accounts"
+            },
+            "instances": [
+                {
+                    "name": "Apps",
+                    "type": "GameMakerApps"
+                },
+                {
+                    "name": "Dialogs",
+                    "type": "Dialogs"
+                },
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+            ]
         }
     ]
 }

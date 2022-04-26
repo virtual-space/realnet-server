@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 class Module(ABC):
 
     @abstractmethod
-    def get_item(self, item):
+    def get_item(self, id):
         pass
 
     @abstractmethod
@@ -36,6 +36,18 @@ class Module(ABC):
         pass
 
     @abstractmethod
-    def perform_search(self, account, data, public):
+    def perform_search(self, id, account, data, public):
+        pass
+
+    @abstractmethod
+    def invoke(self, item, arguments):
+        pass
+
+    @abstractmethod
+    def message(self, item, arguments):
+        pass
+
+    @abstractmethod
+    def import_file(self, item, file):
         pass
 

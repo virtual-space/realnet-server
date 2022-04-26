@@ -13,7 +13,7 @@
             "justMyCode": true
         },
         {
-            "name": "Python: Flask",
+            "name": "Python: Serve",
             "type": "python",
             "request": "launch",
             "module": "realnet_server",
@@ -24,6 +24,21 @@
             },
             "args": [
                 "serve"
+            ],
+            "jinja": true
+        },
+        {
+            "name": "Python: Initialize",
+            "type": "python",
+            "request": "launch",
+            "module": "realnet_server",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH":"${PYTHONPATH}:${workspaceRoot}"
+            },
+            "args": [
+                "initialize"
             ],
             "jinja": true
         }

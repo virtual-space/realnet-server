@@ -8,6 +8,14 @@
             }
         },
         {
+            "name": "File",
+            "base": "Media",
+            "module": "file",
+            "attributes": {
+                "icon": "file_present"
+            }
+        },
+        {
             "name": "Document",
             "base": "Media",
             "attributes": {

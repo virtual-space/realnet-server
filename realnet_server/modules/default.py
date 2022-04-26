@@ -12,7 +12,7 @@ except ImportError:
 
 import realnet_server
 from .module import Module
-from realnet_server.models import VisibilityType, db, Item, Blob, BlobType, Type, create_item
+from realnet_server.models import VisibilityType, db, Item, Blob, BlobType, Type, AclType, Acl, AccountGroup, create_item
 from realnet_server.config import Config
 import mimetypes
 
@@ -26,7 +26,121 @@ session = boto3.Session(
     region_name=cfg.get_s3_region()
 )
 
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'md', 'csv', 'txt', 'zip', 'html', 'xml', 'json'}
+
 class Default(Module):
+
+    def is_item_public(self, item):
+
+        if [acl for acl in item.acls if acl.type == AclType.public]:
+            return True
+
+        return False
+
+    def can_account_execute_item(self, account, item):
+        
+        if [acl for acl in item.acls if acl.type == AclType.public]:
+            return True
+
+        if [acl for acl in item.acls if acl.type == AclType.user and acl.name == account.username and 'e' in acl.permission]:
+            return True
+
+        account_groups = set([ag.name for ag in AccountGroup.query.filter(AccountGroup.account_id == account.id)])
+
+        if [acl for acl in item.acls if acl.type == AclType.group and acl.name in account_groups and 'e' in acl.permission]:
+            return True
+
+        account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id, AccountGroup.account_id == account.id).first()
+
+        if account_group:
+            return True
+
+        if item.owner_id == account.id:
+            return True
+
+
+    def can_account_message_item(self, account, item):
+
+        if [acl for acl in item.acls if acl.type == AclType.public]:
+            return True
+
+        if [acl for acl in item.acls if acl.type == AclType.user and acl.name == account.username and 'm' in acl.permission]:
+            return True
+
+        account_groups = set([ag.name for ag in AccountGroup.query.filter(AccountGroup.account_id == account.id)])
+
+        if [acl for acl in item.acls if acl.type == AclType.group and acl.name in account_groups and 'm' in acl.permission]:
+            return True
+
+        account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id, AccountGroup.account_id == account.id).first()
+
+        if account_group:
+            return True
+
+        if item.owner_id == account.id:
+            return True
+
+
+    def can_account_read_item(self, account, item):
+
+        if [acl for acl in item.acls if acl.type == AclType.public]:
+            return True
+
+        if [acl for acl in item.acls if acl.type == AclType.user and acl.name == account.username and ('r' in acl.permission or 'w' in acl.permission)]:
+            return True
+
+        ags = AccountGroup.query.filter(AccountGroup.account_id == account.id).all()
+        account_groups = set([ag.group.name for ag in ags])
+
+        if [acl for acl in item.acls if acl.type == AclType.group and acl.name in account_groups and ('r' in acl.permission or 'w' in acl.permission)]:
+            return True
+
+        account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id, AccountGroup.account_id == account.id).first()
+
+        if account_group:
+            return True
+
+        if item.owner_id == account.id:
+            return True
+
+
+    def can_account_write_item(self, account, item):
+
+        if [acl for acl in item.acls if
+            acl.type == AclType.user and acl.name == account.username and 'w' in acl.permission]:
+            return True
+
+        account_groups = set([ag.group.name for ag in AccountGroup.query.filter(AccountGroup.account_id == account.id)])
+
+        if [acl for acl in item.acls if
+            acl.type == AclType.group and acl.name in account_groups and 'w' in acl.permission]:
+            return True
+
+        account_group = AccountGroup.query.filter(AccountGroup.group_id == item.group_id, AccountGroup.account_id == account.id).first()
+
+        if account_group:
+            return True
+
+        if item.owner_id == account.id:
+            return True
+
+
+    def can_account_delete_item(self, account, item):
+        
+        account_group = AccountGroup.query.filter(
+            AccountGroup.group_id == item.group_id, AccountGroup.account_id == account.id).first()
+        
+        if account_group:
+            return True
+
+        return item.owner_id == account.id
+
+    def filter_readable_items(self, account, items_json):
+        return [i for i in json.loads(items_json) if self.can_account_read_item(account, Item(**i))] if items_json else []
+
+    def allowed_file(self, filename):
+        return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     def create_item(self, parent_item=None, **kwargs):
         item_name = None
@@ -88,20 +202,18 @@ class Default(Module):
 
         db.session.add(item)
         db.session.commit()
-        return json.dumps(item.to_dict())
+        return item
 
     def get_item_data(self, item):
-        blob = Blob.query.filter(Blob.item_id == item.id).first()
-
-        if blob:
-            if blob.type == BlobType.local:
+        if item and item.attributes and 'blob_type' in item.attributes:
+            if item.attributes['blob_type'] == 'BlobType.local':
                 path1 = os.path.join(os.getcwd(), 'storage')
-                return os.path.join(path1, blob.filename)
-            elif blob.type == BlobType.s3:
+                return os.path.join(path1, item.attributes['filename'])
+            elif item.attributes['blob_type'] == 'BlobType.s3':
                 s3 = session.resource('s3')
                 bucket = s3.Bucket(cfg.get_s3_bucket())
-                s3_obj = bucket.Object(blob.id).get()
-                return {'s3_obj': s3_obj, 'mimetype': blob.mime_type, 'filename': blob.filename}
+                s3_obj = bucket.Object(item.attributes['s3_blob_id']).get()
+                return {'s3_obj': s3_obj, 'mimetype': item.attributes['mime_type'], 'filename': item.attributes['filename']}
 
         return None
 
@@ -172,21 +284,21 @@ class Default(Module):
         return {'created': False, 'updated': False}
 
     def delete_item_data(self, item):
-        blob = Blob.query.filter(Blob.item_id == item.id).first()
+        file = Item.query.filter(Item.id == item.id).first()
 
-        if blob:
-            if blob.type == BlobType.local:
+        if file:
+            if file.type == BlobType.local:
                 path1 = os.path.join(os.getcwd(), 'storage')
-                os.remove(os.path.join(path1, blob.filename))
-                db.session.delete(blob)
-                db.session.commit()
+                # os.remove(os.path.join(path1, file.filename))
+                # db.session.delete(blob)
+                # db.session.commit()
                 return True
-            elif blob.type == BlobType.s3:
+            elif file.type == BlobType.s3:
                 s3 = session.resource('s3')
                 bucket = s3.Bucket(cfg.get_s3_bucket())
-                bucket.Object(blob.id).delete()
-                db.session.delete(blob)
-                db.session.commit()
+                bucket.Object(file.id).delete()
+                # db.session.delete(blob)
+                # db.session.commit()
                 return True
 
         return False
@@ -222,23 +334,99 @@ class Default(Module):
 
         db.session.commit()
 
-    def get_items(self, item):
-        id = item.id if isinstance(item, Item) else item['id']
-        return json.dumps([i.to_dict() for i in Item.query.filter(Item.parent_id == id)])
+    def get_items(self, id):
+        return Item.query.filter(Item.parent_id == id).all()
 
-    def get_item(self, item):
-        retrieved_item = Item.query.filter(Item.id == item.id).first()
-        if retrieved_item:
-            return json.dumps({'id': retrieved_item.id,
-                            'name': retrieved_item.name,
-                            'attributes': retrieved_item.attributes,
-                            'type': retrieved_item.type.to_dict(),
-                            'parent_id': retrieved_item.parent_id,
-                            'items': [i.to_dict() for i in retrieved_item.items]})
+    def get_item(self, id):
+        return Item.query.filter(Item.id == id).first()
 
+    def invoke(self, item, arguments):
+        func = item
+        if func:
+            code = func.attributes.code
+            if code:
+                result = dict()
+                safe_list = ['func', 'arguments', 'result']
+                safe_dict = dict([(k, locals().get(k, None)) for k in safe_list])
+                eval(func.code, None, safe_dict)
+                return result
+        else:
+            return None
+
+    def message(self, item, arguments):
         return None
 
-    def perform_search(self, account, data, public=False):
+    def import_file(self, item, storage):
+        cfg = Config()
+        content_type = storage.content_type
+        if storage.filename and content_type is None:
+            content_type = mimetypes.guess_type(storage.filename)[0] or 'application/octet-stream'
+
+        target_type = Type.query.filter(Type.name == 'File').first()
+
+        if content_type.startswith('image/'):
+            target_type = Type.query.filter(Type.name == 'Image').first()
+        elif content_type.startswith('application/pdf') or content_type.startswith('text/plain') or storage.filename.endswith('.md'):
+            target_type = Type.query.filter(Type.name == 'Document').first()
+        elif content_type.startswith('application/x-zip-compressed'):
+            target_type = Type.query.filter(Type.name == 'File').first()
+        elif content_type.startswith('text/csv'):
+            target_type = Type.query.filter(Type.name == 'File').first()
+        else:
+            target_type = Type.query.filter(Type.name == 'File').first()
+
+        if not target_type:
+            return  {'created': False, 'updated': False}
+        
+        if cfg.get_storage_type() == BlobType.local:
+            basepath = cfg.get_storage_path()
+            path = os.path.join(basepath, storage.filename)
+            storage.save(path)
+            target = Item(id=str(uuid.uuid4()),
+                            name=storage.filename,
+                            type_id=target_type.id,
+                            attributes={
+                                'blob_type': 'BlobType.local',
+                                'path': basepath,
+                                'content_length': os.stat(path).st_size,
+                                'content_type': content_type,
+                                'filename': storage.filename,
+                                'mime_type': content_type
+                                },
+                            owner_id=item.owner_id,
+                            group_id=item.group_id,
+                            parent_id=item.id)
+            
+            db.session.add(target)
+            db.session.commit()
+            return {'created': True, 'updated': False}
+        elif cfg.get_storage_type() == BlobType.s3:
+            basepath = cfg.get_storage_path()
+            s3 = session.resource('s3')
+            bucket = s3.Bucket(cfg.get_s3_bucket())
+            blob_id = str(uuid.uuid4())
+            res = bucket.Object(blob_id).put(Body=storage)
+            target = Item(id=str(uuid.uuid4()),
+                          name=storage.filename,
+                            type_id=target_type.id,
+                            attributes={
+                                'blob_type': 'BlobType.s3',
+                                's3_blob_id': blob_id,
+                                'content_length': storage.content_length,
+                                'content_type': content_type,
+                                'filename': storage.filename,
+                                'mime_type': content_type
+                                },
+                            owner_id=item.owner_id,
+                            group_id=item.group_id,
+                            parent_id=item.id)
+            
+            db.session.add(target)
+            db.session.commit()
+            return {'created': True, 'updated': False}
+
+
+    def perform_search(self, id, account, data, public=False):
         
         home = data.get('home')
         if home:
@@ -308,6 +496,8 @@ class Default(Module):
             conditions.append(Item.parent_id == parent_id)
         elif my_items and account:
             conditions.append(Item.owner_id == account.id)
+        elif public:
+            conditions.append(Item.acls.any(Acl.type == AclType.public))
 
 
         if name:

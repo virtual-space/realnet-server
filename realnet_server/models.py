@@ -86,7 +86,7 @@ class Group(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(50), unique=True)
     parent_id = db.Column(db.String(36), db.ForeignKey('group.id'))
-
+    attributes = db.Column(db.JSON)
 
 # Define the AccountGroup association table
 class AccountGroup(db.Model, SerializerMixin):
@@ -347,7 +347,7 @@ def create_item(db,
 
         instance = Instance(id=item_id,
                             name=item_name,
-                            public=item_is_public == "true",
+                            public=item_is_public.lower() == 'true' if isinstance(item_is_public, str) else item_is_public,
                             owner_id=owner_id,
                             group_id=group_id,
                             type_id=item_type.id)
@@ -613,8 +613,9 @@ def create_basic_types(owner_id, group_id):
     load_types("resources/views.json", owner_id, group_id)
     load_types("resources/controls.json", owner_id, group_id)
     load_types("resources/items.json", owner_id, group_id)
-    load_types("resources/types.json", owner_id, group_id)
+    load_types("resources/apps.json", owner_id, group_id)
     load_types("resources/core.json", owner_id, group_id)
+    load_types("resources/types.json", owner_id, group_id)
     load_types("resources/media.json", owner_id, group_id)
     load_types("resources/topics.json", owner_id, group_id)
     load_types("resources/groups.json", owner_id, group_id)
@@ -627,11 +628,24 @@ def create_basic_types(owner_id, group_id):
     load_types("resources/jobs.json", owner_id, group_id)
     load_types("resources/events.json", owner_id, group_id)
     load_types("resources/games.json", owner_id, group_id)
-    load_types("resources/apps.json", owner_id, group_id)
+    load_types("resources/admin.json", owner_id, group_id)
 
         
 
 def create_basic_items(owner_id, group_id):
+    item = create_item(db,
+                        item_type_name='PublicApps',
+                        item_id=str(uuid.uuid4()),
+                        item_name='PublicApps',
+                        item_attributes=dict(),
+                        item_location=None,
+                        item_visibility=None,
+                        item_tags=None,
+                        item_is_public=True,
+                        owner_id=owner_id,
+                        group_id=group_id)
+    db.session.add(item)
+    db.session.commit()
     with open(os.path.join(os.path.dirname(sys.modules[__name__].__file__),
                            "resources/items.csv"), 'r') as f:
         items = []
@@ -661,15 +675,15 @@ def create_account(tenant_name,
 
     db.session.add(account)
 
-    group = AccountGroup(id=str(uuid.uuid4()),
+    account_group = AccountGroup(id=str(uuid.uuid4()),
                                 account_id=account.id,
                                 group_id=group.id,
-                                role_type=GroupRoleType[account_role])
-    db.session.add(group)
+                                role_type=GroupRoleType.contributor)
+    db.session.add(account_group)
 
     db.session.commit()
 
-    create_account_dt(account, group)
+    create_account_dt(db, account, group, account_role)
 
     return account
 
@@ -701,12 +715,12 @@ def get_or_create_delegated_account(tenant_name,
     group = AccountGroup(id=str(uuid.uuid4()),
                                 account_id=account.id,
                                 group_id=group.id,
-                                role_type=GroupRoleType[account_role])
+                                role_type=GroupRoleType.contributor)
     db.session.add(group)
 
     db.session.commit()
 
-    create_account_dt(account, group)
+    create_account_dt(db, account, group, account_role)
     
     db.session.commit()
 
@@ -756,10 +770,10 @@ def create_app(name,
 
     return client
 
-def create_account_dt(db, account, group):
+def create_account_dt(db, account, group, role):
     item = None
     if account.type == AccountType.person:
-        person_type = db.session.query(Type).filter(Type.name == 'Person').first()
+        person_type = db.session.query(Type).filter(Type.name == role).first()
         if not person_type:
             return None
         item = create_item(db,
@@ -777,7 +791,7 @@ def create_account_dt(db, account, group):
         db.session.add(item)
         db.session.commit()
     else:
-        thing_type = db.session.query(Type).filter(Type.name == 'Thing').first()
+        thing_type = db.session.query(Type).filter(Type.name == role).first()
         if not thing_type:
             return None
         item = create_item(db,
@@ -865,7 +879,7 @@ def create_tenant(tenant_name, root_username, root_email, root_password, uri, we
 
     create_basic_types(root_account_id, root_group_id)
     create_basic_items(root_account_id, root_group_id)
-    account_dt = create_account_dt(db, root_account, root_group)
+    account_dt = create_account_dt(db, root_account, root_group, 'Admin')
 
     result = root_group.to_dict()
     result['client_id'] = cli_client.client_id
