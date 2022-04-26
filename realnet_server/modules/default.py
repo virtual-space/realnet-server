@@ -2,7 +2,7 @@ import uuid
 import os
 import json
 
-from sqlalchemy import false, null
+from sqlalchemy import false, null, func
 
 from sqlalchemy.sql import func, and_, or_, not_, functions
 try:
@@ -228,13 +228,20 @@ class Default(Module):
 
     def get_item(self, item):
         retrieved_item = Item.query.filter(Item.id == item.id).first()
+        item_location = db.session.query(func.ST_AsGeoJSON(Item.location)).filter(Item.id == item.id).first()
+        location = null
+        for loc in item_location:
+            location = json.loads(loc)
         if retrieved_item:
-            return json.dumps({'id': retrieved_item.id,
+            jsondump = json.dumps({'id': retrieved_item.id,
                             'name': retrieved_item.name,
                             'attributes': retrieved_item.attributes,
                             'type': retrieved_item.type.to_dict(),
                             'parent_id': retrieved_item.parent_id,
-                            'items': [i.to_dict() for i in retrieved_item.items]})
+                            'items': [i.to_dict() for i in retrieved_item.items],
+                            'location': location
+                            })
+            return jsondump
 
         return None
 
