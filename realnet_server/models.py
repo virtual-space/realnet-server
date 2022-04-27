@@ -262,14 +262,25 @@ def build_item( item_id,
                 group_id,
                 parent_item_id=None):
 
-    item = Item( id=item_id,
-                 name=instance.name,
-                 attributes=attributes,
-                 owner_id=owner_id,
-                 group_id=group_id,
-                 location=item_data.get('item_location'),
-                 type_id=instance.type.id,
-                 parent_id=parent_item_id)
+    location = item_data.get('item_location')
+
+    if not location:
+        item = Item( id=item_id,
+                    name=instance.name,
+                    attributes=attributes,
+                    owner_id=owner_id,
+                    group_id=group_id,
+                    type_id=instance.type.id,
+                    parent_id=parent_item_id)
+    else:
+        item = Item( id=item_id,
+                    name=instance.name,
+                    attributes=attributes,
+                    owner_id=owner_id,
+                    group_id=group_id,
+                    location=location,
+                    type_id=instance.type.id,
+                    parent_id=parent_item_id)
     
     db.session.add(item)
     db.session.commit()
