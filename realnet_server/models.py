@@ -267,6 +267,7 @@ def build_item( item_id,
                  attributes=attributes,
                  owner_id=owner_id,
                  group_id=group_id,
+                 location=item_data.get('item_location'),
                  type_id=instance.type.id,
                  parent_id=parent_item_id)
     

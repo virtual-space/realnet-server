@@ -169,11 +169,12 @@ class Default(Module):
             elif key == 'tags':
                 item_tags = value
             elif key == 'location':
-                if value['type'] == 'Point':
-                    item_location = 'SRID=4326;POINT({0} {1})'.format(value['coordinates'][0], value['coordinates'][1])
+                data = json.loads(value)
+                if data['type'] == 'Point':
+                    item_location = 'SRID=4326;POINT({0} {1})'.format(data['coordinates'][0], data['coordinates'][1])
                 else:
                     item_location = 'SRID=4326;POLYGON(('
-                    for ii in value['coordinates'][0]:
+                    for ii in data['coordinates'][0]:
                         item_location = item_location + '{0} {1},'.format(ii[0], ii[1])
                     item_location = item_location[0:-1] + '))'
             elif key == 'visibility':
@@ -321,11 +322,12 @@ class Default(Module):
             elif key == 'location':
                 item_location = ''
                 if value:
-                    if value['type'] == 'Point':
-                        item_location = 'SRID=4326;POINT({0} {1})'.format(value['coordinates'][0], value['coordinates'][1])
-                    elif value['type'] == 'Polygon':
+                    data = json.loads(value)
+                    if data['type'] == 'Point':
+                        item_location = 'SRID=4326;POINT({0} {1})'.format(data['coordinates'][0], data['coordinates'][1])
+                    elif data['type'] == 'Polygon':
                         item_location = 'SRID=4326;POLYGON(('
-                        for ii in value['coordinates'][0]:
+                        for ii in data['coordinates'][0]:
                             item_location = item_location + '{0} {1},'.format(ii[0], ii[1])
                         item_location = item_location[0:-1] + '))'
                 else:
