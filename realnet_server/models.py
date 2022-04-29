@@ -13,6 +13,7 @@ from sqlalchemy_serializer import SerializerMixin
 import shapely
 import json
 import csv
+import datetime
 
 from authlib.integrations.sqla_oauth2 import (
     OAuth2ClientMixin,
@@ -176,6 +177,8 @@ class Item(db.Model, SerializerMixin):
     type_id = db.Column(db.String(36), db.ForeignKey('type.id', ondelete='CASCADE'), nullable=False)
     parent_id = db.Column(db.String(36), db.ForeignKey('item.id'))
     location = db.Column(Geometry(geometry_type='GEOMETRY', srid=4326))
+    valid_from = db.Column(db.DateTime(timezone=True),default=datetime.datetime.utcnow)
+    valid_to = db.Column(db.DateTime(timezone=True))
     visibility = db.Column(db.Enum(VisibilityType))
     tags = db.Column(db.ARRAY(db.String()))
     type = db.relationship('Type')
