@@ -129,7 +129,8 @@
                     "name": "Name",
                     "type": "EditCtrl",
                     "attributes": {
-                        "value": "New item"
+                        "value": "New item",
+                        "field_name": "name"
                     }
                 },
                 {
@@ -138,15 +139,27 @@
                 },
                 {
                     "name": "Location",
-                    "type": "LocationCtrl"
+                    "type": "LocationCtrl",
+                    "attributes": {
+                        "field_name": "location"
+                    }
+                    
                 },
                 {
                     "name": "From",
-                    "type": "DateCtrl"
+                    "type": "DateCtrl",
+                    "attributes": {
+                        "target": "valid_from",
+                        "field_name": "valid_from"
+                    }
                 },
                 {
                     "name": "To",
-                    "type": "DateCtrl"
+                    "type": "DateCtrl",
+                    "attributes": {
+                        "target": "valid_to",
+                        "field_name": "valid_to"
+                    }
                 },
                 {
                     "name": "Cancel",
@@ -180,7 +193,10 @@
             "instances": [
                 {
                     "name": "Name",
-                    "type": "EditCtrl"
+                    "type": "EditCtrl",
+                    "attributes": {
+                        "field_name": "name"
+                    }
                 },
                 {
                     "name": "Attributes",
@@ -188,15 +204,26 @@
                 },
                 {
                     "name": "Location",
-                    "type": "LocationCtrl"
+                    "type": "LocationCtrl",
+                    "attributes": {
+                        "field_name": "location"
+                    }
                 },
                 {
                     "name": "From",
-                    "type": "DateCtrl"
+                    "type": "DateCtrl",
+                    "attributes": {
+                        "target": "valid_from",
+                        "field_name": "valid_from"
+                    }
                 },
                 {
                     "name": "To",
-                    "type": "DateCtrl"
+                    "type": "DateCtrl",
+                    "attributes": {
+                        "target": "valid_to",
+                        "field_name": "valid_to"
+                    }
                 },
                 {
                     "name": "Cancel",

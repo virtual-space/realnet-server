@@ -5,7 +5,8 @@
             "base": "Item",
             "attributes": {
                 "icon": "assignment_turned_in",
-                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
+                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"],
+                "statuses": ["To Do", "In Progress", "Done"]
             }
         },
         {

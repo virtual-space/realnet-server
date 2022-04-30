@@ -153,6 +153,9 @@ class Default(Module):
         item_visibility = None
         item_tags = None
         item_is_public = False
+        item_valid_from = None
+        item_valid_to = None
+        item_status = None
 
         for key, value in kwargs.items():
             # print("%s == %s" % (key, value))
@@ -181,6 +184,12 @@ class Default(Module):
                 item_visibility = value
             elif key == 'public':
                 item_is_public = (value.lower() == "true")
+            elif key == 'valid_from':
+                item_valid_from = value
+            elif key == 'valid_to':
+                item_valid_to = value
+            elif key == 'status':
+                item_status = value
 
         if parent_item:
             item_parent_id = parent_item.id
@@ -199,7 +208,10 @@ class Default(Module):
             item_attributes=item_attributes,
             item_visibility=item_visibility,
             item_location=item_location,
-            item_is_public=item_is_public)
+            item_is_public=item_is_public,
+            item_valid_from=item_valid_from,
+            item_valid_to=item_valid_to,
+            item_status=item_status)
 
         db.session.add(item)
         db.session.commit()

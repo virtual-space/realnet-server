@@ -177,8 +177,9 @@ class Item(db.Model, SerializerMixin):
     type_id = db.Column(db.String(36), db.ForeignKey('type.id', ondelete='CASCADE'), nullable=False)
     parent_id = db.Column(db.String(36), db.ForeignKey('item.id'))
     location = db.Column(Geometry(geometry_type='GEOMETRY', srid=4326))
-    valid_from = db.Column(db.DateTime(timezone=True),default=datetime.datetime.utcnow)
+    valid_from = db.Column(db.DateTime(timezone=True))
     valid_to = db.Column(db.DateTime(timezone=True))
+    status = db.Column(db.String(128))
     visibility = db.Column(db.Enum(VisibilityType))
     tags = db.Column(db.ARRAY(db.String()))
     type = db.relationship('Type')
@@ -266,11 +267,17 @@ def build_item( item_id,
                 parent_item_id=None):
 
     location = item_data.get('item_location')
+    valid_from = item_data.get('item_valid_from')
+    valid_to = item_data.get('item_valid_to')
+    status = item_data.get('item_status')
 
     if not location:
         item = Item( id=item_id,
                     name=instance.name,
                     attributes=attributes,
+                    valid_from=valid_from,
+                    valid_to=valid_to,
+                    status=status,
                     owner_id=owner_id,
                     group_id=group_id,
                     type_id=instance.type.id,
@@ -279,6 +286,9 @@ def build_item( item_id,
         item = Item( id=item_id,
                     name=instance.name,
                     attributes=attributes,
+                    valid_from=valid_from,
+                    valid_to=valid_to,
+                    status=status,
                     owner_id=owner_id,
                     group_id=group_id,
                     location=location,
@@ -339,7 +349,10 @@ def create_item(db,
                 item_is_public,
                 owner_id,
                 group_id,
-                parent_item_id=None):
+                parent_item_id=None,
+                item_valid_from=None,
+                item_valid_to=None,
+                item_status=None):
 
     item = None
     item_type = Type.query.filter(Type.name == item_type_name).first()
@@ -373,7 +386,10 @@ def create_item(db,
         item_data = {"item_location": item_location, 
                      "item_visibility": item_visibility,
                      "item_tags": item_tags,
-                     "item_is_public": item_is_public}
+                     "item_is_public": item_is_public,
+                     "item_valid_from": item_valid_from,
+                     "item_valid_to": item_valid_to,
+                     "item_status": item_status}
         
         item = build_item(item_id, instance, attributes, item_data, owner_id, group_id, parent_item_id)
     

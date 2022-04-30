@@ -279,6 +279,21 @@ def items():
                     if parent_id:
                         parent_item = Item.query.filter(Item.id == parent_id).first()
 
+                    valid_from = None
+
+                    if 'valid_from' in input_data:
+                        valid_from = input_data['valid_from']
+
+                    valid_to = None
+
+                    if 'valid_to' in input_data:
+                        valid_to = input_data['valid_to']
+
+                    status = None
+
+                    if 'status' in input_data:
+                        status = input_data['status']
+
                     args = dict()
 
                     if input_name:
@@ -295,6 +310,15 @@ def items():
 
                     if input_tags:
                         args['tags'] = input_tags
+
+                    if valid_from:
+                        args['valid_from'] = valid_from
+
+                    if valid_to:
+                        args['valid_to'] = valid_to
+
+                    if status:
+                        args['status'] = status
 
                     args['owner_id'] = current_token.account.id
                     args['group_id'] = current_token.account.group_id
