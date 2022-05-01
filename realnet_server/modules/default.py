@@ -345,6 +345,14 @@ class Default(Module):
                 else:
                     item_location = None
                 item.location = item_location
+            elif key == 'valid_from':
+                item.valid_from = value
+            elif key == 'valid_to':
+                item.valid_to = value
+            elif key == 'status':
+                item.status = value
+            elif key == 'tags':
+                item.tags = value
 
         db.session.commit()
 

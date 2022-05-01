@@ -270,6 +270,7 @@ def build_item( item_id,
     valid_from = item_data.get('item_valid_from')
     valid_to = item_data.get('item_valid_to')
     status = item_data.get('item_status')
+    tags = item_data.get('item_tags')
 
     if not location:
         item = Item( id=item_id,
@@ -278,6 +279,7 @@ def build_item( item_id,
                     valid_from=valid_from,
                     valid_to=valid_to,
                     status=status,
+                    tags=tags,
                     owner_id=owner_id,
                     group_id=group_id,
                     type_id=instance.type.id,
@@ -289,6 +291,7 @@ def build_item( item_id,
                     valid_from=valid_from,
                     valid_to=valid_to,
                     status=status,
+                    tags=tags,
                     owner_id=owner_id,
                     group_id=group_id,
                     location=location,

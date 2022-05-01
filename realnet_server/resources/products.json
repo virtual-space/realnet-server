@@ -27,7 +27,8 @@
             "base": "Item",
             "attributes" : {
                 "icon": "local_shipping",
-                "statuses": ["New", "Preparing", "Shipping", "Delivered"]
+                "creatable": "true",
+                "values": ["New", "Preparing", "Shipping", "Delivered"]
             }
         },
         {

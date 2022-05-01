@@ -6,7 +6,8 @@
             "attributes": {
                 "icon": "assignment_turned_in",
                 "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"],
-                "statuses": ["To Do", "In Progress", "Done"]
+                "creatable": "true",
+                "values": ["To Do", "In Progress", "Done"]
             }
         },
         {

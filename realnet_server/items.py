@@ -424,11 +424,21 @@ def single_item(id):
 
             if 'visibility' in input_data:
                 args['visibility'] = input_data['visibility']
+                
             elif 'public' in input_data:
                 args['visibility'] = 'visible' if input_data['public'] else 'restricted'
 
             if 'tags' in input_data:
                 args['tags'] = input_data['tags']
+
+            if 'valid_from' in input_data:
+                args['valid_from'] = input_data['valid_from']
+
+            if 'valid_to' in input_data:
+                args['valid_to'] = input_data['valid_to']
+
+            if 'status' in input_data:
+                args['status'] = input_data['status']
 
             module_instance.update_item(item, **args)
 

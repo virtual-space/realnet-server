@@ -123,51 +123,74 @@
             "instances": [
                 {
                     "name": "Type",
-                    "type": "TypeSelectCtrl"
+                    "type": "TypeSelectCtrl",
+                    "attributes": {
+                        "order": "1"
+                    }
                 },
                 {
                     "name": "Name",
                     "type": "EditCtrl",
                     "attributes": {
                         "value": "New item",
-                        "field_name": "name"
+                        "field_name": "name",
+                        "order": "2"
                     }
                 },
                 {
                     "name": "Attributes",
-                    "type": "AttrsCtrl"
+                    "type": "AttrsCtrl",
+                    "attributes": {
+                        "order": "3"
+                    }
+                },
+                {
+                    "name": "Tags",
+                    "type": "TagsCtrl",
+                    "attributes": {
+                        "order": "4",
+                        "field_name": "tags"
+                    }
                 },
                 {
                     "name": "Location",
                     "type": "LocationCtrl",
                     "attributes": {
-                        "field_name": "location"
+                        "field_name": "location",
+                        "order": "5"
                     }
                     
                 },
                 {
-                    "name": "From",
+                    "name": "Valid from",
                     "type": "DateCtrl",
                     "attributes": {
                         "target": "valid_from",
-                        "field_name": "valid_from"
+                        "field_name": "valid_from",
+                        "order": "6"
                     }
                 },
                 {
-                    "name": "To",
+                    "name": "Valid to",
                     "type": "DateCtrl",
                     "attributes": {
                         "target": "valid_to",
-                        "field_name": "valid_to"
+                        "field_name": "valid_to",
+                        "order": "7"
                     }
                 },
                 {
                     "name": "Cancel",
-                    "type": "CancelButton"
+                    "type": "CancelButton",
+                    "attributes": {
+                        "close": "true",
+                        "order": "8"
+                    }
                 },
                 {
                     "name": "Create",
-                    "type": "SaveButton"
+                    "type": "SaveButton",
+                    "order": "9"
                 }
             ]
         },
@@ -195,43 +218,73 @@
                     "name": "Name",
                     "type": "EditCtrl",
                     "attributes": {
-                        "field_name": "name"
+                        "field_name": "name",
+                        "order": "1"
                     }
                 },
                 {
                     "name": "Attributes",
-                    "type": "AttrsCtrl"
+                    "type": "AttrsCtrl",
+                    "attributes": {
+                        "order": "2"
+                    }
+                },
+                {
+                    "name": "Tags",
+                    "type": "TagsCtrl",
+                    "attributes": {
+                        "order": "3",
+                        "field_name": "tags"
+                    }
                 },
                 {
                     "name": "Location",
                     "type": "LocationCtrl",
                     "attributes": {
-                        "field_name": "location"
+                        "field_name": "location",
+                        "order": "4"
                     }
                 },
                 {
-                    "name": "From",
+                    "name": "Valid from",
                     "type": "DateCtrl",
                     "attributes": {
                         "target": "valid_from",
-                        "field_name": "valid_from"
+                        "field_name": "valid_from",
+                        "order": "5"
                     }
                 },
                 {
-                    "name": "To",
+                    "name": "Valid to",
                     "type": "DateCtrl",
                     "attributes": {
                         "target": "valid_to",
-                        "field_name": "valid_to"
+                        "field_name": "valid_to",
+                        "order": "6"
+                    }
+                },
+                {
+                    "name": "Status",
+                    "type": "SelectCtrl",
+                    "attributes": {
+                        "target": "status",
+                        "field_name": "status",
+                        "values": ["To Do", "In Progress", "Done"],
+                        "order": "7"
                     }
                 },
                 {
                     "name": "Cancel",
-                    "type": "CancelButton"
+                    "type": "CancelButton",
+                    "attributes": {
+                        "close": "true",
+                        "order": "8"
+                    }
                 },
                 {
                     "name": "Save",
-                    "type": "SaveButton"
+                    "type": "SaveButton",
+                    "order": "9"
                 }
             ]
         },
