@@ -6,6 +6,9 @@ provider:
   name: aws
   runtime: python3.9
   endpointType: REGIONAL
+  apiGateway:
+    binaryMediaTypes:
+      - '*/*'
 
 functions:
   app:
