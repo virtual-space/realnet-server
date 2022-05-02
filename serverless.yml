@@ -41,6 +41,7 @@ custom:
   apigwBinary:
     types: #list of mime-types
       - 'image/*'
+      - 'multipart/form-data'
   slackDeployNotification:
     token: ${param:SLACK_ACCESS_TOKEN}
     channel: ${param:SLACK_CHANNEL_ID}  
