@@ -2,6 +2,7 @@ from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from flask import request, jsonify, send_file, Response
 from .models import db, Item, Type, Account, AccountGroup, Acl, AclType, Function, Topic, Message, TopicFunction, VisibilityType
+from .config import Config
 from .auth import require_oauth
 import importlib
 import json
@@ -566,11 +567,18 @@ def item_data(id):
             output = module_instance.get_item_data(item)
 
         if 's3_obj' in output:
-            return Response(
-                output['s3_obj']['Body'].read(),
-                mimetype=output['mimetype'],
-                headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])}
-            )
+            cfg = Config()
+            if cfg.get_base64_encode_data():
+                read = output['s3_obj']['Body'].read()
+                return Response(
+                    base64.encode(read).decode('utf-8'),
+                    mimetype=output['mimetype'],
+                    headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])})
+            else:
+                return Response(
+                    output['s3_obj']['Body'].read(),
+                    mimetype=output['mimetype'],
+                    headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])})
         elif 'filename' in output:
             return send_file(output['filename'], as_attachment=True)
         else:

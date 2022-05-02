@@ -48,3 +48,6 @@ class Config:
 
     def get_jwt_issuer(self):
         return os.getenv('REALNET_JWT_ISSUER')
+
+    def get_base64_encode_data(self):
+        return os.getenv('REALNET_BASE64_ENCODE_DATA', False)
