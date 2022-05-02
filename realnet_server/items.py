@@ -571,7 +571,7 @@ def item_data(id):
             if cfg.get_base64_encode_data():
                 read = output['s3_obj']['Body'].read()
                 return Response(
-                    base64.encode(read).decode('utf-8'),
+                    base64.b64encode(read).decode('utf-8'),
                     mimetype=output['mimetype'],
                     headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])})
             else:
