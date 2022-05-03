@@ -26,7 +26,7 @@ session = boto3.Session(
     region_name=cfg.get_s3_region()
 )
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'md', 'csv', 'txt', 'zip', 'html', 'xml', 'json'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'md', 'csv', 'txt', 'zip', 'html', 'xml', 'json', 'mov', 'mp4', 'asf', 'avi'}
 
 class Default(Module):
 
@@ -394,6 +394,8 @@ class Default(Module):
                 content_type = 'text/markdown'
         elif content_type.startswith('text/html'):
             target_type = Type.query.filter(Type.name == 'Page').first()
+        elif content_type.startswith('video/'):
+            target_type = Type.query.filter(Type.name == 'Video').first()
         elif content_type.startswith('application/x-zip-compressed'):
             target_type = Type.query.filter(Type.name == 'File').first()
         elif content_type.startswith('text/csv'):

@@ -568,7 +568,7 @@ def item_data(id):
 
         if 's3_obj' in output:
             cfg = Config()
-            if cfg.get_base64_encode_data():
+            if cfg.get_base64_encode_data() and not output['mimetype'].startswith('text/'):
                 read = output['s3_obj']['Body'].read()
                 return Response(
                     base64.b64encode(read).decode('utf-8'),
@@ -699,7 +699,7 @@ def item_import(id):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=400,
-                               data='Unsupported file type'), 400
+                               data='Unsupported file type {}'.format(file.filename.rsplit('.', 1)[1].lower())), 400
         else:
             return jsonify(isError=True,
                        message="Failure",
