@@ -390,6 +390,10 @@ class Default(Module):
             target_type = Type.query.filter(Type.name == 'Image').first()
         elif content_type.startswith('application/pdf') or content_type.startswith('text/plain') or storage.filename.endswith('.md'):
             target_type = Type.query.filter(Type.name == 'Document').first()
+            if storage.filename.endswith('.md'):
+                content_type = 'text/markdown'
+        elif content_type.startswith('text/html'):
+            target_type = Type.query.filter(Type.name == 'Page').first()
         elif content_type.startswith('application/x-zip-compressed'):
             target_type = Type.query.filter(Type.name == 'File').first()
         elif content_type.startswith('text/csv'):
