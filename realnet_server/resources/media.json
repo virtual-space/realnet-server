@@ -30,21 +30,6 @@
             ]
         },
         {
-            "name": "Link",
-            "base": "Media",
-            "attributes": {
-                "icon": "link",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "LinkView"
-                }
-            ]
-
-        },
-        {
             "name": "Page",
             "base": "Media",
             "attributes": {

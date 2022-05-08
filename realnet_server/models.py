@@ -662,6 +662,7 @@ def create_basic_types(owner_id, group_id):
     load_types("resources/jobs.json", owner_id, group_id)
     load_types("resources/events.json", owner_id, group_id)
     load_types("resources/games.json", owner_id, group_id)
+    load_types("resources/server.json", owner_id, group_id)
     load_types("resources/admin.json", owner_id, group_id)
 
         

@@ -3,10 +3,48 @@
         {
             "name": "Type",
             "base": "Item",
+            "module": "types",
             "attributes": {
                 "icon": "approval",
-                "createable": "true",
-                "creatable_types": ["Type"]
+                "creatable": "true",
+                "creatable_types": ["Instance"],
+                "show_children": "true"
+            },
+            "instances": [
+                {
+                    "name": "All",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "Instance",
+            "base": "Func",
+            "module": "types",
+            "attributes": {
+                "icon": "approval",
+                "creatable": "true",
+                "creatable_types": ["Type"],
+                "show_children": "true"
+            },
+            "instances": [
+                {
+                    "name": "All",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "Operation",
+            "base": "Instance",
+            "module": "types",
+            "attributes": {
+                "icon": "approval",
+                "creatable": "true",
+                "creatable_types": ["Type"],
+                "show_children": "true",
+                "code": "#python code goes here - look at children and return the result of the operation i.e. Union, Intersection etc.."
+
             },
             "instances": [
                 {

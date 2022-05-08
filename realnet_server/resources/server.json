@@ -1,0 +1,138 @@
+{
+    "types": [
+        {
+            "name": "Provider",
+            "base": "Module",
+            "attributes": {
+                "icon": "trending_up"
+            }
+        },
+        {
+            "name": "Kubernetes",
+            "base": "Provider",
+            "attributes": {
+                "icon": "trending_up",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Serverless",
+            "base": "Provider",
+            "attributes": {
+                "icon": "trending_up",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "AWS",
+            "base": "Provider",
+            "attributes": {
+                "icon": "trending_up",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Local",
+            "base": "Provider",
+            "attributes": {
+                "icon": "trending_up",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Resource",
+            "base": "Item",
+            "attributes": {
+                "icon": "trending_up",
+                "creatable_types": ["Provider"]
+            }
+        },
+        {
+            "name": "Datastore",
+            "base": "Resource",
+            "attributes": {
+                "icon": "trending_up"
+            }
+        },
+        {
+            "name": "Itemstore",
+            "base": "Resource",
+            "attributes": {
+                "icon": "trending_up"
+            }
+        },
+        {
+            "name": "Webhost",
+            "base": "Resource",
+            "attributes": {
+                "icon": "trending_up"
+            }
+        },
+        {
+            "name": "MessageBus",
+            "base": "Resource",
+            "attributes": {
+                "icon": "trending_up"
+            }
+        },
+        {
+            "name": "Deployment",
+            "attributes": {
+                "image": "",
+                "registry": "",
+                "code": "",
+                "icon": "settings_applications",
+                "creatable_types": ["Resource"],
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "Node",
+            "base": "Item",
+            "attributes": {
+                "icon": "trending_up",
+                "creatable": "true",
+                "creatable_types": ["Deployment"]
+            }
+        },
+        {
+            "name": "Server",
+            "base": "Item",
+            "attributes": {
+                "icon": "trending_up",
+                "creatable": "true",
+                "creatable_types": ["Node"]
+            }
+        },
+        {
+            "name": "ServerApp",
+            "base": "App",
+            "attributes": {
+                "creatable_types": ["Server", "Provider"],
+                "icon": "trending_up"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "my_items": "true",
+                        "types": ["Server", "Provider"]
+                    }
+                },
+                {
+                    "name": "All",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        }
+
+    ]
+}

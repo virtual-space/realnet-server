@@ -1,6 +1,8 @@
 from .default import Default
 
 import json
+import uuid
+
 from sqlalchemy import false, null
 
 from sqlalchemy.sql import func, and_, or_, not_, functions
@@ -143,5 +145,71 @@ class Types(Default):
 
         return None
 
+    def create_item(self, parent_item=None, **kwargs):
+        item_name = None
+        item_type_id = None
+        item_attributes = None
+        item_parent_id = None
+        item_location = None
+        item_visibility = None
+        item_tags = None
+        item_is_public = False
+
+        for key, value in kwargs.items():
+            # print("%s == %s" % (key, value))
+            if key == 'name':
+                item_name = value
+            elif key == 'owner_id':
+                item_owner_id = value
+            elif key == 'group_id':
+                item_group_id = value
+            elif key == 'type_id':
+                item_type_id = value
+            elif key == 'attributes':
+                item_attributes = value
+            elif key == 'tags':
+                item_tags = value
+            elif key == 'parent_id':
+                item_parent_id = value
+            elif key == 'location':
+                if value['type'] == 'Point':
+                    item_location = 'SRID=4326;POINT({0} {1})'.format(value['coordinates'][0], value['coordinates'][1])
+                else:
+                    item_location = 'SRID=4326;POLYGON(('
+                    for ii in value['coordinates'][0]:
+                        item_location = item_location + '{0} {1},'.format(ii[0], ii[1])
+                    item_location = item_location[0:-1] + '))'
+            elif key == 'visibility':
+                item_visibility = value
+            elif key == 'public':
+                item_is_public = (value.lower() == "true")
+
+        target_id = item_parent_id
+        base_id = item_parent_id
+        ids = item_parent_id.split("_")
+        if len(ids) > 1:
+            base_id = ids[0]
+            target_id = ids[-1]
+
+        type = Type(id=str(uuid.uuid4()),
+                           name=item_name,
+                           icon=item_attributes.get('icon', 'approval'),
+                           attributes=item_attributes,
+                           owner_id=item_owner_id,
+                           group_id=item_group_id,
+                           module=item_attributes.get('module', 'default'))
+        
+        db.session.add(type)
+        
+        db.session.commit()
+            
+        return Item( id="{}_{}".format(id, type.id),
+                     name=type.name,
+                     attributes=type.attributes,
+                     owner_id=type.owner_id,
+                     group_id=type.group_id,
+                     type_id=type.id,
+                     parent_id= "{}_{}".format(id, type.base_id),
+                     type = type)
 
 

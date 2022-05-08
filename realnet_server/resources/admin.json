@@ -47,6 +47,10 @@
                     "type": "JobsApp"
                 },
                 {
+                    "name": "Server",
+                    "type": "ServerApp"
+                },
+                {
                     "name": "Public",
                     "type": "PublicApp"
                 },

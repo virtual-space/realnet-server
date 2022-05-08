@@ -52,24 +52,37 @@
             ]
         },
         {
-            "name": "Op",
-            "base": "Func",
+            "name": "Module",
+            "base": "Item",
+            "attributes": {
+                "icon": "functions",
+                "creatable": "true",
+                "code": "# Python 3 code for your class goes here...\nfrom .default import Default\nclass MyModuleName(Default):\n\tpass"
+            },
             "instances": [
                 {
-                    "name": "Lambda",
-                    "type": "Func"
+                    "name": "FuncView",
+                    "type": "FuncView"
                 }
             ]
         },
         {
-            "name": "Functor",
-            "base": "Func",
+            "name": "Link",
+            "base": "Item",
+            "attributes": {
+                "icon": "link",
+                "creatable": "true",
+                "item_id": "",
+                "url": "",
+                "redirect": "true"
+            },
             "instances": [
                 {
-                    "name": "Lambda",
-                    "type": "Func"
+                    "name": "View",
+                    "type": "LinkView"
                 }
             ]
+
         }
 
     ]
