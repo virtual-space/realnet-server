@@ -53,10 +53,10 @@ import realnet_server.oauth
 import realnet_server.items
 import realnet_server.types
 import realnet_server.groups
-import realnet_server.apps
+import realnet_server.clients
 import realnet_server.accounts
 import realnet_server.authenticators
-import realnet_server.tenants
+import realnet_server.orgs
 import realnet_server.mobile
 import realnet_server.profile
 

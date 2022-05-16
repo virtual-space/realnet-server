@@ -65,6 +65,7 @@ class Initialize(ProtoCmd):
 
     def add_arguments(self, parser):
         parser.add_argument('--name', help='specify the tenant name', default=os.getenv('REALNET_NAME'))
+        parser.add_argument('--type', help='specify the tenant name', default=os.getenv('REALNET_ORG_TYPE'))
         parser.add_argument('--username', help='specify the root username', default=os.getenv('REALNET_USERNAME'))
         parser.add_argument('--password', help='specify the root password', default=os.getenv('REALNET_PASSWORD'))
         parser.add_argument('--email', help='specify the root email', default=os.getenv('REALNET_EMAIL'))
@@ -74,7 +75,7 @@ class Initialize(ProtoCmd):
     def run(self, args):
         with app.app_context():
             db.create_all()
-            initialize_server(args.name, args.username, args.email, args.password, args.uri, args.redirect_uri)
+            initialize_server(args.name, args.type, args.username, args.email, args.password, args.uri, args.redirect_uri)
 
 
 class RealnetServer(Shell):

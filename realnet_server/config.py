@@ -1,8 +1,6 @@
 import os
 from dotenv import *
 
-from .models import BlobType
-
 path = os.path.join(os.getcwd(), ".env")
 if os.path.exists(path):
     load_dotenv(dotenv_path=path)
@@ -23,7 +21,7 @@ class Config:
         return os.getenv('REALNET_SERVER_PORT')
 
     def get_storage_type(self):
-        return BlobType[os.getenv('REALNET_STORAGE_TYPE')]
+        return os.getenv('REALNET_STORAGE_TYPE')
 
     def get_storage_path(self):
         return os.getenv('REALNET_STORAGE_PATH')

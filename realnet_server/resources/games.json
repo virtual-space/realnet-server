@@ -339,10 +339,6 @@
                 {
                     "name": "Dialogs",
                     "type": "Dialogs"
-                },
-                {
-                    "name": "List",
-                    "type": "ListView"
                 }
             ]
         }

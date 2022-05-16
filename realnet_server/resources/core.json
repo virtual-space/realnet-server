@@ -1,8 +1,104 @@
 {
     "types": [
         {
-            "name": "Query",
+            "name": "Item",
+            "attributes": {
+                "icon": "link",
+                "creatable": "false",
+                "item_id": "",
+                "url": "",
+                "redirect": "false"
+            }
+        },
+        {
+            "name": "Func",
             "base": "Item",
+            "attributes": {
+                "icon": "functions",
+                "creatable": "true",
+                "code": "# Python 3 code goes here..."
+            },
+            "instances": [
+                {
+                    "name": "FuncView",
+                    "type": "FuncView"
+                }
+            ]
+        },
+        {
+            "name": "Exp",
+            "base": "Func",
+            "attributes": {
+                "icon": "functions",
+                "code": "#python3 code here..."
+            }
+        },
+        {
+            "name": "Const",
+            "base": "Exp",
+            "attributes": {
+                "icon": "functions",
+                "code": "return self.name"
+            }
+        },
+        {
+            "name": "Link",
+            "base": "Exp",
+            "attributes": {
+                "creatable": "true",
+                "item_id": "item_id",
+                "url": "url",
+                "redirect": "true"
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "LinkView"
+                }
+            ]
+
+        },
+        {
+            "name": "UnaryOp",
+            "base": "Link",
+            "attributes": {
+                "creatable": "true",
+                "item_id": "item_id",
+                "url": "url",
+                "redirect": "true"
+            },
+            "instances": [
+                {
+                    "name": "Item",
+                    "type": "Item"
+                }
+            ]
+
+        },
+        {
+            "name": "BiaryOp",
+            "base": "Link",
+            "attributes": {
+                "creatable": "true",
+                "item_id": "item_id",
+                "url": "url",
+                "redirect": "true"
+            },
+            "instances": [
+                {
+                    "name": "Left",
+                    "type": "Item"
+                },
+                {
+                    "name": "Right",
+                    "type": "Item"
+                }
+            ]
+
+        },
+        {
+            "name": "Query",
+            "base": "Exp",
             "attributes": {
                 "icon": "search",
                 "parent_id": "",
@@ -37,8 +133,31 @@
             ]
         },
         {
-            "name": "Func",
-            "base": "Item",
+            "name": "File",
+            "module": "file"
+        },
+        
+        
+        {
+            "name": "Module",
+            "base": "Query",
+            "attributes": {
+                "icon": "functions",
+                "creatable": "true",
+                "creatable_types": ["Func", "Module"],
+                "show_children": "true",
+                "code": "# Python 3 code for your class goes here...\nfrom .default import Default\nclass MyModuleName(Default):\n\tpass"
+            },
+            "instances": [
+                {
+                    "name": "Functions and Modules",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "Invert<T>",
+            "base": "Op<T>",
             "attributes": {
                 "icon": "functions",
                 "creatable": "true",
@@ -52,12 +171,12 @@
             ]
         },
         {
-            "name": "Module",
-            "base": "Item",
+            "name": "Add<L,R>",
+            "base": "Op<L,R>",
             "attributes": {
                 "icon": "functions",
                 "creatable": "true",
-                "code": "# Python 3 code for your class goes here...\nfrom .default import Default\nclass MyModuleName(Default):\n\tpass"
+                "code": "# Python 3 code goes here..."
             },
             "instances": [
                 {
@@ -65,24 +184,6 @@
                     "type": "FuncView"
                 }
             ]
-        },
-        {
-            "name": "Link",
-            "base": "Item",
-            "attributes": {
-                "icon": "link",
-                "creatable": "true",
-                "item_id": "",
-                "url": "",
-                "redirect": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "LinkView"
-                }
-            ]
-
         }
 
     ]

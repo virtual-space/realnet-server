@@ -1,3 +1,4 @@
+from email.mime import base
 import uuid
 import os
 import json
@@ -12,7 +13,7 @@ except ImportError:
 
 import realnet_server
 from .module import Module
-from realnet_server.models import VisibilityType, db, Item, Blob, BlobType, Type, AclType, Acl, AccountGroup, create_item
+from realnet_server.models import VisibilityType, db, Item, Type, AclType, Acl, AccountGroup
 from realnet_server.config import Config
 import mimetypes
 
@@ -30,6 +31,40 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'md', 'csv', 't
 
 class Default(Module):
 
+    def is_derived_from(self, type, type_name):
+        if type.name == type_name:
+            return True
+        if type.base:
+            return self.is_derived_from(type.base, type_name)
+
+        return False
+
+    def merge_attributes(self, left_item, right_item):
+        if left_item.attributes and right_item.attributes:
+            return left_item.attributes | right_item.attributes
+        elif left_item.attributes:
+            return left_item.attributes
+        else:
+            return right_item.attributes
+
+    def get_type_attributes(self, type):
+        result = {}
+        if type.base:
+            base_attrs = self.get_type_attributes(type.base)
+            if base_attrs:
+                result = result | base_attrs
+        if type.attributes:
+            result = result | type.attributes
+
+        return result
+
+    def get_instance_attributes(self, instance):
+        result = self.get_type_attributes(instance.type)
+        if instance.attributes:
+            result = result | instance.attributes
+        return result
+            
+            
     def is_item_public(self, item):
 
         if [acl for acl in item.acls if acl.type == AclType.public]:
@@ -231,88 +266,41 @@ class Default(Module):
         return None
 
     def update_item_data(self, item, storage):
-        cfg = Config()
-        blob = Blob.query.filter(Blob.item_id == item.id).first()
-
         content_type = storage.content_type
         if storage.filename and content_type is None:
             content_type = mimetypes.guess_type(storage.filename)[0] or 'application/octet-stream'
-        if blob:
-            # update existing
-            if blob.type == BlobType.local:
-                path = os.path.join(blob.data['path'], storage.filename)
+        if item:
+            cfg = Config()
+            blob_type = cfg.get_storage_type()
+            if item.attributes and 'blob_type' in item.attributes:
+                blob_type = item.attributes['blob_type']
+            if blob_type == 'local':
+                path = os.path.join(item.attributes['path'], storage.filename)
                 storage.save(path)
-                blob.content_length = os.stat(path).st_size
-                blob.content_type = content_type
-                blob.filename = storage.filename
-                blob.mime_type = content_type
+                item.attributes['content_length'] = os.stat(path).st_size
+                item.attributes['content_type'] = content_type
+                item.attributes['filename'] = storage.filename
+                item.attributes['mime_type'] = content_type
                 db.session.commit()
                 return {'created': False, 'updated': True}
-            elif blob.type == BlobType.s3:
+            elif blob_type == 's3':
                 s3 = session.resource('s3')
                 bucket = s3.Bucket(cfg.get_s3_bucket())
-                bucket.Object(blob.id).put(Body=storage)
-                blob.data = storage
-                blob.content_length = storage.content_length,
-                blob.content_type = content_type,
-                blob.filename = storage.filename,
-                blob.mime_type = storage.mimetype,
+                bucket.Object(item.attributes['s3_blob_id']).put(Body=storage)
+                item.attributes['content_length'] = storage.content_length,
+                item.attributes['content_type'] = content_type,
+                item.attributes['filename'] = storage.filename,
+                item.attributes['mime_type'] = storage.mimetype,
                 db.session.commit()
                 return {'created': False, 'updated': True}
-        else:
-            if cfg.get_storage_type() == BlobType.local:
-                basepath = cfg.get_storage_path()
-                path = os.path.join(basepath, storage.filename)
-                storage.save(path)
-                blob = Blob(id=str(uuid.uuid4()),
-                            type=BlobType.local,
-                            data={'path': basepath},
-                            content_length=os.stat(path).st_size,
-                            content_type=content_type,
-                            filename=storage.filename,
-                            mime_type=content_type,
-                            item_id=item.id)
-                db.session.add(blob)
-                db.session.commit()
-                return {'created': True, 'updated': False}
-            elif cfg.get_storage_type() == BlobType.s3:
-                basepath = cfg.get_storage_path()
-                #path = os.path.join(basepath, storage.filename)
-                s3 = session.resource('s3')
-                bucket = s3.Bucket(cfg.get_s3_bucket())
-                blob_id = str(uuid.uuid4())
-                res = bucket.Object(blob_id).put(Body=storage)
-                blob = Blob(id=blob_id,
-                            type=BlobType.s3,
-                            data=storage,
-                            content_length=storage.content_length,
-                            content_type=content_type,
-                            filename=storage.filename,
-                            mime_type=storage.mimetype,
-                            item_id=item.id)
-                db.session.add(blob)
-                db.session.commit()
-                return {'created': True, 'updated': False}
 
         return {'created': False, 'updated': False}
 
     def delete_item_data(self, item):
         file = Item.query.filter(Item.id == item.id).first()
-
+        #TODO
         if file:
-            if file.type == BlobType.local:
-                path1 = os.path.join(os.getcwd(), 'storage')
-                # os.remove(os.path.join(path1, file.filename))
-                # db.session.delete(blob)
-                # db.session.commit()
-                return True
-            elif file.type == BlobType.s3:
-                s3 = session.resource('s3')
-                bucket = s3.Bucket(cfg.get_s3_bucket())
-                bucket.Object(file.id).delete()
-                # db.session.delete(blob)
-                # db.session.commit()
-                return True
+            pass
 
         return False
 
@@ -368,7 +356,7 @@ class Default(Module):
             code = func.attributes.code
             if code:
                 result = dict()
-                safe_list = ['func', 'arguments', 'result']
+                safe_list = ['self', 'func', 'arguments', 'result']
                 safe_dict = dict([(k, locals().get(k, None)) for k in safe_list])
                 eval(func.code, None, safe_dict)
                 return result
@@ -406,7 +394,7 @@ class Default(Module):
         if not target_type:
             return  {'created': False, 'updated': False}
         
-        if cfg.get_storage_type() == BlobType.local:
+        if cfg.get_storage_type() == 'local':
             basepath = cfg.get_storage_path()
             path = os.path.join(basepath, storage.filename)
             storage.save(path)
@@ -414,7 +402,7 @@ class Default(Module):
                             name=storage.filename,
                             type_id=target_type.id,
                             attributes={
-                                'blob_type': 'BlobType.local',
+                                'blob_type': 'local',
                                 'path': basepath,
                                 'content_length': os.stat(path).st_size,
                                 'content_type': content_type,
@@ -428,7 +416,7 @@ class Default(Module):
             db.session.add(target)
             db.session.commit()
             return {'created': True, 'updated': False}
-        elif cfg.get_storage_type() == BlobType.s3:
+        elif cfg.get_storage_type() == 's3':
             basepath = cfg.get_storage_path()
             s3 = session.resource('s3')
             bucket = s3.Bucket(cfg.get_s3_bucket())
@@ -438,7 +426,7 @@ class Default(Module):
                           name=storage.filename,
                             type_id=target_type.id,
                             attributes={
-                                'blob_type': 'BlobType.s3',
+                                'blob_type': 's3',
                                 's3_blob_id': blob_id,
                                 'content_length': storage.content_length,
                                 'content_type': content_type,

@@ -316,7 +316,25 @@
             }
         },
         {
-            "name": "Item"
+            "name": "Dialogs",
+            "instances": [
+                {
+                    "name": "Create",
+                    "type": "ItemCreateDialog"
+                },
+                {
+                    "name": "Edit",
+                    "type": "ItemEditDialog"
+                },
+                {
+                    "name": "Query",
+                    "type": "ItemQueryDialog"
+                },
+                {
+                    "name": "Hierarchy",
+                    "type": "ItemHierarchyDialog"
+                }
+            ]
         }
     ]
 }

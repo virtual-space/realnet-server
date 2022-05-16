@@ -16,7 +16,7 @@ from werkzeug.security import gen_salt
 
 
 from .models import db, Account
-from .models import App, AuthorizationCode, Token
+from .models import Client, AuthorizationCode, Token
 
 
 class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
@@ -190,7 +190,7 @@ class HybridGrant(oidc_grants.OpenIDHybridGrant):
         return user_info
 
 
-query_client = create_query_client_func(db.session, App)
+query_client = create_query_client_func(db.session, Client)
 save_token = create_save_token_func(db.session, Token)
 authorization = AuthorizationServer(
     query_client=query_client,

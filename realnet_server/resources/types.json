@@ -35,16 +35,14 @@
             ]
         },
         {
-            "name": "Operation",
+            "name": "Exp",
             "base": "Instance",
             "module": "types",
             "attributes": {
                 "icon": "approval",
                 "creatable": "true",
-                "creatable_types": ["Type"],
-                "show_children": "true",
-                "code": "#python code goes here - look at children and return the result of the operation i.e. Union, Intersection etc.."
-
+                "creatable_types": ["Exp"],
+                "show_children": "true"
             },
             "instances": [
                 {
@@ -54,21 +52,37 @@
             ]
         },
         {
-            "name": "TypeApp",
-            "base": "App",
+            "name": "Exp",
+            "base": "Instance",
             "module": "types",
             "attributes": {
-                "creatable_types": ["Type"],
                 "icon": "approval",
-                "show_children": "true"
+                "creatable_types": ["Exp"],
+                "show_children": "true",
+                "code": "#python code goes here - evaluate the children and return the result of the operation i.e. Filter a Query results, perform a function or even a basic operation like Union, Intersection etc.."
             },
             "instances": [
                 {
                     "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
+                    "type": "ListView"
                 }
             ]
+        },
+        {
+            "name": "Const",
+            "base": "Exp",
+            "module": "types"
+        },
+        {
+            "name": "TypeApp",
+            "base": "App",
+            "module": "types",
+            "attributes": {
+                "creatable_types": ["Type", "Op"],
+                "icon": "approval",
+                "show_children": "true",
+                "show_views_as_items": "true"
+             }
         }
 
     ]

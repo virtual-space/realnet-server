@@ -11,7 +11,7 @@ try:
 except ImportError:
     from urllib import unquote  # PY2
 
-from realnet_server.models import VisibilityType, db, Item, Blob, BlobType, Type, create_item
+from realnet_server.models import Instance, db, Item, Type
 
 class Types(Default):
     
@@ -132,16 +132,43 @@ class Types(Default):
         ids = id.split("_")
         if len(ids) > 1:
             target_id = ids[-1]
-        t = Type.query.filter(Type.id == target_id).first()
-        if t:
-            return Item( id="{}_{}".format(id, t.id),
-                            name=t.name,
-                            attributes=t.attributes,
-                            owner_id=t.owner_id,
-                            group_id=t.group_id,
-                            type_id=t.id,
-                            parent_id= "{}_{}".format(id, t.base_id),
-                            type = t)
+        if target_id != base_id:
+            type = Type.query.filter(Type.id == target_id).first()
+            instance_type = Type.query.filter(Type.name == 'Instance').first()
+            return Item( id="{}_{}".format(base_id, target_id),
+                            name=type.name,
+                            attributes=type.attributes,
+                            owner_id=type.owner_id,
+                            group_id=type.group_id,
+                            type_id=type.id,
+                            items=[Item( id="{}_{}".format(type.id, tt.id),
+                                    name=tt.name,
+                                    attributes=self.merge_attributes(instance_type, tt),
+                                    owner_id=instance_type.owner_id,
+                                    group_id=instance_type.group_id,
+                                    type_id=instance_type.id,
+                                    type = instance_type) for tt in Instance.query.filter(Instance.parent_type_id == target_id)],
+                            parent_id=base_id,
+                            type = type)
+        else:
+            #this is the query for all orgs
+            typeapp_type = Type.query.filter(Type.name == 'TypeApp').first()
+            t = Item.query.filter(Item.id == id).first()
+            if t and typeapp_type:
+                return Item( id=t.id,
+                             name=t.name,
+                             attributes=self.merge_attributes(typeapp_type, t),
+                             owner_id=typeapp_type.owner_id,
+                             group_id=typeapp_type.group_id,
+                             type_id=typeapp_type.id,
+                             items=[Item( id="{}_{}".format(t.id, tt.id),
+                                    name=tt.name,
+                                    attributes=tt.attributes,
+                                    owner_id=tt.owner_id,
+                                    group_id=tt.group_id,
+                                    type_id=tt.id,
+                                    type = tt) for tt in Type.query.all()],
+                             type=typeapp_type)
 
         return None
 

@@ -1,7 +1,7 @@
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from flask import request, jsonify, send_file, Response
-from .models import db, Item, Type, Account, AccountGroup, Acl, AclType, Function, Topic, Message, TopicFunction, VisibilityType
+from .models import db, Item, Type, Account, Acl, AclType
 from .config import Config
 from .auth import require_oauth
 import importlib
@@ -34,6 +34,10 @@ def get_module_by_id(id):
             parent_item = Item.query.filter(Item.id == parent_id).first()
             if parent_item and parent_item.type.module:
                 module_name = parent_item.type.module
+        else:
+            item = Item.query.filter(Item.id == id).first()
+            if item and item.type.module:
+                module_name = item.type.module
         
     return load_module(module_name)
 
@@ -220,8 +224,6 @@ def items():
         if input_data:
             input_type = Type.query.filter(Type.name == input_data['type']).first()
             if input_type:
-                module_instance = load_module(input_type.module)
-
                 input_name = input_data['name']
                 if input_name:
                     parent_id = None
@@ -231,8 +233,13 @@ def items():
                         if folder:
                             parent_id = folder.id
 
+                    module_instance = None
+
+                    account = Account.query.filter(Account.id == current_token.account.id).first()
+
                     if not parent_id and 'parent_id' in input_data:
                         parent_id = input_data['parent_id']
+                        module_instance = get_module_by_id(parent_id)
                         ids = parent_id.split("_")
                         if len(ids) > 1:
                             parent_id = ids[0]
@@ -242,14 +249,14 @@ def items():
                                            message="Failure",
                                            statusCode=404,
                                            data='Parent item not found'), 404
-
-                        account = Account.query.filter(Account.id == current_token.account.id).first()
-
-                        if not module_instance.can_account_write_item(account=account,item=parent):
+                        if not module_instance.can_account_write_item(account=account, item=parent):
                             return jsonify(isError=True,
-                                           message="Failure",
-                                           statusCode=403,
-                                           data='Account not authorized to write to parent'), 403
+                                        message="Failure",
+                                        statusCode=403,
+                                        data='Account not authorized to write to parent'), 403
+                    else:
+                        module_instance = load_module(input_type.module)
+
                     if not parent_id:
                         parent_id = current_token.account.home_id
 

@@ -1,0 +1,385 @@
+{
+    "types": [
+        {
+            "name": "Apps",
+            "attributes": {
+                "icon": "apps"
+            }
+        },
+        {
+            "name": "Role",
+            "attributes": {
+                "icon": "badge",
+                "creatable_types": ["Apps", "Dialogs"]
+            }
+        },
+        {
+            "name": "Account",
+            "attributes": {
+                "icon": "account_circle",
+                "creatable_types": ["Role"],
+                "username": "",
+                "password": ""
+            }
+        },
+        {
+            "name": "Person",
+            "base": "Account",
+            "attributes": {
+                "icon": "person",
+                "creatable": "true",
+                "account_type": "person",
+                "email": "a@b.com",
+                "phone_number": ""
+            }
+        },
+        {
+            "name": "Device",
+            "base": "Account",
+            "attributes": {
+                "icon": "usb",
+                "account_type": "thing",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Group",
+            "attributes": {
+                "icon": "groups",
+                "creatable": "true",
+                "creatable_types": ["Account"],
+                "show_children": "true"
+            }
+        },
+        {
+            "name": "Client",
+            "attributes": {
+                "icon": "key",
+                "creatable": "true",
+                "client_id": "",
+                "uri": "",
+                "grant_types": [],
+                "redirect_uris": [],
+                "response_types": [],
+                "scope": "",
+                "auth_method": ""
+            }
+        },
+        {
+            "name": "Acl",
+            "attributes": {
+                "icon": "lock"
+            }
+        },
+        {
+            "name": "HomeApp",
+            "base": "App",
+            "attributes": {
+                "icon": "home",
+                "show_children": "true"
+            },
+            "instances": [
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "LoginApp",
+            "base": "App",
+            "attributes": {
+                "icon": "key",
+                "api": "http://localhost:8080",
+                "client_id": "IEmf5XYQJXIHvWcQtZ5FXbLM",
+                "authenticator_name": "password",
+                "authenticator_type": "password"
+            }
+        },
+        {
+            "name": "FindApp",
+            "base": "App",
+            "attributes": {
+                "icon": "search"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {}
+                },
+                {
+                    "name": "List",
+                    "type": "ListView"
+                }
+                
+            ]
+        },
+        {
+            "name": "AroundApp",
+            "base": "App",
+            "attributes":{
+                "icon": "local_pizza"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {}
+                },
+                {
+                    "name": "Map",
+                    "type": "MapView",
+                    "attributes": {}
+                },
+                {
+                    "name": "List",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+                
+            ]
+        },
+        {
+            "name": "GroupApp",
+            "base": "App",
+            "attributes": {
+                "creatable_types": ["Group"],
+                "icon": "groups",
+                "show_children": "true"
+            },
+            "instances": [
+                {
+                    "name": "All",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "RoleApp",
+            "base": "App",
+            "attributes": {
+                "creatable_types": ["Role"],
+                "icon": "badge"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "types": ["Role"]
+                    }
+                },
+                {
+                    "name": "All",
+                    "type": "ListView",
+                    "attributes": {}
+                }
+            ]
+        },
+        {
+            "name": "PublicApp",
+            "base": "App",
+            "attributes": {
+                "icon": "public",
+                "initial": "true"
+            },
+            "instances": [
+                {
+                    "name": "Query",
+                    "type": "Query",
+                    "attributes": {
+                        "public": "true"
+                    }
+                },
+                {
+                    "name": "Items",
+                    "type": "ListView",
+                    "attributes": {
+                        "public": "true"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "PublicApps",
+            "base": "Apps",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Find",
+                    "public": "true",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Public",
+                    "public": "true",
+                    "type": "PublicApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
+                },
+                {
+                    "name": "Around",
+                    "public": "true",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Login",
+                    "public": "true",
+                    "type": "LoginApp"
+                }
+            ]
+        },
+        {
+            "name": "OrgApp",
+            "base": "App",
+            "module": "orgs",
+            "attributes": {
+                "creatable_types": ["Org"],
+                "icon": "corporate_fare",
+                "show_children": "true"
+            }
+        },
+        {
+            "name": "Contact",
+            "base": "Link",
+            "module": "groups",
+            "attributes": {
+                "icon": "account_circle",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "ContactApp",
+            "base": "App",
+            "attributes": {
+                "creatable_types": ["Contact"],
+                "icon": "account_circle"
+            }
+        },
+        {
+            "name": "AdminApps",
+            "base": "Apps",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Home",
+                    "type": "HomeApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
+                },
+                {
+                    "name": "Around",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Types",
+                    "type": "TypeApp"
+                },
+                {
+                    "name": "Org",
+                    "type": "OrgApp"
+                },
+                {
+                    "name": "Roles",
+                    "type": "RoleApp"
+                },
+                {
+                    "name": "Contacts",
+                    "type": "ContactApp"
+                },
+                {
+                    "name": "Server",
+                    "type": "ServerApp"
+                },
+                {
+                    "name": "Login",
+                    "type": "LoginApp"
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "base": "Role",
+            "attributes": {
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "Apps",
+                    "type": "AdminApps"
+                },
+                {
+                    "name": "Dialogs",
+                    "type": "Dialogs"
+                }
+            ]
+        },
+        {
+            "name": "GuestApps",
+            "base": "Apps",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Home",
+                    "type": "HomeApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
+                },
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Public",
+                    "type": "PublicApp"
+                },
+                {
+                    "name": "Around",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Login",
+                    "type": "LoginApp"
+                }
+            ]
+        },
+        {
+            "name": "Root",
+            "base": "Person",
+            "attributes": {
+                "root": "true"
+            },
+            "instances": [
+                {
+                    "name": "Admin",
+                    "type": "Admin"
+                }
+            ]
+        },
+        {
+            "name": "Org",
+            "module": "orgs",
+            "attributes": {
+                "icon": "corporate_fare",
+                "creatable": "true",
+                "creatable_types": ["Group", "Client"],
+                "show_children": "true"
+            }
+        }
+    ]
+}

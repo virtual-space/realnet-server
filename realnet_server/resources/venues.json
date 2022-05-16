@@ -5,7 +5,7 @@
             "base": "Place",
             "attributes": {
                 "icon": "other_houses",
-                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
+                "creatable_types": ["Event", "Contact"]
             },
             "instances": [
                 {

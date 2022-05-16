@@ -104,7 +104,8 @@
             "base": "Event",
             "attributes": {
                 "icon": "celebration",
-                "creatable": "true"
+                "creatable": "true",
+                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
             },
             "instances": [
                 {
@@ -178,34 +179,19 @@
             "instances": [
                 {
                     "name": "Events",
-                    "type": "EventApp",
-                    "attributes": {
-                        "initial": "true"
-                    }
+                    "type": "EventApp"
                 },
                 {
                     "name": "Venues",
                     "type": "VenueApp"
                 },
                 {
-                    "name": "Products",
-                    "type": "ProductApp"
-                },
-                {
                     "name": "Orders",
                     "type": "OrderApp"
                 },
                 {
-                    "name": "Suppliers",
-                    "type": "SupplierApp"
-                },
-                {
                     "name": "Tasks",
                     "type": "TaskApp"
-                },
-                {
-                    "name": "Games",
-                    "type": "GameApp"
                 },
                 {
                     "name": "Find",
@@ -213,11 +199,10 @@
                 },
                 {
                     "name": "Home",
-                    "type": "HomeApp"
-                },
-                {
-                    "name": "Groups",
-                    "type": "GroupApp"
+                    "type": "HomeApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
                 },
                 {
                     "name": "Topics",
@@ -238,28 +223,7 @@
             ]
         },
         {
-            "name": "EventStaff",
-            "base": "Role",
-            "attributes": {
-                "icon": "manager_accounts"
-            },
-            "instances": [
-                {
-                    "name": "Apps",
-                    "type": "EventStaffApps"
-                },
-                {
-                    "name": "Dialogs",
-                    "type": "Dialogs"
-                },
-                {
-                    "name": "List",
-                    "type": "ListView"
-                }
-            ]
-        },
-        {
-            "name": "EventStaffApps",
+            "name": "EventManagerApps",
             "base": "Apps",
             "attributes": {
                 "icon": "apps"
@@ -299,7 +263,10 @@
                 },
                 {
                     "name": "Home",
-                    "type": "HomeApp"
+                    "type": "HomeApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
                 },
                 {
                     "name": "Groups",
@@ -320,6 +287,211 @@
                 {
                     "name": "Login",
                     "type": "LoginApp"
+                }
+            ]
+        },
+        {
+            "name": "EventVisitorApps",
+            "base": "Apps",
+            "attributes": {
+                "icon": "apps"
+            },
+            "instances": [
+                {
+                    "name": "Events",
+                    "type": "EventApp"
+                },
+                {
+                    "name": "Games",
+                    "type": "GameApp"
+                },
+                {
+                    "name": "Find",
+                    "type": "FindApp"
+                },
+                {
+                    "name": "Home",
+                    "type": "HomeApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
+                },
+                {
+                    "name": "Topics",
+                    "type": "TopicApp"
+                },
+                {
+                    "name": "Contacts",
+                    "type": "ContactApp"
+                },
+                {
+                    "name": "Around",
+                    "type": "AroundApp"
+                },
+                {
+                    "name": "Login",
+                    "type": "LoginApp"
+                }
+            ]
+        },
+        {
+            "name": "EventManager",
+            "base": "Role",
+            "attributes": {
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "Apps",
+                    "type": "EventManagerApps"
+                },
+                {
+                    "name": "Dialogs",
+                    "type": "Dialogs"
+                }
+            ]
+        },
+        {
+            "name": "EventStaff",
+            "base": "Role",
+            "attributes": {
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "Apps",
+                    "type": "EventStaffApps"
+                },
+                {
+                    "name": "Dialogs",
+                    "type": "Dialogs"
+                }
+            ]
+        },
+        {
+            "name": "EventVisitor",
+            "base": "Role",
+            "attributes": {
+                "creatable": "true"
+            },
+            "instances": [
+                {
+                    "name": "Apps",
+                    "type": "EventVisitorApps"
+                },
+                {
+                    "name": "Dialogs",
+                    "type": "Dialogs"
+                }
+            ]
+        },
+        {
+            "name": "Manager",
+            "base": "Person",
+            "attributes": {
+                "username": "manager",
+                "password": "1234"
+            },
+            "instances": [
+                {
+                    "name": "EventManager",
+                    "type": "EventManager"
+                }
+            ]
+        },
+        {
+            "name": "Staff",
+            "base": "Person",
+            "attributes": {
+                "username": "staff",
+                "password": "1234"
+            },
+            "instances": [
+                {
+                    "name": "EventStaff",
+                    "type": "EventStaff"
+                }
+            ]
+        },
+        {
+            "name": "Visitor",
+            "base": "Person",
+            "attributes": {
+                "username": "visitor",
+                "password": "1234"
+            },
+            "instances": [
+                {
+                    "name": "EventVisitor",
+                    "type": "EventVisitor"
+                }
+            ]
+        },
+        {
+            "name": "EventGroup",
+            "base": "Group",
+            "instances": [
+                {
+                    "name": "Manager",
+                    "type": "Manager"
+                },
+                {
+                    "name": "Staff",
+                    "type": "Staff"
+                },
+                {
+                    "name": "Visitor",
+                    "type": "Visitor"
+                }
+            ]
+        },
+        {
+            "name": "EventOrg",
+            "base": "Org",
+            "instances": [
+                {
+                    "name": "Everyone",
+                    "type": "EventGroup",
+                    "attributes": {
+                        "root": "true"
+                    }
+                },
+                {
+                    "name": "CLI",
+                    "type": "Client",
+                    "attributes": {
+                        "client_id": "Vk6Swe7GyqJIKKfa3SiXYJbv",
+                        "uri": "http://localhost:8080",
+                        "grant_types": ["password"],
+                        "redirect_uris": ["http://localhost:4200/callback"],
+                        "response_types": ["token"],
+                        "auth_method": "client_secret_basic"
+                    }
+                },
+                {
+                    "name": "Web",
+                    "type": "Client",
+                    "attributes": {
+                        "client_id": "IEmf5XYQJXIHvWcQtZ5FXbLM",
+                        "uri": "http://localhost:8080",
+                        "grant_types": ["password"],
+                        "redirect_uris": ["http://localhost:4200/callback"],
+                        "response_types": ["token"],
+                        "auth_method": "none"
+                    }
+                },
+                {
+                    "name": "Mobile",
+                    "type": "Client",
+                    "attributes": {
+                        "client_id": "MPpG679mTwfpkwzVfK1flaPa",
+                        "client_secret": "2CNYMgCEVoOsqgSQGipwDN5bo8AsxQktU1KegT7jrQl3Arjq",
+                        "uri": "http://localhost:8080",
+                        "grant_types": ["authorization_code", "password"],
+                        "redirect_uris": ["io.realnet.api-dev:/callback"],
+                        "response_types": ["code"],
+                        "auth_method": "client_secret_basic"
+                    }
                 }
             ]
         }
