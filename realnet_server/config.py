@@ -8,11 +8,15 @@ if os.path.exists(path):
 class Config:
 
     def get_database_url(self):
-        return 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(os.getenv('REALNET_DB_USER'),
+        return '{0}://{1}:{2}@{3}:{4}/{5}'.format(os.getenv('REALNET_DB_TYPE'),
+                                                         os.getenv('REALNET_DB_USER'),
                                                          os.getenv('REALNET_DB_PASS'),
                                                          os.getenv('REALNET_DB_HOST'),
                                                          os.getenv('REALNET_DB_PORT'),
                                                          os.getenv('REALNET_DB_NAME'))
+
+    def get_db_type(self):
+        return os.getenv('REALNET_DB_TYPE')
 
     def get_server_host(self):
         return os.getenv('REALNET_SERVER_HOST')
