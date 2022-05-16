@@ -488,7 +488,7 @@
                         "client_secret": "2CNYMgCEVoOsqgSQGipwDN5bo8AsxQktU1KegT7jrQl3Arjq",
                         "uri": "http://localhost:8080",
                         "grant_types": ["authorization_code", "password"],
-                        "redirect_uris": ["io.realnet.api-dev:/callback"],
+                        "redirect_uris": ["io.realnet.app:/oauth2redirect"],
                         "response_types": ["code"],
                         "auth_method": "client_secret_basic"
                     }
