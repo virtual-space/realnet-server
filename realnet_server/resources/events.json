@@ -46,7 +46,8 @@
             "base": "Item",
             "attributes": {
                 "icon": "event",
-                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
+                "creatable_types": ["Event", "Task", "Place", "Contact", "Document", "Menu", "Material"],
+                "show_children": "true"
             },
             "instances": [
                 {
@@ -54,8 +55,36 @@
                     "type": "CalendarView"
                 },
                 {
-                    "name": "All",
-                    "type": "ListView"
+                    "name": "Contacts",
+                    "type": "ListView",
+                    "attributes": {
+                        "query": {"types": ["Contact"]}
+                    }
+                },
+                {
+                    "name": "Documents",
+                    "type": "ListView",
+                    "attributes": {
+                        "query": {"types": ["Document"]}
+                    }
+                },
+                {
+                    "name": "Tasks",
+                    "type": "BoardView",
+                    "attributes": {
+                        "query": {"types": ["Task"]}
+                    }
+                },
+                {
+                    "name": "Materials",
+                    "type": "ListView",
+                    "attributes": {
+                        "query": {"types": ["Material"]}
+                    }
+                },
+                {
+                    "name": "Map",
+                    "type": "MapView"
                 }
             ]
         },
@@ -104,27 +133,8 @@
             "base": "Event",
             "attributes": {
                 "icon": "celebration",
-                "creatable": "true",
-                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
-            },
-            "instances": [
-                {
-                    "name": "Menu",
-                    "type": "ItemView",
-                    "attributes": {
-                        "select_name": "Menu",
-                        "select_type": "Menu"
-                    }
-                },
-                {
-                    "name": "Contract",
-                    "type": "ItemView",
-                    "attributes": {
-                        "select_name": "Contract",
-                        "select_type": "Document"
-                    }
-                }
-            ]
+                "creatable": "true"
+            }
         },
         {
             "name": "Festival",
@@ -242,8 +252,8 @@
                     "type": "ProductApp"
                 },
                 {
-                    "name": "Orders",
-                    "type": "OrderApp"
+                    "name": "Materials",
+                    "type": "MaterialApp"
                 },
                 {
                     "name": "Suppliers",
@@ -254,27 +264,11 @@
                     "type": "TaskApp"
                 },
                 {
-                    "name": "Games",
-                    "type": "GameApp"
-                },
-                {
-                    "name": "Find",
-                    "type": "FindApp"
-                },
-                {
                     "name": "Home",
                     "type": "HomeApp",
                     "attributes": {
                         "initial": "true"
                     }
-                },
-                {
-                    "name": "Groups",
-                    "type": "GroupApp"
-                },
-                {
-                    "name": "Topics",
-                    "type": "TopicApp"
                 },
                 {
                     "name": "Contacts",

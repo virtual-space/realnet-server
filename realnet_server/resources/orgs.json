@@ -246,11 +246,16 @@
         },
         {
             "name": "Contact",
-            "base": "Link",
-            "module": "groups",
+            "base": "Item",
             "attributes": {
                 "icon": "account_circle",
-                "creatable": "true"
+                "creatable": "true",
+                "first_name": "",
+                "last_name": "",
+                "title": "",
+                "phone_number": "",
+                "email": "",
+                "address": ""
             }
         },
         {
@@ -258,7 +263,8 @@
             "base": "App",
             "attributes": {
                 "creatable_types": ["Contact"],
-                "icon": "account_circle"
+                "icon": "account_circle",
+                "show_children": "true"
             }
         },
         {

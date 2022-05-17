@@ -93,6 +93,14 @@
             "base": "Control"
         },
         {
+            "name": "TabsCtrl",
+            "base": "Control"
+        },
+        {
+            "name": "TabCtrl",
+            "base": "Control"
+        },
+        {
             "name": "ItemCtrl",
             "base": "Control"
         },

@@ -573,26 +573,26 @@ def item_data(id):
 
             output = module_instance.get_item_data(item)
 
-        if 's3_obj' in output:
-            cfg = Config()
-            if cfg.get_base64_encode_data() and not output['mimetype'].startswith('text/'):
-                read = output['s3_obj']['Body'].read()
-                return Response(
-                    base64.b64encode(read).decode('utf-8'),
-                    mimetype=output['mimetype'],
-                    headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])})
+            if 's3_obj' in output:
+                cfg = Config()
+                if cfg.get_base64_encode_data() and not output['mimetype'].startswith('text/'):
+                    read = output['s3_obj']['Body'].read()
+                    return Response(
+                        base64.b64encode(read).decode('utf-8'),
+                        mimetype=output['mimetype'],
+                        headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])})
+                else:
+                    return Response(
+                        output['s3_obj']['Body'].read(),
+                        mimetype=output['mimetype'],
+                        headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])})
+            elif 'filename' in output:
+                return send_file(output['filename'], as_attachment=True)
             else:
-                return Response(
-                    output['s3_obj']['Body'].read(),
-                    mimetype=output['mimetype'],
-                    headers={"Content-Disposition": "attachment;filename={}".format(output['filename'])})
-        elif 'filename' in output:
-            return send_file(output['filename'], as_attachment=True)
-        else:
-            return jsonify(isError=True,
-                           message="Failure",
-                           statusCode=500,
-                           data='get_item {0}'.format(id)), 500
+                return jsonify(isError=True,
+                            message="Failure",
+                            statusCode=500,
+                            data='get_item {0}'.format(id)), 500
 
     return jsonify(isError=True,
                    message="Failure",

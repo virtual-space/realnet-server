@@ -115,6 +115,115 @@
             ]
         },
         {
+            "name": "GeneralTab",
+            "base": "TabCtrl",
+            "instances": [
+                {
+                    "name": "Name",
+                    "type": "EditCtrl",
+                    "attributes": {
+                        "target": "name",
+                        "field_name": "name",
+                        "order": "1"
+                    }
+                },
+                {
+                    "name": "Status",
+                    "type": "SelectCtrl",
+                    "attributes": {
+                        "target": "status",
+                        "field_name": "status",
+                        "values": ["To Do", "In Progress", "Done"],
+                        "order": "2"
+                    }
+                },
+                {
+                    "name": "Tags",
+                    "type": "TagsCtrl",
+                    "attributes": {
+                        "order": "3",
+                        "target": "tags",
+                        "field_name": "tags"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "AttributesTab",
+            "base": "TabCtrl",
+            "instances": [
+                {
+                    "name": "Attributes",
+                    "type": "AttrsCtrl",
+                    "attributes": {
+                        "order": "1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "LocationTab",
+            "base": "TabCtrl",
+            "instances": [
+                {
+                    "name": "Location",
+                    "type": "LocationCtrl",
+                    "attributes": {
+                        "target": "location",
+                        "field_name": "location",
+                        "order": "1"
+                    }
+                    
+                }
+            ]
+        },
+        {
+            "name": "SchedulingTab",
+            "base": "TabCtrl",
+            "instances": [
+                {
+                    "name": "Valid from",
+                    "type": "DateCtrl",
+                    "attributes": {
+                        "target": "valid_from",
+                        "field_name": "valid_from",
+                        "order": "1"
+                    }
+                },
+                {
+                    "name": "Valid to",
+                    "type": "DateCtrl",
+                    "attributes": {
+                        "target": "valid_to",
+                        "field_name": "valid_to",
+                        "order": "2"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ItemDialogTabs",
+            "base": "TabsCtrl",
+            "instances": [
+                {
+                    "name": "General",
+                    "type": "GeneralTab"
+                },
+                {
+                    "name": "Attributes",
+                    "type": "AttributesTab"
+                },
+                {
+                    "name": "Location",
+                    "type": "LocationTab"
+                },
+                {
+                    "name": "Scheduling",
+                    "type": "SchedulingTab"
+                }
+            ]
+        },
+        {
             "name": "ItemCreateForm",
             "base": "FormCtrl",
             "attributes": {
@@ -129,55 +238,8 @@
                     }
                 },
                 {
-                    "name": "Name",
-                    "type": "EditCtrl",
-                    "attributes": {
-                        "value": "New item",
-                        "field_name": "name",
-                        "order": "2"
-                    }
-                },
-                {
-                    "name": "Attributes",
-                    "type": "AttrsCtrl",
-                    "attributes": {
-                        "order": "3"
-                    }
-                },
-                {
-                    "name": "Tags",
-                    "type": "TagsCtrl",
-                    "attributes": {
-                        "order": "4",
-                        "field_name": "tags"
-                    }
-                },
-                {
-                    "name": "Location",
-                    "type": "LocationCtrl",
-                    "attributes": {
-                        "field_name": "location",
-                        "order": "5"
-                    }
-                    
-                },
-                {
-                    "name": "Valid from",
-                    "type": "DateCtrl",
-                    "attributes": {
-                        "target": "valid_from",
-                        "field_name": "valid_from",
-                        "order": "6"
-                    }
-                },
-                {
-                    "name": "Valid to",
-                    "type": "DateCtrl",
-                    "attributes": {
-                        "target": "valid_to",
-                        "field_name": "valid_to",
-                        "order": "7"
-                    }
+                    "name": "Tabs",
+                    "type": "ItemDialogTabs"
                 },
                 {
                     "name": "Cancel",
@@ -215,63 +277,8 @@
             },
             "instances": [
                 {
-                    "name": "Name",
-                    "type": "EditCtrl",
-                    "attributes": {
-                        "field_name": "name",
-                        "order": "1"
-                    }
-                },
-                {
-                    "name": "Attributes",
-                    "type": "AttrsCtrl",
-                    "attributes": {
-                        "order": "2"
-                    }
-                },
-                {
-                    "name": "Tags",
-                    "type": "TagsCtrl",
-                    "attributes": {
-                        "order": "3",
-                        "field_name": "tags"
-                    }
-                },
-                {
-                    "name": "Location",
-                    "type": "LocationCtrl",
-                    "attributes": {
-                        "field_name": "location",
-                        "order": "4"
-                    }
-                },
-                {
-                    "name": "Valid from",
-                    "type": "DateCtrl",
-                    "attributes": {
-                        "target": "valid_from",
-                        "field_name": "valid_from",
-                        "order": "5"
-                    }
-                },
-                {
-                    "name": "Valid to",
-                    "type": "DateCtrl",
-                    "attributes": {
-                        "target": "valid_to",
-                        "field_name": "valid_to",
-                        "order": "6"
-                    }
-                },
-                {
-                    "name": "Status",
-                    "type": "SelectCtrl",
-                    "attributes": {
-                        "target": "status",
-                        "field_name": "status",
-                        "values": ["To Do", "In Progress", "Done"],
-                        "order": "7"
-                    }
+                    "name": "Tabs",
+                    "type": "ItemDialogTabs"
                 },
                 {
                     "name": "Cancel",

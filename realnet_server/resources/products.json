@@ -5,21 +5,19 @@
             "base": "Item",
             "attributes" : {
                 "icon": "shopping_cart",
-                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
+                "creatable": "true",
+                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"],
+                "price": "0",
+                "currency": "USD"
             }
         },
         {
             "name": "Supplier",
             "base": "Item",
             "attributes" : {
-                "icon": "store"
-            }
-        },
-        {
-            "name": "Client",
-            "base": "Item",
-            "attributes" : {
-                "icon": "account_circle"
+                "icon": "store",
+                "creatable_types": ["Contact", "Product"],
+                "creatable": "true"
             }
         },
         {
@@ -87,21 +85,13 @@
             "base": "App",
             "attributes": {
                 "creatable_types": ["Product"],
-                "icon": "shopping_cart"
+                "icon": "shopping_cart",
+                "show_children": "true"
             },
             "instances": [
                 {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Product"]
-                    }
-                },
-                {
                     "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
+                    "type": "ListView"
                 }
             ]
         }

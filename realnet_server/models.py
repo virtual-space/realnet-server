@@ -630,6 +630,7 @@ def create_basic_types(owner_id, group_id):
     load_types("resources/places.json", owner_id, group_id)
     load_types("resources/things.json", owner_id, group_id)
     load_types("resources/products.json", owner_id, group_id)
+    load_types("resources/materials.json", owner_id, group_id)
     load_types("resources/venues.json", owner_id, group_id)
     load_types("resources/tasks.json", owner_id, group_id)
     load_types("resources/jobs.json", owner_id, group_id)

@@ -1,0 +1,36 @@
+{
+    "types": [
+        {
+            "name": "Material",
+            "base": "Item",
+            "attributes": {
+                "icon": "inventory_2",
+                "quantity": "1",
+                "creatable": "true",
+                "creatable_types": ["Material", "Product", "Event", "Thing"],
+                "values": ["Absent", "Procuring", "Installed", "Disposing", "Disposed"]
+            }
+        },
+        {
+            "name": "MaterialApp",
+            "base": "App",
+            "attributes": {
+                "creatable_types": ["Material"],
+                "icon": "inventory_2",
+                "show_children": "true"
+            },
+            "instances": [
+                {
+                    "name": "All",
+                    "type": "ListView",
+                    "attributes": {}
+                },
+                {
+                    "name": "Board",
+                    "type": "BoardView",
+                    "attributes": {}
+                }
+            ]
+        }
+    ]
+}

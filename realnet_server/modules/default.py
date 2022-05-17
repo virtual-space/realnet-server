@@ -254,10 +254,10 @@ class Default(Module):
 
     def get_item_data(self, item):
         if item and item.attributes and 'blob_type' in item.attributes:
-            if item.attributes['blob_type'] == 'BlobType.local':
+            if item.attributes['blob_type'] == 'local':
                 path1 = os.path.join(os.getcwd(), 'storage')
                 return os.path.join(path1, item.attributes['filename'])
-            elif item.attributes['blob_type'] == 'BlobType.s3':
+            elif item.attributes['blob_type'] == 's3':
                 s3 = session.resource('s3')
                 bucket = s3.Bucket(cfg.get_s3_bucket())
                 s3_obj = bucket.Object(item.attributes['s3_blob_id']).get()
