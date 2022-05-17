@@ -8,7 +8,11 @@ if os.path.exists(path):
 class Config:
 
     def get_database_url(self):
-        return '{0}://{1}:{2}@{3}:{4}/{5}'.format(os.getenv('REALNET_DB_TYPE'),
+        if(os.getenv('REALNET_DB_TYPE') == 'sqlite'):
+            return '{0}:///{1}.db'.format(os.getenv('REALNET_DB_TYPE'),
+                                                         os.getenv('REALNET_DB_NAME'))
+        else:
+            return '{0}://{1}:{2}@{3}:{4}/{5}'.format(os.getenv('REALNET_DB_TYPE'),
                                                          os.getenv('REALNET_DB_USER'),
                                                          os.getenv('REALNET_DB_PASS'),
                                                          os.getenv('REALNET_DB_HOST'),
