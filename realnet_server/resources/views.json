@@ -10,35 +10,40 @@
             "name": "ListView",
             "base": "View",
             "attributes": {
-                "icon": "view_list"
+                "icon": "view_list",
+                "creatable": "true"
             }
         },
         {
             "name": "CardsView",
             "base": "View",
             "attributes": {
-                "icon": "view_module"
+                "icon": "view_module",
+                "creatable": "true"
             }
         },
         {
             "name": "MapView",
             "base": "View",
             "attributes": {
-                "icon": "map"
+                "icon": "map",
+                "creatable": "true"
             }
         },
         {
             "name": "CalendarView",
             "base": "View",
             "attributes": {
-                "icon": "calendar_today"
+                "icon": "calendar_today",
+                "creatable": "true"
             }
         },
         {
             "name": "BoardView",
             "base": "View",
             "attributes": {
-                "icon": "assignment"
+                "icon": "assignment",
+                "creatable": "true"
             }
         },
         {
@@ -87,14 +92,17 @@
             "name": "CtrlView",
             "base": "View",
             "attributes": {
-                "icon": "widgets"
+                "icon": "widgets",
+                "creatable": "true",
+                "creatable_types": ["Control"]
             }
         },
         {
             "name": "TreeView",
             "base": "View",
             "attributes": {
-                "icon": "account_tree"
+                "icon": "account_tree",
+                "creatable": "true"
             }
         },
         {

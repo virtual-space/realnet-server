@@ -302,6 +302,11 @@ def items():
                     if 'status' in input_data:
                         status = input_data['status']
 
+                    linked_item_id = None
+
+                    if 'linked_item_id' in input_data:
+                        linked_item_id = input_data['linked_item_id']
+
                     args = dict()
 
                     if input_name:
@@ -327,6 +332,9 @@ def items():
 
                     if status:
                         args['status'] = status
+
+                    if linked_item_id:
+                        args['linked_item_id'] = linked_item_id
 
                     args['owner_id'] = current_token.account.id
                     args['group_id'] = current_token.account.group_id
@@ -447,6 +455,9 @@ def single_item(id):
 
             if 'status' in input_data:
                 args['status'] = input_data['status']
+
+            if 'linked_item_id' in input_data:
+                args['linked_item_id'] = input_data['linked_item_id']
 
             module_instance.update_item(item, **args)
 

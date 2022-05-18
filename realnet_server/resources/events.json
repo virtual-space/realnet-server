@@ -267,7 +267,8 @@
                     "name": "Home",
                     "type": "HomeApp",
                     "attributes": {
-                        "initial": "true"
+                        "initial": "true",
+                        "creatable_types": ["Event", "Venue"]
                     }
                 },
                 {

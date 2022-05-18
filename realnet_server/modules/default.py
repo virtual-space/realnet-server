@@ -191,6 +191,7 @@ class Default(Module):
         item_valid_from = None
         item_valid_to = None
         item_status = None
+        item_linked_item_id = None
 
         for key, value in kwargs.items():
             # print("%s == %s" % (key, value))
@@ -225,6 +226,8 @@ class Default(Module):
                 item_valid_to = value
             elif key == 'status':
                 item_status = value
+            elif key == 'linked_item_id':
+                item_linked_item_id = value
 
         if parent_item:
             item_parent_id = parent_item.id
@@ -246,7 +249,8 @@ class Default(Module):
             item_is_public=item_is_public,
             item_valid_from=item_valid_from,
             item_valid_to=item_valid_to,
-            item_status=item_status)
+            item_status=item_status,
+            item_linked_item_id=item_linked_item_id)
 
         db.session.add(item)
         db.session.commit()
@@ -341,6 +345,8 @@ class Default(Module):
                 item.status = value
             elif key == 'tags':
                 item.tags = value
+            elif key == 'linked_item_id':
+                item.linked_item_id = value
 
         db.session.commit()
 

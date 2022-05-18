@@ -309,18 +309,50 @@
             ]
         },
         {
-            "name": "ItemQueryDialog",
-            "base": "Dialog",
+            "name": "ItemLinkForm",
+            "base": "FormCtrl",
             "attributes": {
                 "value": "something"
-            }
+            },
+            "instances": [
+                {
+                    "name": "Item",
+                    "type": "ItemSelectCtrl",
+                    "attributes": {
+                        "order": "1"
+                    }
+                },
+                {
+                    "name": "Tabs",
+                    "type": "ItemDialogTabs"
+                },
+                {
+                    "name": "Cancel",
+                    "type": "CancelButton",
+                    "attributes": {
+                        "close": "true",
+                        "order": "8"
+                    }
+                },
+                {
+                    "name": "Create",
+                    "type": "SaveButton",
+                    "order": "9"
+                }
+            ]
         },
         {
-            "name": "ItemHierarchyDialog",
+            "name": "ItemLinkDialog",
             "base": "Dialog",
             "attributes": {
                 "value": "something"
-            }
+            },
+            "instances": [
+                {
+                    "name": "Link",
+                    "type": "ItemLinkForm"
+                }
+            ]
         },
         {
             "name": "Dialogs",
@@ -334,12 +366,8 @@
                     "type": "ItemEditDialog"
                 },
                 {
-                    "name": "Query",
-                    "type": "ItemQueryDialog"
-                },
-                {
-                    "name": "Hierarchy",
-                    "type": "ItemHierarchyDialog"
+                    "name": "Link",
+                    "type": "ItemLinkDialog"
                 }
             ]
         }

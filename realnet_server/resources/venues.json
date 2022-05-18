@@ -4,8 +4,7 @@
             "name": "Venue",
             "base": "Place",
             "attributes": {
-                "icon": "other_houses",
-                "creatable_types": ["Event", "Contact"]
+                "icon": "other_houses"
             },
             "instances": [
                 {
@@ -59,7 +58,7 @@
             "name": "BusinessCentre",
             "base": "Venue",
             "attributes": {
-                "icon": "buysiness_center",
+                "icon": "business_center",
                 "creatable": "true"
             }
         },

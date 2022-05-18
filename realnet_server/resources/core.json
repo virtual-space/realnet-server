@@ -3,12 +3,27 @@
         {
             "name": "Item",
             "attributes": {
-                "icon": "link",
-                "creatable": "false",
-                "item_id": "",
-                "url": "",
-                "redirect": "false"
+                "icon": "square",
+                "creatable": "false"
             }
+        },
+        {
+            "name": "Link",
+            "base": "Item",
+            "attributes": {
+                "icon": "link",
+                "creatable": "true",
+                "item_id": "item_id",
+                "url": "url",
+                "redirect": "true"
+            },
+            "instances": [
+                {
+                    "name": "View",
+                    "type": "LinkView"
+                }
+            ]
+
         },
         {
             "name": "Func",
@@ -40,23 +55,6 @@
                 "icon": "functions",
                 "code": "return self.name"
             }
-        },
-        {
-            "name": "Link",
-            "base": "Exp",
-            "attributes": {
-                "creatable": "true",
-                "item_id": "item_id",
-                "url": "url",
-                "redirect": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "LinkView"
-                }
-            ]
-
         },
         {
             "name": "UnaryOp",

@@ -8,15 +8,18 @@
         },
         {
             "name": "LocationCtrl",
-            "base": "Control"
+            "base": "Control",
+            "creatable": "true"
         },
         {
             "name": "DateCtrl",
-            "base": "Control"
+            "base": "Control",
+            "creatable": "true"
         },
         {
             "name": "EditCtrl",
-            "base": "Control"
+            "base": "Control",
+            "creatable": "true"
         },
         {
             "name": "FormCtrl",
@@ -24,19 +27,23 @@
         },
         {
             "name": "SelectCtrl",
-            "base": "Control"
+            "base": "Control",
+            "creatable": "true"
         },
         {
             "name": "ItemSelectCtrl",
-            "base": "SelectCtrl"
+            "base": "SelectCtrl",
+            "creatable": "true"
         },
         {
             "name": "TypeSelectCtrl",
-            "base": "SelectCtrl"
+            "base": "SelectCtrl",
+            "creatable": "true"
         },
         {
             "name": "CalendarCtrl",
-            "base": "Control"
+            "base": "Control",
+            "creatable": "true"
         },
         {
             "name": "ButtonCtrl",
@@ -46,14 +53,16 @@
                 "is_ok_button": "false",
                 "is_cancel_button": "false",
                 "color": "primary",
-                "disabled": "false"
+                "disabled": "false",
+                "creatable": "true"
             }
         },
         {
             "name": "LabelCtrl",
             "base": "Control",
             "attributes": {
-                "icon": "label"
+                "icon": "label",
+                "creatable": "true"
             }
         },
         {
@@ -66,7 +75,8 @@
         },
         {
             "name": "TagsCtrl",
-            "base": "Control"
+            "base": "Control",
+            "creatable": "true"
         },
         {
             "name": "TagCtrl",
@@ -94,11 +104,13 @@
         },
         {
             "name": "TabsCtrl",
-            "base": "Control"
+            "base": "Control",
+            "creatable": "true"
         },
         {
             "name": "TabCtrl",
-            "base": "Control"
+            "base": "Control",
+            "creatable": "true"
         },
         {
             "name": "ItemCtrl",
@@ -106,11 +118,13 @@
         },
         {
             "name": "AttrsCtrl",
-            "base": "Control"
+            "base": "Control",
+            "creatable": "true"
         },
         {
             "name": "FuncCtrl",
-            "base": "Control"
+            "base": "Control",
+            "creatable": "true"
         },
         {
             "name": "UploadCtrl",
