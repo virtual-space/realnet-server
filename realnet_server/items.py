@@ -471,7 +471,7 @@ def single_item(id):
                                statusCode=403,
                                data='Account not authorized to delete this item'), 403
 
-            module_instance.delete_item(item)
+            module_instance.delete_item(item, id)
             return jsonify(isError=False,
                            message="Success",
                            statusCode=200,

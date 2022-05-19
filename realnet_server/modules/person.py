@@ -19,7 +19,7 @@ class Person(Module):
     def get_items(self, item):
         pass
 
-    def delete_item(self, item):
+    def delete_item(self, item, id=None):
         pass
 
     def update_item(self, item, **kwargs):
