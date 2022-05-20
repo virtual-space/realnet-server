@@ -571,9 +571,9 @@ class Orgs(Default):
             for row in Item.query.filter(Item.owner_id == account_id):
                 rows_to_delete.append(row)
         elif length == 5:
-            #attempting to delete a role in an account
-            item_id = ids[-1]
-            rows_to_delete.append(Item.query.filter(Item.id == item_id).first)
+            pass #attempting to delete a role in an account
+            #item_id = ids[-1]
+            #rows_to_delete.append(Item.query.filter(Item.id == item_id).first)
         #print(rows_to_delete)
         for row in rows_to_delete:
             if(row is not None):
