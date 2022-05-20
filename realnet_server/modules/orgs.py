@@ -541,10 +541,11 @@ class Orgs(Default):
                                             parent_id=base_id,
                                             type=type)
 
-    def delete_item(self, item, id):
-        ids = id.split('_')
+    def delete_item(self, item):
+        ids = item.id.split('_')
         length = len(ids)
-        #print("id list", ids)
+        print("id list", ids)
+        print(item.type)
         rows_to_delete = []
         if length == 1:
             pass #attempting to delete the 'org' module. This should raise an error.
