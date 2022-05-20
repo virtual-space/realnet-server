@@ -544,8 +544,7 @@ class Orgs(Default):
     def delete_item(self, item):
         ids = item.id.split('_')
         length = len(ids)
-        print("id list", ids)
-        print(item.type)
+        #print("id list", ids)
         rows_to_delete = []
         if length == 1:
             pass #attempting to delete the 'org' module. This should raise an error.
@@ -561,11 +560,14 @@ class Orgs(Default):
                 rows_to_delete.append(row)
             for row in Item.query.filter(Item.group_id == group_id):
                 rows_to_delete.append(row)
+            for row in AccountGroup.query.filter(AccountGroup.group_id == group_id):
+                rows_to_delete.append(row)
             rows_to_delete.append(Client.query.filter(Client.id == group_id).first())
         elif length == 4:
             #attempting to delete a account in a group, and all roles linked to that account
             account_id = ids[-1]
             rows_to_delete.append(Account.query.filter(Account.id == account_id).first())
+            rows_to_delete.append(AccountGroup.query.filter(AccountGroup.account_id == account_id).first())
             for row in Item.query.filter(Item.owner_id == account_id):
                 rows_to_delete.append(row)
         elif length == 5:
