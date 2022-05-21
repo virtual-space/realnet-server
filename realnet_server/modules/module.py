@@ -12,7 +12,7 @@ class Module(ABC):
         pass
 
     @abstractmethod
-    def delete_item(self, item, id=None):
+    def delete_item(self, item):
         pass
 
     @abstractmethod

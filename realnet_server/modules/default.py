@@ -309,7 +309,7 @@ class Default(Module):
         return False
 
 
-    def delete_item(self, item, id=None):
+    def delete_item(self, item):
         db.session.delete(item)
         db.session.commit()
 
