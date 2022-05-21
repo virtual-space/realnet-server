@@ -95,10 +95,6 @@
             "base": "Control"
         },
         {
-            "name": "QueryCtrl",
-            "base": "Control"
-        },
-        {
             "name": "TreeCtrl",
             "base": "Control"
         },

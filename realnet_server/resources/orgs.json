@@ -76,14 +76,14 @@
             "base": "App",
             "attributes": {
                 "icon": "home",
-                "show_children": "true"
-            },
-            "instances": [
-                {
-                    "name": "List",
-                    "type": "ListView"
-                }
-            ]
+                "show_children": "true",
+                "views": [
+                    {
+                        "name": "List",
+                        "type": "ListView"
+                    }
+                ]
+            }
         },
         {
             "name": "LoginApp",
@@ -100,45 +100,33 @@
             "name": "FindApp",
             "base": "App",
             "attributes": {
-                "icon": "search"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {}
-                },
-                {
-                    "name": "List",
-                    "type": "ListView"
-                }
-                
-            ]
+                "icon": "search",
+                "views": [
+                    {
+                        "name": "List",
+                        "type": "ListView"
+                    }
+                ]
+            }
         },
         {
             "name": "AroundApp",
             "base": "App",
             "attributes":{
-                "icon": "local_pizza"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {}
-                },
-                {
-                    "name": "Map",
-                    "type": "MapView",
-                    "attributes": {}
-                },
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-                
-            ]
+                "icon": "local_pizza",
+                "views": [
+                    {
+                        "name": "Map",
+                        "type": "MapView",
+                        "attributes": {}
+                    },
+                    {
+                        "name": "List",
+                        "type": "ListView",
+                        "attributes": {}
+                    }
+                ]
+            }
         },
         {
             "name": "GroupApp",
@@ -146,61 +134,52 @@
             "attributes": {
                 "creatable_types": ["Group"],
                 "icon": "groups",
-                "show_children": "true"
-            },
-            "instances": [
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                "show_children": "true",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
         },
         {
             "name": "RoleApp",
             "base": "App",
             "attributes": {
                 "creatable_types": ["Role"],
-                "icon": "badge"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "types": ["Role"]
-                    }
+                "icon": "badge",
+                "query": {
+                    "types": ["Role"]
                 },
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView",
+                        "attributes": {}
+                    }
+                ]
+            }
         },
         {
             "name": "PublicApp",
             "base": "App",
             "attributes": {
                 "icon": "public",
-                "initial": "true"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "public": "true"
-                    }
+                "initial": "true",
+                "query": {
+                    "public": "true"
                 },
-                {
-                    "name": "Items",
-                    "type": "ListView",
-                    "attributes": {
-                        "public": "true"
+                "views": [
+                    {
+                        "name": "Items",
+                        "type": "ListView",
+                        "attributes": {
+                            "public": "true"
+                        }
                     }
-                }
-            ]
+                ]
+            }
         },
         {
             "name": "PublicApps",

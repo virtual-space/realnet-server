@@ -16,13 +16,7 @@
                 "creatable": "true",
                 "creatable_types": ["Trait"],
                 "show_children": "true"
-            },
-            "instances": [
-                {
-                    "name": "All",
-                    "type": "ListView"
-                }
-            ]
+            }
         },
         {
             "name": "Resource",
@@ -47,14 +41,14 @@
                 "icon": "snowshoeing",
                 "creatable_types": ["Resource", "Tool", "Task", "Trait"],
                 "creatable": "true",
-                "show_children": "true"
-            },
-            "instances": [
-                {
-                    "name": "All",
-                    "type": "ListView"
-                }
-            ]
+                "show_children": "true",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
         },
         {
             "name": "Creature",
@@ -64,13 +58,7 @@
                 "creatable": "true",
                 "creatable_types": ["Resource", "Tool", "Event", "Media", "Task"],
                 "show_children": "true"
-            },
-            "instances": [
-                {
-                    "name": "All",
-                    "type": "ListView"
-                }
-            ]
+            }
         },
         {
             "name": "Goal",
@@ -103,18 +91,18 @@
                 "icon": "smart_toy",
                 "creatable_types": ["Creature", "Resource", "Tool", "Player", "Place", "Thing", "Event", "Task", "Goal", "Award", "Progress"],
                 "creatable": "true",
-                "show_children": "true"
-            },
-            "instances": [
-                {
-                    "name": "All",
-                    "type": "ListView"
-                },
-                {
-                    "name": "Map",
-                    "type": "MapView"
-                }
-            ]
+                "show_children": "true",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    }
+                ]
+            }
         },
         {
             "name": "Clip",
@@ -132,14 +120,15 @@
                 "icon": "play_circle",
                 "creatable_types": ["Clip", "Level"],
                 "creatable": "true",
-                "show_children": "true"
-            },
-            "instances": [
-                {
-                    "name": "All",
-                    "type": "ListView"
-                }
-            ]
+                "show_children": "true",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+
+            }
         },
         {
             "name": "Story",
@@ -148,59 +137,59 @@
                 "icon": "history_edu",
                 "creatable_types": ["Chapter"],
                 "creatable": "true",
-                "show_children": "true"
-            },
-            "instances": [
-                {
-                    "name": "All",
-                    "type": "ListView"
-                }
-            ]
+                "show_children": "true",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
         },
         {
             "name": "PlayView",
             "base": "CtrlView",
             "attributes": {
                 "icon": "task_alt",
-                "layout": "column"
-            },
-            "instances": [
-                {
-                    "name": "Title",
-                    "type": "LabelCtrl",
-                    "attributes": {
-                        "target": "title"
+                "layout": "column",
+                "controls": [
+                    {
+                        "name": "Title",
+                        "type": "LabelCtrl",
+                        "attributes": {
+                            "target": "title"
+                        }
+                    },
+                    {
+                        "name": "Description",
+                        "type": "LabelCtrl",
+                        "attributes": {
+                            "target": "description"
+                        }
+                    },
+                    {
+                        "name": "Goal",
+                        "type": "LabelCtrl",
+                        "attributes": {
+                            "value": "This is the goal"
+                        }
+                    },
+                    {
+                        "name": "Award",
+                        "type": "LabelCtrl",
+                        "attributes": {
+                            "value": "This is the award"
+                        }
+                    },
+                    {
+                        "name": "Progress",
+                        "type": "LabelCtrl",
+                        "attributes": {
+                            "value": "This is the progress"
+                        }
                     }
-                },
-                {
-                    "name": "Description",
-                    "type": "LabelCtrl",
-                    "attributes": {
-                        "target": "description"
-                    }
-                },
-                {
-                    "name": "Goal",
-                    "type": "LabelCtrl",
-                    "attributes": {
-                        "value": "This is the goal"
-                    }
-                },
-                {
-                    "name": "Award",
-                    "type": "LabelCtrl",
-                    "attributes": {
-                        "value": "This is the award"
-                    }
-                },
-                {
-                    "name": "Progress",
-                    "type": "LabelCtrl",
-                    "attributes": {
-                        "value": "This is the progress"
-                    }
-                }
-            ]
+                ]
+            }
         },
         {
             "name": "Game",
@@ -211,18 +200,18 @@
                 "creatable": "true",
                 "show_children": "true",
                 "title": "My cool game",
-                "description": "Something about the game"
-            },
-            "instances": [
-                {
-                    "name": "Play",
-                    "type": "PlayView"
-                },
-                {
-                    "name": "All",
-                    "type": "ListView"
-                }
-            ]
+                "description": "Something about the game",
+                "views": [
+                    {
+                        "name": "Play",
+                        "type": "PlayView"
+                    },
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
         },
         {
             "name": "Quest",
@@ -253,29 +242,6 @@
                 "title": "My cool battle",
                 "description": "Something about the battle"
             }
-        },
-        {
-            "name": "GameApp",
-            "base": "App",
-            "attributes": {
-                "creatable_types": ["Game"],
-                "icon": "sports_esports"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Game"]
-                    }
-                },
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
         },
         {
             "name": "GameMakerApps",

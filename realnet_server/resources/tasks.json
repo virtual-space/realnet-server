@@ -15,28 +15,22 @@
             "base": "App",
             "attributes": {
                 "creatable_types": ["Task"],
-                "icon": "assignment_turned_in"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Task"]
+                "icon": "assignment_turned_in",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Task"]
+                },
+                "views": [
+                    {
+                        "name": "Board",
+                        "type": "BoardView"
+                    },
+                    {
+                        "name": "All",
+                        "type": "ListView"
                     }
-                },
-                {
-                    "name": "Board",
-                    "type": "BoardView",
-                    "attributes": {}
-                },
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                ]
+            }
         }
     ]
 }

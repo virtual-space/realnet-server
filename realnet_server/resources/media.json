@@ -12,143 +12,135 @@
             "base": "Media",
             "attributes": {
                 "icon": "description",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "DocumentView"
-                }
-            ]
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "DocumentView"
+                    }
+                ]
+            }
         },
         {
             "name": "Page",
             "base": "Media",
             "attributes": {
                 "icon": "web_asset",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "PageView"
-                }
-            ]
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "PageView"
+                    }
+                ]
+            }
         },
         {
             "name": "Image",
             "base": "Media",
             "attributes": {
                 "icon": "image",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "ImageView"
-                }
-            ]
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "ImageView"
+                    }
+                ]
+            }
         },
         {
             "name": "Video",
             "base": "Media",
             "attributes": {
                 "icon": "ondemand_video",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "VideoView"
-                }
-            ]
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "VideoView"
+                    }
+                ]
+            }
         },
         {
             "name": "Drawing",
             "base": "Media",
             "attributes": {
                 "icon": "gesture",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "DrawingView"
-                }
-            ]
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "DrawingView"
+                    }
+                ]
+            }
         },
         {
             "name": "Folder",
             "base": "Media",
             "attributes": {
                 "icon": "folder",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "Children",
-                    "type": "ListView"
-                }
-            ]
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "Children",
+                        "type": "ListView"
+                    }
+                ]
+            }
         },
         {
             "name": "Scene",
             "base": "Media",
             "attributes": {
                 "icon": "view_in_ar",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "SceneView"
-                }
-            ]
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "SceneView"
+                    }
+                ]
+            }
         },
         {
             "name": "MediaApp",
             "base": "App",
             "attributes": {
                 "creatable_types": ["Media"],
-                "icon": "perm_media"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Media"]
-                    }
+                "icon": "perm_media",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Media"]
                 },
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
         },
         {
             "name": "ViewsApp",
             "base": "App",
             "attributes": {
                 "creatable_types": ["View"],
-                "icon": "fullscreen"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "types": ["View"]
-                    }
+                "icon": "fullscreen",
+                "query": {
+                    "my_items": "true",
+                    "types": ["View"]
                 },
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView",
+                        "attributes": {}
+                    }
+                ]
+            }
         }
     ]
 }

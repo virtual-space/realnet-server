@@ -5,23 +5,19 @@
             "base": "App",
             "attributes": {
                 "creatable_types": ["Controller"],
-                "icon": "developer_board"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Controller"]
-                    }
+                "icon": "developer_board",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Controller"]
                 },
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView",
+                        "attributes": {}
+                    }
+                ]
+            }
         }
     ]
 }

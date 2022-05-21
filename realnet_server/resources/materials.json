@@ -7,7 +7,7 @@
                 "icon": "inventory_2",
                 "quantity": "1",
                 "creatable": "true",
-                "creatable_types": ["Material", "Product", "Event", "Thing"],
+                "creatable_types": ["Material", "Product"],
                 "values": ["Absent", "Procuring", "Installed", "Disposing", "Disposed"]
             }
         },
@@ -17,20 +17,18 @@
             "attributes": {
                 "creatable_types": ["Material"],
                 "icon": "inventory_2",
-                "show_children": "true"
-            },
-            "instances": [
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                },
-                {
-                    "name": "Board",
-                    "type": "BoardView",
-                    "attributes": {}
-                }
-            ]
+                "show_children": "true",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Board",
+                        "type": "BoardView"
+                    }
+                ]
+            }
         }
     ]
 }

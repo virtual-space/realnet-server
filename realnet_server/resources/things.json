@@ -45,23 +45,19 @@
             "base": "App",
             "attributes": {
                 "creatable_types": ["Thing"],
-                "icon": "graphic_eq"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Thing"]
-                    }
+                "icon": "graphic_eq",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Thing"]
                 },
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                "views": [
+                    {
+                        "name": "List",
+                        "type": "ListView",
+                        "attributes": {}
+                    }
+                ]
+            }
         }
     ]
 }

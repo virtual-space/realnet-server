@@ -153,6 +153,13 @@
             "attributes": {
                 "icon": "search"
             }
+        },
+        {
+            "name": "RunView",
+            "attributes": {
+                "icon": "play",
+                "query": { "show_children": "true", "types": ["Arg", "Func"] }
+            }
         }
 
     ]

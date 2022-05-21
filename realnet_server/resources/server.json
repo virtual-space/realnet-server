@@ -83,14 +83,14 @@
                 "code": "",
                 "icon": "settings_applications",
                 "creatable_types": ["Resource"],
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "List",
-                    "type": "ListView"
-                }
-            ]
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "List",
+                        "type": "ListView"
+                    }
+                ]
+            }
         },
         {
             "name": "Node",
@@ -115,23 +115,19 @@
             "base": "App",
             "attributes": {
                 "creatable_types": ["Server", "Provider"],
-                "icon": "trending_up"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Server", "Provider"]
-                    }
+                "icon": "trending_up",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Server", "Provider"]
                 },
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView",
+                        "attributes": {}
+                    }
+                ]
+            }
         }
 
     ]

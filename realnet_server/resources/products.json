@@ -2,30 +2,31 @@
     "types": [
         {
             "name": "Product",
-            "base": "Item",
+            "base": "DigitalTwin",
             "attributes" : {
                 "icon": "shopping_cart",
                 "creatable": "true",
-                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"],
+                "creatable_types": ["Product", "Event", "Thing", "Place", "Game", "Task", "Media"],
                 "price": "0",
                 "currency": "USD"
             }
         },
         {
             "name": "Supplier",
-            "base": "Item",
+            "base": "DigitalTwin",
             "attributes" : {
                 "icon": "store",
-                "creatable_types": ["Contact", "Product"],
+                "creatable_types": ["Contact", "Product", "Order"],
                 "creatable": "true"
             }
         },
         {
             "name": "Order",
-            "base": "Item",
+            "base": "DigitalTwin",
             "attributes" : {
                 "icon": "local_shipping",
                 "creatable": "true",
+                "creatable_types": ["Material", "Order"],
                 "values": ["New", "Preparing", "Shipping", "Delivered"]
             }
         },
@@ -34,51 +35,32 @@
             "base": "App",
             "attributes": {
                 "creatable_types": ["Supplier"],
-                "icon": "store"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Supplier"]
+                "icon": "store",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
                     }
-                },
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                ]
+            }
         },
         {
             "name": "OrderApp",
             "base": "App",
             "attributes": {
                 "creatable_types": ["Order"],
-                "icon": "local_shipping"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Order"]
+                "icon": "local_shipping",
+                "views": [
+                    {
+                        "name": "Board",
+                        "type": "BoardView"
+                    },
+                    {
+                        "name": "All",
+                        "type": "ListView"
                     }
-                },
-                {
-                    "name": "Board",
-                    "type": "BoardView",
-                    "attributes": {}
-                },
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                ]
+            }
         },
         {
             "name": "ProductApp",
@@ -86,14 +68,13 @@
             "attributes": {
                 "creatable_types": ["Product"],
                 "icon": "shopping_cart",
-                "show_children": "true"
-            },
-            "instances": [
-                {
-                    "name": "All",
-                    "type": "ListView"
-                }
-            ]
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
         }
         
     ]

@@ -5,20 +5,20 @@
             "base": "Item",
             "attributes": {
                 "icon": "other_houses",
-                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Contact"]
-            },
-            "instances": [
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                },
-                {
-                    "name": "Map",
-                    "type": "MapView",
-                    "attributes": {}
-                }
-            ]
+                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Contact"],
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView",
+                        "attributes": {}
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView",
+                        "attributes": {}
+                    }
+                ]
+            }
         },
         {
             "name": "Area",
@@ -61,23 +61,18 @@
             "base": "App",
             "attributes": {
                 "creatable_types": ["Place"],
-                "icon": "place"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Place"]
-                    }
+                "icon": "place",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Place"]
                 },
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
         }
 
     ]

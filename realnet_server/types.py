@@ -111,6 +111,17 @@ def types():
         return jsonify([q.to_dict() for q in Type.query.filter(Type.group_id == current_token.account.group_id)])
 
 
+@app.route('/public/types', methods=['GET'])
+def public_types():
+    if request.method == 'GET':
+        #TODO return only public types
+        return jsonify([q.to_dict() for q in Type.query.all()])
+    return jsonify( isError=True,
+                    message="Failure",
+                    statusCode=404,
+                    data='Person not found'), 404
+
+
 @app.route('/types/<id>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def single_type(id):

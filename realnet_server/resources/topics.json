@@ -15,23 +15,18 @@
             "attributes": {
                 "creatable_types": ["Topic"],
                 "creatable": "true",
-                "icon": "forum"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Topic"]
-                    }
+                "icon": "forum",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Topic"]
                 },
-                {
-                    "name": "All",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
         }
 
     ]

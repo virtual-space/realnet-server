@@ -15,30 +15,95 @@
                 "creatable": "true",
                 "item_id": "item_id",
                 "url": "url",
-                "redirect": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "LinkView"
-                }
-            ]
+                "redirect": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "LinkView"
+                    }
+                ]
+            }
 
         },
         {
-            "name": "Func",
-            "base": "Item",
+            "name": "FuncLink",
+            "base": "Link",
             "attributes": {
                 "icon": "functions",
                 "creatable": "true",
-                "code": "# Python 3 code goes here..."
-            },
-            "instances": [
-                {
-                    "name": "FuncView",
-                    "type": "FuncView"
+                "creatable_types": ["Func"]
+            }
+
+        },
+        {
+            "name": "Arg",
+            "base": "Link"
+        },
+        {
+            "name": "Apply",
+            "base": "Link",
+            "module": "func",
+            "attriubtes": {
+                "creatable": "true",
+                "code": "# Python 3 code that loads the Func into environment and calls it by passing arguments goes here...\nfor arg in args:\n\tpass",
+                "args": [
+                    {
+                        "name": "Func",
+                        "type": "Link"
+                    }
+                ],
+                "linked_item": {
+                    "name": "Func",
+                    "type": "Link"
                 }
-            ]
+            }
+        },
+        {
+            "name": "Func",
+            "base": "Link",
+            "module": "func",
+            "attributes": {
+                "icon": "functions",
+                "creatable": "true",
+                "creatable_types": [],
+                "args": [
+                    {
+                        "name": "Arg",
+                        "type": "Arg"
+                    }
+                ],
+                "func": [
+                    {
+                        "name": "Apply",
+                        "type": "Apply"
+                    }
+                ],
+                "views": [
+                    {
+                        "name": "RunView",
+                        "type": "RunView"
+                    },
+                    {
+                        "name": "TreeView",
+                        "type": "TreeView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "PyFunc",
+            "base": "Func",
+            "attributes": {
+                "icon": "functions",
+                "creatable": "true",
+                "func": [
+                    {
+                        "name": "Apply",
+                        "type": "Apply"
+                    }
+                ]
+            }
+
         },
         {
             "name": "Exp",
@@ -57,48 +122,11 @@
             }
         },
         {
-            "name": "UnaryOp",
-            "base": "Link",
-            "attributes": {
-                "creatable": "true",
-                "item_id": "item_id",
-                "url": "url",
-                "redirect": "true"
-            },
-            "instances": [
-                {
-                    "name": "Item",
-                    "type": "Item"
-                }
-            ]
-
-        },
-        {
-            "name": "BiaryOp",
-            "base": "Link",
-            "attributes": {
-                "creatable": "true",
-                "item_id": "item_id",
-                "url": "url",
-                "redirect": "true"
-            },
-            "instances": [
-                {
-                    "name": "Left",
-                    "type": "Item"
-                },
-                {
-                    "name": "Right",
-                    "type": "Item"
-                }
-            ]
-
-        },
-        {
             "name": "Query",
             "base": "Exp",
             "attributes": {
                 "icon": "search",
+                "show_children": "true",
                 "parent_id": "",
                 "name": "",
                 "my_items": "",
@@ -114,29 +142,28 @@
             "name": "App",
             "base": "Item",
             "attributes": {
-                "icon": "apps"
+                "icon": "apps",
+                "show_children": "true"
             }
         },
         {
             "name": "FuncView",
             "base": "CtrlView",
             "attributes": {
-                "icon": "functions"
-            },
-            "instances": [
-                {
-                    "name": "FuncCtrl",
-                    "type": "FuncCtrl"
-                }
-            ]
+                "icon": "functions",
+                "controls": [
+                    {
+                        "name": "FuncCtrl",
+                        "type": "FuncCtrl"
+                    }
+                ]
+            }
         },
         {
             "name": "File",
             "module": "file"
         },
-        
-        
-        {
+       {
             "name": "Module",
             "base": "Query",
             "attributes": {
@@ -144,44 +171,14 @@
                 "creatable": "true",
                 "creatable_types": ["Func", "Module"],
                 "show_children": "true",
-                "code": "# Python 3 code for your class goes here...\nfrom .default import Default\nclass MyModuleName(Default):\n\tpass"
-            },
-            "instances": [
-                {
-                    "name": "Functions and Modules",
-                    "type": "ListView"
-                }
-            ]
-        },
-        {
-            "name": "Invert<T>",
-            "base": "Op<T>",
-            "attributes": {
-                "icon": "functions",
-                "creatable": "true",
-                "code": "# Python 3 code goes here..."
-            },
-            "instances": [
-                {
-                    "name": "FuncView",
-                    "type": "FuncView"
-                }
-            ]
-        },
-        {
-            "name": "Add<L,R>",
-            "base": "Op<L,R>",
-            "attributes": {
-                "icon": "functions",
-                "creatable": "true",
-                "code": "# Python 3 code goes here..."
-            },
-            "instances": [
-                {
-                    "name": "FuncView",
-                    "type": "FuncView"
-                }
-            ]
+                "code": "# Python 3 code for your class goes here...\nfrom .default import Default\nclass MyModuleName(Default):\n\tpass",
+                "views": [
+                    {
+                        "name": "Functions and Modules",
+                        "type": "ListView"
+                    }
+                ]
+            }
         }
 
     ]

@@ -15,78 +15,71 @@
                 "icon": "restaurant_menu",
                 "creatable_types": ["MenuItem"],
                 "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "Items",
-                    "type": "CardsView"
-                }
-            ]
+            }
         },
         {
             "name": "EventView",
             "base": "CtrlView",
             "attributes": {
                 "icon": "calendar",
-                "layout": "column"
-            },
-            "instances": [
-                {
-                    "name": "Venue",
-                    "type": "ItemSelectCtrl"
-                },
-                {
-                    "name": "Timeline",
-                    "type": "CalendarCtrl"
-                }
-            ]
+                "layout": "column",
+                "controls": [
+                    {
+                        "name": "Venue",
+                        "type": "ItemSelectCtrl"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarCtrl"
+                    }
+                ]
+            }
         },
         {
             "name": "Event",
             "base": "Item",
             "attributes": {
                 "icon": "event",
-                "creatable_types": ["Event", "Task", "Place", "Contact", "Document", "Menu", "Material"],
-                "show_children": "true"
-            },
-            "instances": [
-                {
-                    "name": "Timeline",
-                    "type": "CalendarView"
-                },
-                {
-                    "name": "Contacts",
-                    "type": "ListView",
-                    "attributes": {
-                        "query": {"types": ["Contact"]}
+                "views": [
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView",
+                        "attributes": {
+                            "query": {"types": ["Task"]}
+                        }
+                    },
+                    {
+                        "name": "Materials",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Material"]}
+                        }
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
                     }
-                },
-                {
-                    "name": "Documents",
-                    "type": "ListView",
-                    "attributes": {
-                        "query": {"types": ["Document"]}
-                    }
-                },
-                {
-                    "name": "Tasks",
-                    "type": "BoardView",
-                    "attributes": {
-                        "query": {"types": ["Task"]}
-                    }
-                },
-                {
-                    "name": "Materials",
-                    "type": "ListView",
-                    "attributes": {
-                        "query": {"types": ["Material"]}
-                    }
-                },
-                {
-                    "name": "Map",
-                    "type": "MapView"
-                }
-            ]
+                ]
+                
+            }
         },
         {
             "name": "Conference",
@@ -157,28 +150,20 @@
             "base": "App",
             "attributes": {
                 "creatable_types": ["Event"],
-                "icon": "event"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Event"]
+                "icon": "event",
+                "views": [
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView",
+                        "attributes": {}
+                    },
+                    {
+                        "name": "List",
+                        "type": "ListView",
+                        "attributes": {}
                     }
-                },
-                {
-                    "name": "Timeline",
-                    "type": "CalendarView",
-                    "attributes": {}
-                },
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                ]
+            }
         },
         {
             "name": "EventStaffApps",
@@ -248,10 +233,6 @@
                     "type": "VenueApp"
                 },
                 {
-                    "name": "Products",
-                    "type": "ProductApp"
-                },
-                {
                     "name": "Materials",
                     "type": "MaterialApp"
                 },
@@ -260,8 +241,16 @@
                     "type": "SupplierApp"
                 },
                 {
+                    "name": "Orders",
+                    "type": "OrderApp"
+                },
+                {
                     "name": "Tasks",
                     "type": "TaskApp"
+                },
+                {
+                    "name": "Game",
+                    "type": "GameApp"
                 },
                 {
                     "name": "Home",

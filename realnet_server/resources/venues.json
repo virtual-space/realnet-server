@@ -4,15 +4,15 @@
             "name": "Venue",
             "base": "Place",
             "attributes": {
-                "icon": "other_houses"
-            },
-            "instances": [
-                {
-                    "name": "Calendar",
-                    "type": "CalendarView",
-                    "attributes": {}
-                }
-            ]
+                "icon": "other_houses",
+                "views": [
+                    {
+                        "name": "Calendar",
+                        "type": "CalendarView",
+                        "attributes": {}
+                    }
+                ]
+            }
         },
         {
             "name": "Club",
@@ -115,23 +115,18 @@
             "base": "App",
             "attributes": {
                 "creatable_types": ["Venue"],
-                "icon": "other_houses"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Venue"]
-                    }
+                "icon": "other_houses",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Venue"]
                 },
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
+                "views": [
+                    {
+                        "name": "List",
+                        "type": "ListView"
+                    }
+                ]
+            }
         }
     ]
 }

@@ -117,144 +117,156 @@
         {
             "name": "GeneralTab",
             "base": "TabCtrl",
-            "instances": [
-                {
-                    "name": "Name",
-                    "type": "EditCtrl",
-                    "attributes": {
-                        "target": "name",
-                        "field_name": "name",
-                        "order": "1"
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "Name",
+                        "type": "EditCtrl",
+                        "attributes": {
+                            "target": "name",
+                            "field_name": "name",
+                            "order": "1"
+                        }
+                    },
+                    {
+                        "name": "Status",
+                        "type": "SelectCtrl",
+                        "attributes": {
+                            "target": "status",
+                            "field_name": "status",
+                            "values": ["To Do", "In Progress", "Done"],
+                            "order": "2"
+                        }
+                    },
+                    {
+                        "name": "Tags",
+                        "type": "TagsCtrl",
+                        "attributes": {
+                            "order": "3",
+                            "target": "tags",
+                            "field_name": "tags"
+                        }
                     }
-                },
-                {
-                    "name": "Status",
-                    "type": "SelectCtrl",
-                    "attributes": {
-                        "target": "status",
-                        "field_name": "status",
-                        "values": ["To Do", "In Progress", "Done"],
-                        "order": "2"
-                    }
-                },
-                {
-                    "name": "Tags",
-                    "type": "TagsCtrl",
-                    "attributes": {
-                        "order": "3",
-                        "target": "tags",
-                        "field_name": "tags"
-                    }
-                }
-            ]
+                ]
+            }
         },
         {
             "name": "AttributesTab",
             "base": "TabCtrl",
-            "instances": [
-                {
-                    "name": "Attributes",
-                    "type": "AttrsCtrl",
-                    "attributes": {
-                        "order": "1"
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "Attributes",
+                        "type": "AttrsCtrl",
+                        "attributes": {
+                            "order": "1"
+                        }
                     }
-                }
-            ]
+                ]
+            }
         },
         {
             "name": "LocationTab",
             "base": "TabCtrl",
-            "instances": [
-                {
-                    "name": "Location",
-                    "type": "LocationCtrl",
-                    "attributes": {
-                        "target": "location",
-                        "field_name": "location",
-                        "order": "1"
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "Location",
+                        "type": "LocationCtrl",
+                        "attributes": {
+                            "target": "location",
+                            "field_name": "location",
+                            "order": "1"
+                        }
+                        
                     }
-                    
-                }
-            ]
+                ]
+            }
+            
         },
         {
             "name": "SchedulingTab",
             "base": "TabCtrl",
-            "instances": [
-                {
-                    "name": "Valid from",
-                    "type": "DateCtrl",
-                    "attributes": {
-                        "target": "valid_from",
-                        "field_name": "valid_from",
-                        "order": "1"
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "Valid from",
+                        "type": "DateCtrl",
+                        "attributes": {
+                            "target": "valid_from",
+                            "field_name": "valid_from",
+                            "order": "1"
+                        }
+                    },
+                    {
+                        "name": "Valid to",
+                        "type": "DateCtrl",
+                        "attributes": {
+                            "target": "valid_to",
+                            "field_name": "valid_to",
+                            "order": "2"
+                        }
                     }
-                },
-                {
-                    "name": "Valid to",
-                    "type": "DateCtrl",
-                    "attributes": {
-                        "target": "valid_to",
-                        "field_name": "valid_to",
-                        "order": "2"
-                    }
-                }
-            ]
+                ]
+            }
         },
         {
             "name": "ItemDialogTabs",
             "base": "TabsCtrl",
-            "instances": [
-                {
-                    "name": "General",
-                    "type": "GeneralTab"
-                },
-                {
-                    "name": "Attributes",
-                    "type": "AttributesTab"
-                },
-                {
-                    "name": "Location",
-                    "type": "LocationTab"
-                },
-                {
-                    "name": "Scheduling",
-                    "type": "SchedulingTab"
-                }
-            ]
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "General",
+                        "type": "GeneralTab"
+                    },
+                    {
+                        "name": "Attributes",
+                        "type": "AttributesTab"
+                    },
+                    {
+                        "name": "Location",
+                        "type": "LocationTab"
+                    },
+                    {
+                        "name": "Scheduling",
+                        "type": "SchedulingTab"
+                    }
+                ]
+            }
+            
         },
         {
             "name": "ItemCreateForm",
             "base": "FormCtrl",
             "attributes": {
-                "value": "something"
-            },
-            "instances": [
-                {
-                    "name": "Type",
-                    "type": "TypeSelectCtrl",
-                    "attributes": {
-                        "order": "1"
+                "value": "something",
+                "controls": [
+                    {
+                        "name": "Type",
+                        "type": "TypeSelectCtrl",
+                        "attributes": {
+                            "order": "1"
+                        }
+                    },
+                    {
+                        "name": "Tabs",
+                        "type": "ItemDialogTabs"
+                    },
+                    {
+                        "name": "Cancel",
+                        "type": "CancelButton",
+                        "attributes": {
+                            "close": "true",
+                            "order": "8"
+                        }
+                    },
+                    {
+                        "name": "Create",
+                        "type": "SaveButton",
+                        "order": "9"
                     }
-                },
-                {
-                    "name": "Tabs",
-                    "type": "ItemDialogTabs"
-                },
-                {
-                    "name": "Cancel",
-                    "type": "CancelButton",
-                    "attributes": {
-                        "close": "true",
-                        "order": "8"
-                    }
-                },
-                {
-                    "name": "Create",
-                    "type": "SaveButton",
-                    "order": "9"
-                }
-            ]
+                ]
+            }
         },
         {
             "name": "ItemCreateDialog",
@@ -273,27 +285,27 @@
             "name": "ItemEditForm",
             "base": "FormCtrl",
             "attributes": {
-                "value": "something"
-            },
-            "instances": [
-                {
-                    "name": "Tabs",
-                    "type": "ItemDialogTabs"
-                },
-                {
-                    "name": "Cancel",
-                    "type": "CancelButton",
-                    "attributes": {
-                        "close": "true",
-                        "order": "8"
+                "value": "something",
+                "controls": [
+                    {
+                        "name": "Tabs",
+                        "type": "ItemDialogTabs"
+                    },
+                    {
+                        "name": "Cancel",
+                        "type": "CancelButton",
+                        "attributes": {
+                            "close": "true",
+                            "order": "8"
+                        }
+                    },
+                    {
+                        "name": "Save",
+                        "type": "SaveButton",
+                        "order": "9"
                     }
-                },
-                {
-                    "name": "Save",
-                    "type": "SaveButton",
-                    "order": "9"
-                }
-            ]
+                ]
+            }
         },
         {
             "name": "ItemEditDialog",
@@ -312,34 +324,34 @@
             "name": "ItemLinkForm",
             "base": "FormCtrl",
             "attributes": {
-                "value": "something"
-            },
-            "instances": [
-                {
-                    "name": "Item",
-                    "type": "ItemSelectCtrl",
-                    "attributes": {
-                        "order": "1"
+                "value": "something",
+                "controls": [
+                    {
+                        "name": "Item",
+                        "type": "ItemSelectCtrl",
+                        "attributes": {
+                            "order": "1"
+                        }
+                    },
+                    {
+                        "name": "Tabs",
+                        "type": "ItemDialogTabs"
+                    },
+                    {
+                        "name": "Cancel",
+                        "type": "CancelButton",
+                        "attributes": {
+                            "close": "true",
+                            "order": "8"
+                        }
+                    },
+                    {
+                        "name": "Create",
+                        "type": "SaveButton",
+                        "order": "9"
                     }
-                },
-                {
-                    "name": "Tabs",
-                    "type": "ItemDialogTabs"
-                },
-                {
-                    "name": "Cancel",
-                    "type": "CancelButton",
-                    "attributes": {
-                        "close": "true",
-                        "order": "8"
-                    }
-                },
-                {
-                    "name": "Create",
-                    "type": "SaveButton",
-                    "order": "9"
-                }
-            ]
+                ]
+            }
         },
         {
             "name": "ItemLinkDialog",
@@ -370,6 +382,121 @@
                     "type": "ItemLinkDialog"
                 }
             ]
+            
+        },
+        {
+            "name": "QueryForm",
+            "base": "FormCtrl",
+            "attributes": {
+                "layout": {
+
+                },
+                "controls": [
+                    {
+                        "name": "AppsMenu",
+                        "type": "MenuCtrl",
+                        "attributes": {
+                            "order": "1",
+                            "query": {
+                                "my_items": "true",
+                                "types": ["App"]
+                            },
+                            "controls": [
+                                {
+                                    "name": "Brand",
+                                    "type": "ButtonCtrl"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Icon",
+                        "type": "IconCtrl",
+                        "attributes": {
+                            "order": 2
+                        }
+                    },
+                    {
+                        "name": "Name",
+                        "type": "EditCtrl",
+                        "attributes": {
+                            "order": "3"
+                        }
+                    },
+                    {
+                        "name": "Menu",
+                        "type": "MenuCtrl",
+                        "attributes": {
+                            "order": "2",
+                            "query": {
+                                "children" : "true"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "FilterForm",
+            "base": "FilterCtrl",
+            "attributes": {}
+        },
+        {
+            "name": "QueryCtrl",
+            "base": "Control",
+            "attributes": {
+                "form": {
+                    "name": "Query",
+                    "type": "QueryForm" 
+                }
+            }
+        },
+        {
+            "name": "EventsForm",
+            "base": "FormCtrl",
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "Venue",
+                        "type": "QueryCtrl",
+                        "attributes": {
+                            "order": "1",
+                            "query": {
+                                "my_items" : "true",
+                                "types": ["Venue", "Place"]
+                            }
+                        }
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarCtrl",
+                        "attributes": {
+                            "order": "2",
+                            "query": {
+                                "children" : "true"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Results",
+                        "type": "FilterCtrl",
+                        "attributes": {
+                            "close": "true",
+                            "order": "8"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "EventsView",
+            "base": "FormView",
+            "attributes": {
+                "form": {
+                    "name": "Events",
+                    "base": "EventsForm"
+                }
+            }
         }
     ]
 }
