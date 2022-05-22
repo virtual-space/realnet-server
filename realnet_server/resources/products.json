@@ -141,6 +141,10 @@
             "attributes": {
                 "types": ["Supplier"],
                 "icon": "store",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Supplier"]
+                },
                 "views": [
                     {
                         "name": "All",
@@ -155,6 +159,10 @@
             "attributes": {
                 "types": ["Order"],
                 "icon": "local_shipping",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Order"]
+                },
                 "views": [
                     {
                         "name": "Board",
@@ -172,6 +180,10 @@
             "base": "App",
             "attributes": {
                 "types": ["Product"],
+                "query": {
+                    "my_items": "true",
+                    "types": ["Product"]
+                },
                 "icon": "shopping_cart",
                 "views": [
                     {

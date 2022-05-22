@@ -34,7 +34,7 @@
                 "icon": "trending_up",
                 "query": {
                     "my_items": "true",
-                    "types": ["Group"]
+                    "types": ["Runner", "Job"]
                 },
                 "views": [
                     {

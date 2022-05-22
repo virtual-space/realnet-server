@@ -58,10 +58,12 @@
             "name": "EventsView",
             "base": "FormView",
             "attributes": {
-                "form": {
+                "controls": [
+                    {
                     "name": "EventsForm",
-                    "base": "EventsForm"
-                }
+                    "type": "EventsForm"
+                    }
+                ]
             }
         },
         {
@@ -185,7 +187,7 @@
                 "views": [
                     {
                         "name": "Timeline",
-                        "type": "EventsView"
+                        "type": "CalendarView"
                     },
                     {
                         "name": "All",

@@ -52,7 +52,10 @@
             "attributes": {
                 "types": ["Material"],
                 "icon": "inventory_2",
-                "show_children": "true",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Material"]
+                },
                 "views": [
                     {
                         "name": "All",

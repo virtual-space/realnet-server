@@ -115,25 +115,6 @@
                     }
                 ]
             }
-        },
-        {
-            "name": "ViewsApp",
-            "base": "App",
-            "attributes": {
-                "types": ["View"],
-                "icon": "fullscreen",
-                "query": {
-                    "my_items": "true",
-                    "types": ["View"]
-                },
-                "views": [
-                    {
-                        "name": "All",
-                        "type": "ListView",
-                        "attributes": {}
-                    }
-                ]
-            }
         }
     ]
 }

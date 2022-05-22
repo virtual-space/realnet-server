@@ -76,6 +76,7 @@
             "base": "App",
             "attributes": {
                 "icon": "home",
+                "types": ["Item"],
                 "show_children": "true",
                 "views": [
                     {
@@ -134,7 +135,10 @@
             "attributes": {
                 "types": ["Group"],
                 "icon": "groups",
-                "show_children": "true",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Group"]
+                },
                 "views": [
                     {
                         "name": "All",
@@ -150,6 +154,7 @@
                 "types": ["Role"],
                 "icon": "badge",
                 "query": {
+                    "my_items": "true",
                     "types": ["Role"]
                 },
                 "views": [
@@ -242,6 +247,10 @@
             "base": "App",
             "attributes": {
                 "types": ["Contact"],
+                "query": {
+                    "my_items": "true",
+                    "types": ["Contact"]
+                },
                 "icon": "account_circle",
                 "show_children": "true"
             }
