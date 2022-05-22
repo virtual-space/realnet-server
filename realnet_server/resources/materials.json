@@ -7,15 +7,50 @@
                 "icon": "inventory_2",
                 "quantity": "1",
                 "creatable": "true",
-                "creatable_types": ["Material", "Product"],
-                "values": ["Absent", "Procuring", "Installed", "Disposing", "Disposed"]
+                "types": ["Material", "Product"],
+                "values": ["Absent", "Procuring", "Installed", "Disposing", "Disposed"],
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView",
+                        "attributes": {
+                            "query": {"types": ["Task"]}
+                        }
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    }
+                ]
             }
         },
         {
             "name": "MaterialApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Material"],
+                "types": ["Material"],
                 "icon": "inventory_2",
                 "show_children": "true",
                 "views": [

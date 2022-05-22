@@ -13,26 +13,55 @@
             "base": "Item",
             "attributes": {
                 "icon": "restaurant_menu",
-                "creatable_types": ["MenuItem"],
+                "types": ["MenuItem"],
                 "creatable": "true"
             }
         },
         {
-            "name": "EventView",
-            "base": "CtrlView",
+            "name": "EventsForm",
+            "base": "FormCtrl",
             "attributes": {
-                "icon": "calendar",
-                "layout": "column",
                 "controls": [
                     {
                         "name": "Venue",
-                        "type": "ItemSelectCtrl"
+                        "type": "QueryCtrl",
+                        "attributes": {
+                            "order": "1",
+                            "query": {
+                                "my_items" : "true",
+                                "types": ["Venue", "Place"]
+                            }
+                        }
                     },
                     {
                         "name": "Timeline",
-                        "type": "CalendarCtrl"
+                        "type": "CalendarCtrl",
+                        "attributes": {
+                            "order": "2",
+                            "query": {
+                                "children" : "true"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Results",
+                        "type": "FilterCtrl",
+                        "attributes": {
+                            "close": "true",
+                            "order": "8"
+                        }
                     }
                 ]
+            }
+        },
+        {
+            "name": "EventsView",
+            "base": "FormView",
+            "attributes": {
+                "form": {
+                    "name": "EventsForm",
+                    "base": "EventsForm"
+                }
             }
         },
         {
@@ -149,16 +178,16 @@
             "name": "EventApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Event"],
+                "types": ["Event"],
                 "icon": "event",
                 "views": [
                     {
                         "name": "Timeline",
-                        "type": "CalendarView",
+                        "type": "EventsView",
                         "attributes": {}
                     },
                     {
-                        "name": "List",
+                        "name": "All",
                         "type": "ListView",
                         "attributes": {}
                     }
@@ -219,7 +248,7 @@
         },
         {
             "name": "EventManagerApps",
-            "base": "Apps",
+            "base": "AdminApps",
             "attributes": {
                 "icon": "apps"
             },
@@ -249,28 +278,12 @@
                     "type": "TaskApp"
                 },
                 {
+                    "name": "Products",
+                    "type": "ProductApp"
+                },
+                {
                     "name": "Game",
                     "type": "GameApp"
-                },
-                {
-                    "name": "Home",
-                    "type": "HomeApp",
-                    "attributes": {
-                        "initial": "true",
-                        "creatable_types": ["Event", "Venue"]
-                    }
-                },
-                {
-                    "name": "Contacts",
-                    "type": "ContactApp"
-                },
-                {
-                    "name": "Around",
-                    "type": "AroundApp"
-                },
-                {
-                    "name": "Login",
-                    "type": "LoginApp"
                 }
             ]
         },

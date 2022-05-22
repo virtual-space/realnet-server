@@ -1,13 +1,6 @@
 {
     "types": [
         {
-            "name": "Media",
-            "base": "File",
-            "attributes": {
-                "icon": "collections"
-            }
-        },
-        {
             "name": "Document",
             "base": "Media",
             "attributes": {
@@ -109,7 +102,7 @@
             "name": "MediaApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Media"],
+                "types": ["Media"],
                 "icon": "perm_media",
                 "query": {
                     "my_items": "true",
@@ -127,7 +120,7 @@
             "name": "ViewsApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["View"],
+                "types": ["View"],
                 "icon": "fullscreen",
                 "query": {
                     "my_items": "true",

@@ -44,7 +44,7 @@
             "base": "Item",
             "attributes": {
                 "icon": "trending_up",
-                "creatable_types": ["Provider"]
+                "types": ["Provider"]
             }
         },
         {
@@ -82,7 +82,7 @@
                 "registry": "",
                 "code": "",
                 "icon": "settings_applications",
-                "creatable_types": ["Resource"],
+                "types": ["Resource"],
                 "creatable": "true",
                 "views": [
                     {
@@ -98,7 +98,7 @@
             "attributes": {
                 "icon": "trending_up",
                 "creatable": "true",
-                "creatable_types": ["Deployment"]
+                "types": ["Deployment"]
             }
         },
         {
@@ -107,14 +107,14 @@
             "attributes": {
                 "icon": "trending_up",
                 "creatable": "true",
-                "creatable_types": ["Node"]
+                "types": ["Node"]
             }
         },
         {
             "name": "ServerApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Server", "Provider"],
+                "types": ["Server", "Provider"],
                 "icon": "trending_up",
                 "query": {
                     "my_items": "true",

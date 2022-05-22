@@ -2,90 +2,9 @@
     "types": [
         {
             "name": "View",
+            "Base": "FormControl",
             "attributes": {
                 "icon": "fullscreen"
-            }
-        },
-        {
-            "name": "ListView",
-            "base": "View",
-            "attributes": {
-                "icon": "view_list",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "CardsView",
-            "base": "View",
-            "attributes": {
-                "icon": "view_module",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "MapView",
-            "base": "View",
-            "attributes": {
-                "icon": "map",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "CalendarView",
-            "base": "View",
-            "attributes": {
-                "icon": "calendar_today",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "BoardView",
-            "base": "View",
-            "attributes": {
-                "icon": "assignment",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "PanelView",
-            "base": "View",
-            "attributes": {
-                "icon": "dashboard"
-            }
-        },
-        {
-            "name": "SceneView",
-            "base": "View",
-            "attributes": {
-                "icon": "nature_people"
-            }
-        },
-        {
-            "name": "ImageView",
-            "base": "View",
-            "attributes": {
-                "icon": "preview"
-            }
-        },
-        {
-            "name": "VideoView",
-            "base": "View",
-            "attributes": {
-                "icon": "preview"
-            }
-        },
-        {
-            "name": "DocumentView",
-            "base": "View",
-            "attributes": {
-                "icon": "preview"
-            }
-        },
-        {
-            "name": "PropertiesView",
-            "base": "View",
-            "attributes": {
-                "icon": "ballot"
             }
         },
         {
@@ -93,13 +12,115 @@
             "base": "View",
             "attributes": {
                 "icon": "widgets",
-                "creatable": "true",
-                "creatable_types": ["Control"]
+                "creatable": "false",
+                "types": ["Control"]
             }
         },
         {
+            "name": "FormView",
+            "base": "CtrlView",
+            "attributes": {
+                "icon": "ballot",
+                "query": {},
+                "types": ["Control","View"],
+                "views": [],
+                "controls": []
+            }
+        },
+        {
+            "name": "ListView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "view_list",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "CardsView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "view_module",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "MapView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "map",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "CalendarView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "calendar_today",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "BoardView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "assignment",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "PanelView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "dashboard"
+            }
+        },
+        {
+            "name": "SceneView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "nature_people"
+            }
+        },
+        {
+            "name": "ImageView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "VideoView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "DocumentView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "PropertiesView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "ballot"
+            }
+        },
+        
+        {
             "name": "TreeView",
-            "base": "View",
+            "base": "FormView",
+            "attributes": {
+                "icon": "account_tree",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "TypeView",
+            "base": "FormView",
             "attributes": {
                 "icon": "account_tree",
                 "creatable": "true"
@@ -107,58 +128,90 @@
         },
         {
             "name": "ItemView",
-            "base": "View",
+            "base": "FormView",
             "attributes": {
                 "icon": "view_array"
             }
         },
         {
             "name": "DialogView",
-            "base": "View",
+            "base": "FormView",
             "attributes": {
                 "icon": "web_asset"
             }
         },
         {
             "name": "EditView",
-            "base": "CtrlView",
+            "base": "FormView",
             "attributes": {
                 "icon": "edit"
             }
         },
         {
             "name": "CreateView",
-            "base": "CtrlView",
+            "base": "FormView",
             "attributes": {
                 "icon": "add_circle_outline"
             }
         },
         {
             "name": "DeleteView",
-            "base": "CtrlView",
+            "base": "FormView",
             "attributes": {
                 "icon": "remove_circle_outline"
             }
         },
         {
             "name": "ContentView",
-            "base": "CtrlView",
+            "base": "FormView",
             "attributes": {
                 "icon": "center_focus_weak"
             }
         },
         {
             "name": "QueryView",
-            "base": "CtrlView",
+            "base": "FormView",
             "attributes": {
                 "icon": "search"
             }
         },
         {
+            "name": "FuncView",
+            "base": "FormView",
+            "attributes": {
+                "icon": "functions",
+                "controls": [
+                    {
+                        "name": "FuncCtrl",
+                        "type": "FormCtrl"
+                    }
+                ]
+            }
+        },
+        {
             "name": "RunView",
+            "base": "FormView",
             "attributes": {
                 "icon": "play",
                 "query": { "show_children": "true", "types": ["Arg", "Func"] }
+            }
+        },
+        {
+            "name": "ViewApp",
+            "base": "App",
+            "attributes": {
+                "types": ["View"],
+                "icon": "fullscreen",
+                "query": {
+                    "my_items": "true",
+                    "types": ["View"]
+                },
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
             }
         }
 

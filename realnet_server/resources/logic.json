@@ -4,7 +4,7 @@
             "name": "LogicApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Controller"],
+                "types": ["Controller"],
                 "icon": "developer_board",
                 "query": {
                     "my_items": "true",

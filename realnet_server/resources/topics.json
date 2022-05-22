@@ -13,7 +13,7 @@
             "name": "TopicApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Topic"],
+                "types": ["Topic"],
                 "creatable": "true",
                 "icon": "forum",
                 "query": {

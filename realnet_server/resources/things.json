@@ -5,7 +5,42 @@
             "base": "Item",
             "attributes": {
                 "icon": "graphic_eq",
-                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"]
+                "types": ["Event", "Thing", "Place", "Game", "Task", "Media"],
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView",
+                        "attributes": {
+                            "query": {"types": ["Task"]}
+                        }
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    }
+                ]
             }
         },
         {
@@ -44,7 +79,7 @@
             "name": "ThingApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Thing"],
+                "types": ["Thing"],
                 "icon": "graphic_eq",
                 "query": {
                     "my_items": "true",

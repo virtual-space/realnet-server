@@ -1,33 +1,41 @@
 {
     "types": [
         {
-            "name": "Control",
+            "name": "Ctrl",
+            "base": "Link",
             "attributes": {
-                "icon": "widgets"
+                "icon": "widgets",
+                "creatable": "false",
+                "types": ["Ctrl"]
+            }
+        },
+        {
+            "name": "FormCtrl",
+            "base": "Ctrl",
+            "attributes": {
+                "icon": "ballot",
+                "creatable": "true",
+                "types": ["FormCtrl"]
             }
         },
         {
             "name": "LocationCtrl",
-            "base": "Control",
+            "base": "FormCtrl",
             "creatable": "true"
         },
         {
             "name": "DateCtrl",
-            "base": "Control",
+            "base": "FormCtrl",
             "creatable": "true"
         },
         {
             "name": "EditCtrl",
-            "base": "Control",
+            "base": "FormCtrl",
             "creatable": "true"
         },
         {
-            "name": "FormCtrl",
-            "base": "Control"
-        },
-        {
             "name": "SelectCtrl",
-            "base": "Control",
+            "base": "FormCtrl",
             "creatable": "true"
         },
         {
@@ -42,12 +50,12 @@
         },
         {
             "name": "CalendarCtrl",
-            "base": "Control",
+            "base": "FormCtrl",
             "creatable": "true"
         },
         {
             "name": "ButtonCtrl",
-            "base": "Control",
+            "base": "FormCtrl",
             "attributes": {
                 "icon": "radio_button_checked",
                 "is_ok_button": "false",
@@ -59,7 +67,7 @@
         },
         {
             "name": "LabelCtrl",
-            "base": "Control",
+            "base": "FormCtrl",
             "attributes": {
                 "icon": "label",
                 "creatable": "true"
@@ -67,69 +75,94 @@
         },
         {
             "name": "LinkCtrl",
-            "base": "Control"
+            "base": "FormCtrl"
+        },
+        {
+            "name": "ListCtrl",
+            "base": "FormCtrl"
+        },
+        {
+            "name": "CardCtrl",
+            "base": "FormCtrl"
         },
         {
             "name": "CodeCtrl",
-            "base": "Control"
+            "base": "FormCtrl"
         },
         {
             "name": "TagsCtrl",
-            "base": "Control",
-            "creatable": "true"
+            "base": "FormCtrl"
         },
         {
-            "name": "TagCtrl",
-            "base": "Control"
+            "name": "TypesCtrl",
+            "base": "FormCtrl"
         },
         {
             "name": "BarCtrl",
-            "base": "Control"
+            "base": "FormCtrl"
         },
         {
             "name": "ViewCtrl",
-            "base": "Control"
+            "base": "FormCtrl"
         },
         {
             "name": "ColCtrl",
-            "base": "Control"
+            "base": "FormCtrl"
         },
         {
             "name": "TreeCtrl",
-            "base": "Control"
+            "base": "FormCtrl"
         },
         {
             "name": "TabsCtrl",
-            "base": "Control",
-            "creatable": "true"
+            "base": "FormCtrl"
         },
         {
             "name": "TabCtrl",
-            "base": "Control",
+            "base": "FormCtrl",
             "creatable": "true"
         },
         {
             "name": "ItemCtrl",
-            "base": "Control"
+            "base": "FormCtrl"
         },
         {
             "name": "AttrsCtrl",
-            "base": "Control",
+            "base": "FormCtrl",
             "creatable": "true"
         },
         {
             "name": "FuncCtrl",
-            "base": "Control",
+            "base": "FormCtrl",
             "creatable": "true"
         },
         {
             "name": "UploadCtrl",
-            "base": "Control"
+            "base": "FormCtrl"
         },
         {
             "name": "Dialog",
+            "base": "FormCtrl",
             "attributes": {
                 "icon": "call_to_action"
+            }
+        },
+        {
+            "name": "CtrlApp",
+            "base": "App",
+            "attributes": {
+                "types": ["Ctrl"],
+                "icon": "functions",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Ctrl"]
+                },
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
             }
         }
     ]

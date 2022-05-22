@@ -1,13 +1,44 @@
 {
     "types": [
         {
+            "name": "Arg"
+        },
+        {
+            "name": "Args",
+            "base": "Arg",
+            "attributes": {
+                "creatable": "false",
+                "types": ["Arg"]
+            }
+        },
+        {
+            "name": "Env",
+            "base": "Args"
+        },
+        {
+            "name": "Exp",
+            "base": "Args",
+            "module": "types",
+            "attributes": {
+                "icon": "functions",
+                "show_children": "true",
+                "code": "#python code goes here - evaluate this Link to get details, children and data and return the result of the operation i.e. Filter a Query results, perform a function or even a basic operation like Union, Intersection etc..",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+        {
             "name": "Type",
-            "base": "Item",
+            "base": "Exp",
             "module": "types",
             "attributes": {
                 "icon": "approval",
                 "creatable": "true",
-                "creatable_types": ["Instance"],
+                "types": ["Instance"],
                 "show_children": "true",
                 "views": [
                     {
@@ -19,12 +50,12 @@
         },
         {
             "name": "Instance",
-            "base": "Func",
+            "base": "Type",
             "module": "types",
             "attributes": {
                 "icon": "approval",
                 "creatable": "true",
-                "creatable_types": ["Type"],
+                "types": ["Type"],
                 "show_children": "true",
                 "views": [
                     {
@@ -35,31 +66,125 @@
             }
         },
         {
-            "name": "Exp",
+            "name": "Item",
             "base": "Instance",
-            "module": "types",
             "attributes": {
-                "icon": "approval",
+                "icon": "square",
+                "creatable": "false"
+            }
+        },
+        {
+            "name": "Link",
+            "base": "Item",
+            "attributes": {
+                "icon": "link",
                 "creatable": "true",
-                "creatable_types": ["Exp"],
-                "show_children": "true",
+                "item_id": "item_id",
+                "url": "url",
+                "redirect": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "LinkView"
+                    }
+                ]
+            }
+
+        },
+        {
+            "name": "Op",
+            "base": "Link",
+            "attributes": {
+                "icon": "functions",
+                "creatable": "true",
+                "types": ["Arg"]
+            }
+
+        },
+        {
+            "name": "Code",
+            "base": "Link"
+        },
+        {
+            "name": "Func",
+            "base": "Link",
+            "module": "func",
+            "attributes": {
+                "icon": "functions",
+                "creatable": "true",
+                "types": ["Arg", "Code"],
+                "args": [
+                    {
+                        "name": "Args",
+                        "type": "Arg"
+                    }
+                ],
+                "func": [
+                    {
+                        "name": "Code",
+                        "type": "Code"
+                    }
+                ],
                 "views": [
                     {
                         "name": "All",
-                        "type": "ListView"
+                        "type": "RunView"
+                    },
+                    {
+                        "name": "Run",
+                        "type": "RunView"
+                    },
+                    {
+                        "name": "Hierarchy",
+                        "type": "TreeView"
                     }
                 ]
             }
         },
         {
-            "name": "Exp",
-            "base": "Instance",
+            "name": "FuncLink",
+            "base": "Link",
+            "attributes": {
+                "icon": "functions",
+                "creatable": "true",
+                "types": ["Func"]
+            }
+
+        },
+        {
+            "name": "Const",
+            "base": "Link",
+            "attributes": {
+                "icon": "functions",
+                "code": "return self.name"
+            }
+        },
+        {
+            "name": "Query",
+            "base": "Link",
+            "attributes": {
+                "icon": "search",
+                "show_children": "true",
+                "parent_id": "",
+                "name": "",
+                "my_items": "",
+                "public": "",
+                "types": [],
+                "tags": [],
+                "location": {},
+                "visibility": "",
+                "home": ""
+            }
+        },
+        {
+            "name": "Expression",
+            "base": "Link",
             "module": "types",
             "attributes": {
                 "icon": "approval",
-                "creatable_types": ["Exp"],
+                "creatable": "true",
+                "types": ["Exp"],
                 "show_children": "true",
-                "code": "#python code goes here - evaluate the children and return the result of the operation i.e. Filter a Query results, perform a function or even a basic operation like Union, Intersection etc..",
                 "views": [
                     {
                         "name": "All",
@@ -70,19 +195,7 @@
         },
         {
             "name": "Const",
-            "base": "Exp",
-            "module": "types"
-        },
-        {
-            "name": "TypeApp",
-            "base": "App",
-            "module": "types",
-            "attributes": {
-                "creatable_types": ["Type", "Op"],
-                "icon": "approval",
-                "show_children": "true",
-                "show_views_as_items": "true"
-             }
+            "base": "Link"
         }
 
     ]

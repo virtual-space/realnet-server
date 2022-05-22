@@ -5,16 +5,51 @@
             "base": "Item",
             "attributes": {
                 "icon": "assignment_turned_in",
-                "creatable_types": ["Event", "Thing", "Place", "Game", "Task", "Media"],
+                "types": ["Event", "Thing", "Place", "Game", "Task", "Media"],
                 "creatable": "true",
-                "values": ["To Do", "In Progress", "Done"]
+                "values": ["To Do", "In Progress", "Done"],
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView",
+                        "attributes": {
+                            "query": {"types": ["Task"]}
+                        }
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
+                    }
+                ]
             }
         },
         {
             "name": "TaskApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Task"],
+                "types": ["Task"],
                 "icon": "assignment_turned_in",
                 "query": {
                     "my_items": "true",

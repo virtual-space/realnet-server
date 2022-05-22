@@ -65,7 +65,7 @@
             "name": "Sensor",
             "attributes": {
                 "icon": "sensors",
-                "creatable_types": ["Sensor", "Actuator"]
+                "types": ["Sensor", "Actuator"]
             }
         },
         {
@@ -139,10 +139,19 @@
                         }
                     },
                     {
+                        "name": "Types",
+                        "type": "TypesCtrl",
+                        "attributes": {
+                            "order": "3",
+                            "target": "types",
+                            "field_name": "types"
+                        }
+                    },
+                    {
                         "name": "Tags",
                         "type": "TagsCtrl",
                         "attributes": {
-                            "order": "3",
+                            "order": "4",
                             "target": "tags",
                             "field_name": "tags"
                         }
@@ -176,6 +185,25 @@
                         "attributes": {
                             "target": "location",
                             "field_name": "location",
+                            "order": "1"
+                        }
+                        
+                    }
+                ]
+            }
+            
+        },
+        {
+            "name": "AccessTab",
+            "base": "TabCtrl",
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "ACLs",
+                        "type": "ListCtrl",
+                        "attributes": {
+                            "target": "acls",
+                            "field_name": "acls",
                             "order": "1"
                         }
                         
@@ -230,6 +258,10 @@
                     {
                         "name": "Scheduling",
                         "type": "SchedulingTab"
+                    },
+                    {
+                        "name": "Access",
+                        "type": "AccessTab"
                     }
                 ]
             }
@@ -448,53 +480,6 @@
                 "form": {
                     "name": "Query",
                     "type": "QueryForm" 
-                }
-            }
-        },
-        {
-            "name": "EventsForm",
-            "base": "FormCtrl",
-            "attributes": {
-                "controls": [
-                    {
-                        "name": "Venue",
-                        "type": "QueryCtrl",
-                        "attributes": {
-                            "order": "1",
-                            "query": {
-                                "my_items" : "true",
-                                "types": ["Venue", "Place"]
-                            }
-                        }
-                    },
-                    {
-                        "name": "Timeline",
-                        "type": "CalendarCtrl",
-                        "attributes": {
-                            "order": "2",
-                            "query": {
-                                "children" : "true"
-                            }
-                        }
-                    },
-                    {
-                        "name": "Results",
-                        "type": "FilterCtrl",
-                        "attributes": {
-                            "close": "true",
-                            "order": "8"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "name": "EventsView",
-            "base": "FormView",
-            "attributes": {
-                "form": {
-                    "name": "Events",
-                    "base": "EventsForm"
                 }
             }
         }

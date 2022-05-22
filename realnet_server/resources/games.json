@@ -14,7 +14,7 @@
             "attributes": {
                 "icon": "build",
                 "creatable": "true",
-                "creatable_types": ["Trait"],
+                "types": ["Trait"],
                 "show_children": "true"
             }
         },
@@ -39,7 +39,7 @@
             "type": "Func",
             "attributes": {
                 "icon": "snowshoeing",
-                "creatable_types": ["Resource", "Tool", "Task", "Trait"],
+                "types": ["Resource", "Tool", "Task", "Trait"],
                 "creatable": "true",
                 "show_children": "true",
                 "views": [
@@ -56,7 +56,7 @@
             "attributes": {
                 "icon": "smart_toy",
                 "creatable": "true",
-                "creatable_types": ["Resource", "Tool", "Event", "Media", "Task"],
+                "types": ["Resource", "Tool", "Event", "Media", "Task"],
                 "show_children": "true"
             }
         },
@@ -89,7 +89,7 @@
             "type": "Func",
             "attributes": {
                 "icon": "smart_toy",
-                "creatable_types": ["Creature", "Resource", "Tool", "Player", "Place", "Thing", "Event", "Task", "Goal", "Award", "Progress"],
+                "types": ["Creature", "Resource", "Tool", "Player", "Place", "Thing", "Event", "Task", "Goal", "Award", "Progress"],
                 "creatable": "true",
                 "show_children": "true",
                 "views": [
@@ -109,7 +109,7 @@
             "type": "Media",
             "attributes": {
                 "icon": "movie",
-                "creatable_types": ["Media"],
+                "types": ["Media"],
                 "creatable": "true"
             }
         },
@@ -118,7 +118,7 @@
             "type": "Item",
             "attributes": {
                 "icon": "play_circle",
-                "creatable_types": ["Clip", "Level"],
+                "types": ["Clip", "Level"],
                 "creatable": "true",
                 "show_children": "true",
                 "views": [
@@ -135,7 +135,7 @@
             "type": "Item",
             "attributes": {
                 "icon": "history_edu",
-                "creatable_types": ["Chapter"],
+                "types": ["Chapter"],
                 "creatable": "true",
                 "show_children": "true",
                 "views": [
@@ -196,7 +196,7 @@
             "base": "Item",
             "attributes": {
                 "icon": "sports_esports",
-                "creatable_types": ["Story"],
+                "types": ["Story"],
                 "creatable": "true",
                 "show_children": "true",
                 "title": "My cool game",
@@ -209,6 +209,32 @@
                     {
                         "name": "All",
                         "type": "ListView"
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView"
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
                     }
                 ]
             }
@@ -241,6 +267,24 @@
                 "creatable": "true",
                 "title": "My cool battle",
                 "description": "Something about the battle"
+            }
+        },
+        {
+            "name": "GameApp",
+            "base": "App",
+            "attributes": {
+                "types": ["Game"],
+                "icon": "sports_esports",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Game"]
+                },
+                "views": [
+                    {
+                        "name": "List",
+                        "type": "ListView"
+                    }
+                ]
             }
         },
         {

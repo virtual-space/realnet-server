@@ -1,6 +1,7 @@
 import enum
 from unicodedata import name
 import uuid
+import logging
 import time
 import os
 import sys
@@ -387,6 +388,7 @@ def collect_inheritance_hierarchy(children, td, instances):
         for derived_type in derived_types:
             for instance in td.get('instances', []):
                 instances.append({ "instance": instance, "parent_type_name": derived_type['name']})
+                logging.getLogger().info('*** {} is derived from {} ***'.format(derived_type['name'], name))
             collect_inheritance_hierarchy(children, derived_type, instances)
 
 
@@ -626,13 +628,16 @@ def load_types(resource, owner_id, group_id):
                 import_types(db, data,owner_id, group_id)
 
 def create_basic_types(owner_id, group_id):
-    load_types("resources/views.json", owner_id, group_id)
-    load_types("resources/controls.json", owner_id, group_id)
-    load_types("resources/items.json", owner_id, group_id)
-    load_types("resources/core.json", owner_id, group_id)
     load_types("resources/types.json", owner_id, group_id)
+    load_types("resources/core.json", owner_id, group_id)
+    load_types("resources/controls.json", owner_id, group_id)
+    load_types("resources/views.json", owner_id, group_id)
+    load_types("resources/items.json", owner_id, group_id)
     load_types("resources/orgs.json", owner_id, group_id)
     load_types("resources/media.json", owner_id, group_id)
+    '''
+    '''
+    
     load_types("resources/topics.json", owner_id, group_id)
     load_types("resources/logic.json", owner_id, group_id)
     load_types("resources/places.json", owner_id, group_id)

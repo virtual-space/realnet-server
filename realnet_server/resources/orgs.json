@@ -10,14 +10,14 @@
             "name": "Role",
             "attributes": {
                 "icon": "badge",
-                "creatable_types": ["Apps", "Dialogs"]
+                "types": ["Apps", "Dialogs"]
             }
         },
         {
             "name": "Account",
             "attributes": {
                 "icon": "account_circle",
-                "creatable_types": ["Role"],
+                "types": ["Role"],
                 "username": "",
                 "password": ""
             }
@@ -47,7 +47,7 @@
             "attributes": {
                 "icon": "groups",
                 "creatable": "true",
-                "creatable_types": ["Account"],
+                "types": ["Account"],
                 "show_children": "true"
             }
         },
@@ -132,7 +132,7 @@
             "name": "GroupApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Group"],
+                "types": ["Group"],
                 "icon": "groups",
                 "show_children": "true",
                 "views": [
@@ -147,7 +147,7 @@
             "name": "RoleApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Role"],
+                "types": ["Role"],
                 "icon": "badge",
                 "query": {
                     "types": ["Role"]
@@ -218,7 +218,7 @@
             "base": "App",
             "module": "orgs",
             "attributes": {
-                "creatable_types": ["Org"],
+                "types": ["Org"],
                 "icon": "corporate_fare",
                 "show_children": "true"
             }
@@ -241,7 +241,7 @@
             "name": "ContactApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Contact"],
+                "types": ["Contact"],
                 "icon": "account_circle",
                 "show_children": "true"
             }
@@ -279,6 +279,14 @@
                 {
                     "name": "Roles",
                     "type": "RoleApp"
+                },
+                {
+                    "name": "Exp",
+                    "type": "ExpApp"
+                },
+                {
+                    "name": "Group",
+                    "type": "GroupApp"
                 },
                 {
                     "name": "Contacts",
@@ -362,7 +370,7 @@
             "attributes": {
                 "icon": "corporate_fare",
                 "creatable": "true",
-                "creatable_types": ["Group", "Client"],
+                "types": ["Group", "Client"],
                 "show_children": "true"
             }
         }

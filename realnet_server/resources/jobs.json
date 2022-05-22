@@ -7,7 +7,7 @@
             "attributes": {
                 "createable": "true",
                 "icon": "settings_applications",
-                "creatable_types": ["Job"],
+                "types": ["Job"],
                 "views": [
                     {
                         "name": "List",
@@ -23,14 +23,14 @@
             "attributes": {
                 "icon": "trending_up",
                 "creatable": "true",
-                "creatable_types": ["Task"]
+                "types": ["Task"]
             }
         },
         {
             "name": "JobsApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Runner", "Job"],
+                "types": ["Runner", "Job"],
                 "icon": "trending_up",
                 "query": {
                     "my_items": "true",

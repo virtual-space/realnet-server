@@ -2,39 +2,144 @@
     "types": [
         {
             "name": "Product",
-            "base": "DigitalTwin",
+            "base": "Item",
             "attributes" : {
                 "icon": "shopping_cart",
                 "creatable": "true",
-                "creatable_types": ["Product", "Event", "Thing", "Place", "Game", "Task", "Media"],
+                "types": ["Product", "Event", "Thing", "Place", "Game", "Task", "Media"],
                 "price": "0",
-                "currency": "USD"
+                "currency": "USD",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView",
+                        "attributes": {
+                            "query": {"types": ["Task"]}
+                        }
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    }
+                ]
             }
         },
         {
             "name": "Supplier",
-            "base": "DigitalTwin",
+            "base": "Item",
             "attributes" : {
                 "icon": "store",
-                "creatable_types": ["Contact", "Product", "Order"],
-                "creatable": "true"
+                "types": ["Contact", "Product", "Order"],
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView",
+                        "attributes": {
+                            "query": {"types": ["Task"]}
+                        }
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    }
+                ]
             }
         },
         {
             "name": "Order",
-            "base": "DigitalTwin",
+            "base": "Item",
             "attributes" : {
                 "icon": "local_shipping",
                 "creatable": "true",
-                "creatable_types": ["Material", "Order"],
-                "values": ["New", "Preparing", "Shipping", "Delivered"]
+                "types": ["Material", "Order"],
+                "values": ["New", "Preparing", "Shipping", "Delivered"],
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView",
+                        "attributes": {
+                            "query": {"types": ["Task"]}
+                        }
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    }
+                ]
             }
         },
         {
             "name": "SupplierApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Supplier"],
+                "types": ["Supplier"],
                 "icon": "store",
                 "views": [
                     {
@@ -48,7 +153,7 @@
             "name": "OrderApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Order"],
+                "types": ["Order"],
                 "icon": "local_shipping",
                 "views": [
                     {
@@ -66,7 +171,7 @@
             "name": "ProductApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Product"],
+                "types": ["Product"],
                 "icon": "shopping_cart",
                 "views": [
                     {

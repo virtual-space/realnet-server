@@ -4,14 +4,7 @@
             "name": "Venue",
             "base": "Place",
             "attributes": {
-                "icon": "other_houses",
-                "views": [
-                    {
-                        "name": "Calendar",
-                        "type": "CalendarView",
-                        "attributes": {}
-                    }
-                ]
+                "icon": "other_houses"
             }
         },
         {
@@ -114,7 +107,7 @@
             "name": "VenueApp",
             "base": "App",
             "attributes": {
-                "creatable_types": ["Venue"],
+                "types": ["Venue"],
                 "icon": "other_houses",
                 "query": {
                     "my_items": "true",
