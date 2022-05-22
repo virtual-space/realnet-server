@@ -69,6 +69,7 @@
             "base": "Item",
             "attributes": {
                 "icon": "event",
+                "types": ["Event", "Thing", "Place", "Game", "Task", "Contact", "Material"],
                 "views": [
                     {
                         "name": "Timeline",
@@ -77,30 +78,27 @@
                     {
                         "name": "Contacts",
                         "type": "ListView",
-                        "attributes": {
-                            "query": {"types": ["Contact"]}
-                        }
+                        "query": {"types": ["Contact"]}
                     },
                     {
                         "name": "Documents",
                         "type": "ListView",
-                        "attributes": {
-                            "query": {"types": ["Document"]}
-                        }
+                        "query": {"types": ["Document"]}
                     },
                     {
                         "name": "Tasks",
                         "type": "BoardView",
-                        "attributes": {
-                            "query": {"types": ["Task"]}
-                        }
+                        "query": {"types": ["Task"]}
+                    },
+                    {
+                        "name": "Games",
+                        "type": "ListView",
+                        "query": {"types": ["Game"]}
                     },
                     {
                         "name": "Materials",
                         "type": "ListView",
-                        "attributes": {
-                            "query": {"types": ["Material"]}
-                        }
+                        "query": {"types": ["Material"]}
                     },
                     {
                         "name": "Map",
@@ -180,16 +178,18 @@
             "attributes": {
                 "types": ["Event"],
                 "icon": "event",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Event"]
+                },
                 "views": [
                     {
                         "name": "Timeline",
-                        "type": "EventsView",
-                        "attributes": {}
+                        "type": "EventsView"
                     },
                     {
                         "name": "All",
-                        "type": "ListView",
-                        "attributes": {}
+                        "type": "ListView"
                     }
                 ]
             }
