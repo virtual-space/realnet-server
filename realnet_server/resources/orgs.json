@@ -76,7 +76,7 @@
             "base": "App",
             "attributes": {
                 "icon": "home",
-                "types": ["Item"],
+                "types": ["Event", "Thing", "Place", "Game", "Task", "Contact", "Product", "Material", "Topic", "Folder"],
                 "show_children": "true",
                 "views": [
                     {

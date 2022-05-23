@@ -5,7 +5,7 @@
             "base": "Item",
             "attributes": {
                 "icon": "graphic_eq",
-                "types": ["Event", "Thing", "Place", "Game", "Task", "Media"],
+                "types": ["Event", "Thing", "Place", "Game", "Task", "Topic", "Media"],
                 "views": [
                     {
                         "name": "All",

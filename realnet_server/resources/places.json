@@ -5,7 +5,7 @@
             "base": "Item",
             "attributes": {
                 "icon": "other_houses",
-                "types": ["Event", "Thing", "Place", "Game", "Task", "Contact"],
+                "types": ["Event", "Thing", "Place", "Game", "Task", "Topic", "Contact"],
                 "views": [
                     {
                         "name": "Map",

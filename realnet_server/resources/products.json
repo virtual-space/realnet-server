@@ -6,7 +6,7 @@
             "attributes" : {
                 "icon": "shopping_cart",
                 "creatable": "true",
-                "types": ["Product", "Event", "Thing", "Place", "Game", "Task", "Media"],
+                "types": ["Product", "Event", "Thing", "Place", "Game", "Topic", "Task", "Media"],
                 "price": "0",
                 "currency": "USD",
                 "views": [

@@ -71,7 +71,7 @@
             "base": "Item",
             "attributes": {
                 "icon": "event",
-                "types": ["Event", "Thing", "Place", "Game", "Task", "Contact", "Material"],
+                "types": ["Event", "Thing", "Place", "Game", "Task", "Topic", "Contact", "Material"],
                 "views": [
                     {
                         "name": "Timeline",
