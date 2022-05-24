@@ -579,3 +579,83 @@ class Orgs(Default):
             if(row is not None):
                 db.session.delete(row)
         db.session.commit()
+
+
+    def update_item(self, item, **kwargs):
+        ids = item.id.split('_')
+        length = len(ids)
+        target_id = ids[-1]
+
+        if len(ids) > 1:
+            base_id = ids[0]
+            target_id = ids[-1]
+
+        if target_id != base_id:
+            if length == 3:
+                #edit a group or client
+                if(item.type.name == "Group"):
+                    target_group = Group.query.filter(Group.id == target_id).first()
+                    for key, value in kwargs.items():
+                        # print("%s == %s" % (key, value))
+                        if key == 'name':
+                            target_group.name = value
+                        elif key == 'attributes':
+                            target_group.attributes = value
+                elif(item.type.name == "Client"):
+                    target_client = Client.query.filter(Client.id == target_id).first()
+                    for key, value in kwargs.items():
+                        # print("%s == %s" % (key, value))
+                        if key == 'name':
+                            target_client.name = value
+                        elif key == 'client_id':
+                            target_client.client_id = value
+                        elif key == 'client_secret':
+                            target_client.client_secret = value
+                        elif key == 'attributes':
+                            target_client.attributes = value
+            elif length == 4:
+                if(item.type.name == "Account"):
+                    account = Account.query.filter(Account.id == target_id).first()
+                    account_item = Item.query.filter(Item.id == target_id).first()
+
+                    for key, value in kwargs.items():
+                        # print("%s == %s" % (key, value))
+                        if key == 'name':
+                            pass
+                            #current functionality seems to be UN overrides both.
+                            #account_item.name = value
+                        elif key == 'attributes':
+                                if value.get('password'):
+                                    account.set_password(value.pop('password'))
+                                if value.get('type'):
+                                    account.type = value.pop('type')
+                                if value.get('username'):
+                                    name = value.pop('username')
+                                    account.username = name
+                                    account_item.name = name
+                                account_item.attributes = value
+                        elif key == 'status':
+                            account_item.status = value
+                        elif key == 'email':
+                            account.email = value
+                        elif key == 'tags':
+                            account_item.tags = value
+                        elif key == 'location' and value is dict:
+                            item_location = None
+                            if value.get('type') == 'Point':
+                                item_location = 'SRID=4326;POINT({0} {1})'.format(value['coordinates'][0], value['coordinates'][1])
+                            elif value.get('type') == 'Polygon':
+                                item_location = 'SRID=4326;POLYGON(('
+                                for ii in value['coordinates'][0]:
+                                    item_location = item_location + '{0} {1},'.format(ii[0], ii[1])
+                            item_location = item_location[0:-1] + '))'
+                            account_item.location = item_location
+                        elif key == 'visibility':
+                            account_item.visibility = value
+                        elif key == "valid_from":
+                            account_item.valid_from = value
+                        elif key == "valid_to":
+                            account_item.valid_to = value
+            elif length == 5:
+                pass #edit a role
+        db.session.commit()
