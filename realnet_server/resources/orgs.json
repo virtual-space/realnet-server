@@ -102,10 +102,12 @@
             "base": "App",
             "attributes": {
                 "icon": "search",
+                "types": ["Event", "Place", "Thing", "Game", "Task"],
+                "tags": ["demo"],
                 "views": [
                     {
-                        "name": "List",
-                        "type": "ListView"
+                        "name": "Find",
+                        "type": "QueryView"
                     }
                 ]
             }
@@ -116,6 +118,13 @@
             "attributes":{
                 "icon": "local_pizza",
                 "views": [
+                    {
+                        "name": "Query",
+                        "type": "QueryCtrl",
+                        "attributes": {
+                            "layout": "row"
+                        }
+                    },
                     {
                         "name": "Map",
                         "type": "MapView",
