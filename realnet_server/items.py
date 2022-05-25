@@ -71,62 +71,48 @@ def get_module():
 def extract_search_data(request):
     
         data = dict()
-            
-        home = request.args.get('home')
-        if home:
-            data['home'] = home
 
-        parent_id = request.args.get('parent_id')
-        if parent_id:
-            data['parent_id'] = parent_id
+        type_names = request.args.getlist('types')
+        if type_names:
+            data['type_names'] = type_names
 
-        my_items = request.args.get('my_items')
-        if my_items:
-            data['my_items'] = my_items
+        tags = request.args.getlist('tags')
+        if tags:
+            data['tags'] = tags
 
         name = request.args.get('name')
         if name:
             data['name'] = name
 
-        type_names = request.args.getlist('types')
+        parent_id = request.args.get('parent_id')
+        if parent_id:
+            data['parent_id'] = parent_id
 
-        if type_names:
-            data['type_names'] = type_names
+        location = request.args.get('location')
+        if location:
+            data['location'] = location
+
+        valid_from = request.args.get('valid_from')
+        if valid_from:
+            data['valid_from'] = valid_from
+
+        valid_to = request.args.get('valid_to')
+        if valid_to:
+            data['valid_to'] = valid_to
+
+        # TODO below arguments not yet being passed
 
         keys = request.args.getlist('key')
-
         if keys:
             data['keys'] = keys
 
         values = request.args.getlist('value')
-
         if values:
             data['values'] = values
 
-        lat = request.args.get('lat')
-
-        if lat:
-            data['lat'] = lat
-
-        lng = request.args.get('lng')
-
-        if lng:
-            data['lng'] = lng
-        
-        radius = request.args.get('radius', 100.00)
-
-        if radius:
-            data['radius'] = radius
-
         visibility = request.args.get('visibility')
-
         if visibility:
             data['visibility'] = visibility
-
-        tags = request.args.getlist('tags')
-
-        if tags:
-            data['tags'] = tags
 
         return data
 
@@ -339,7 +325,7 @@ def items():
                     args['owner_id'] = current_token.account.id
                     args['group_id'] = current_token.account.group_id
                     args['type_id'] = input_type.id
-                    args['parent_id'] = input_data['parent_id']
+                    args['parent_id'] = parent_id
 
                     created_item = module_instance.create_item(parent_item=parent_item, **args)
 

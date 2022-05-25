@@ -4,26 +4,54 @@
             "name": "Trait",
             "type": "Item",
             "attributes": {
-                "icon": "motion_blur",
-                "creatable": "true"
+                "icon": "edit_attributes",
+                "creatable": "true",
+                "types": ["Trait"],
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Value",
+            "type": "Trait",
+            "attributes": {
+                "icon": "check_box_outline_blank",
+                "value": "0"
+            }
+        },
+        {
+            "name": "Level",
+            "type": "Value",
+            "attributes": {
+                "icon": "brightness_1",
+                "value": "0"
+            }
+        },
+        {
+            "name": "Power",
+            "type": "Level",
+            "attributes": {
+                "icon": "bolt",
+                "types": ["Level"]
             }
         },
         {
             "name": "Tool",
-            "type": "Item",
+            "type": "Level",
             "attributes": {
                 "icon": "build",
-                "creatable": "true",
-                "types": ["Trait"],
                 "show_children": "true"
             }
         },
         {
             "name": "Resource",
-            "type": "Item",
+            "type": "Level",
             "attributes": {
-                "icon": "diamond",
-                "creatable": "true"
+                "icon": "diamond"
             }
         },
         {
@@ -36,10 +64,10 @@
         },
         {
             "name": "Player",
-            "type": "Func",
+            "type": "Link",
             "attributes": {
                 "icon": "snowshoeing",
-                "types": ["Resource", "Tool", "Task", "Trait"],
+                "types": ["Resource", "Tool", "Task", "Trait", "Clip"],
                 "creatable": "true",
                 "show_children": "true",
                 "views": [
@@ -56,7 +84,7 @@
             "attributes": {
                 "icon": "smart_toy",
                 "creatable": "true",
-                "types": ["Resource", "Tool", "Event", "Media", "Task"],
+                "types": ["Resource", "Tool", "Event", "Clip", "Task"],
                 "show_children": "true"
             }
         },

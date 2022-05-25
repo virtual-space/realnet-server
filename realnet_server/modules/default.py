@@ -450,99 +450,89 @@ class Default(Module):
 
     def perform_search(self, id, account, data, public=False):
         
-        home = data.get('home')
-        if home:
-            data['home'] = home
+        type_names = data.get('type_names')
+        if type_names:
+            data['type_names'] = type_names
 
-        parent_id = data.get('parent_id')
-        if parent_id:
-            data['parent_id'] = parent_id
-
-        my_items = data.get('my_items')
-        if my_items:
-            data['my_items'] = my_items
+        tags = data.get('tags')
+        if tags:
+            data['tags'] = tags
 
         name = data.get('name')
         if name:
             data['name'] = name
+        
+        parent_id = data.get('parent_id')
+        if parent_id:
+            data['parent_id'] = parent_id
 
-        type_names = data.get('type_names')
+        location = data.get('location')
+        if location:
+            data['location'] = location
 
-        if type_names:
-            data['type_names'] = type_names
+        valid_from = data.get('valid_from')
+        if valid_from:
+            data['valid_from'] = valid_from
+
+        valid_to = data.get('valid_to')
+        if valid_to:
+            data['valid_to'] = valid_to
+
+        status = data.get('status')
+        if status:
+            data['status'] = status
+
+        # TODO below
 
         keys = data.get('key')
-
         if keys:
             data['keys'] = keys
 
         values = data.get('values')
-
         if values:
             data['values'] = values
 
-        lat = data.get('lat')
-
-        if lat:
-            data['lat'] = lat
-
-        lng = data.get('lng')
-
-        if lng:
-            data['lng'] = lng
-        
-        radius = data.get('radius', 100.00)
-
-        if radius:
-            data['radius'] = radius
-
         visibility = data.get('visibility')
-
         if visibility:
             data['visibility'] = visibility
 
-        tags = data.get('tags')
-
-        if tags:
-            data['tags'] = tags
-
         conditions = []
-
-        if home:
-            folder = Item.query.filter(Item.parent_id == account.id, Item.name == 'Home').first()
-            if folder:
-                conditions.append(Item.parent_id == folder.id)
-            else:
-                conditions.append(Item.parent_id == None)
-        elif parent_id:
-            conditions.append(Item.parent_id == parent_id)
-        elif my_items and account:
-            conditions.append(Item.owner_id == account.id)
-        elif public:
-            conditions.append(Item.acls.any(Acl.type == AclType.public))
-
-
-        if name:
-            conditions.append(Item.name.ilike('{}%'.format(unquote(name))))
 
         if type_names:
             type_ids = [ti.id for ti in Type.query.filter(Type.name.in_(type_names)).all()]
             derived_type_ids = [ti.id for ti in Type.query.filter(Type.base_id.in_(type_ids)).all()]
             conditions.append(Item.type_id.in_(list(set(type_ids + derived_type_ids))))
 
+        # if tags:
+        #    conditions.append(Item.tags.contains(tags))
+        
+        if name:
+            conditions.append(Item.name.ilike('{}%'.format(unquote(str(name)))))
+        
+        if parent_id:
+            conditions.append(Item.parent_id == parent_id)
+
+        if location:
+            # range = (0.00001) * float(radius)
+            # ST_AsText(ST_GeomFromGeoJSON('{"type":"Point","coordinates":[-48.23456,20.12345]}'))
+            conditions.append(func.ST_DWithin(Item.location, 'SRID=4326;{}'.format(func.ST_AsText(func.ST_GeomFromGeoJSON(location))), range))
+
+        if valid_from:
+            conditions.append(Item.valid_from >= valid_from)
+
+        if valid_to:
+            conditions.append(Item.valid_to <= valid_to)
+
+        if status:
+            conditions.append(Item.status == status)
+
+        
         if keys and values:
             for kv in zip(keys, values):
                 conditions.append(Item.attributes[kv[0]].astext == kv[1])
 
-        if lat and lng:
-            range = (0.00001) * float(radius)
-            conditions.append(func.ST_DWithin(Item.location, 'SRID=4326;POINT({} {})'.format(lng, lat), range))
-
         if visibility:
             conditions.append(Item.visibility == VisibilityType[visibility])
-
-        if tags:
-            conditions.append(Item.tags.contains(tags))
 
         if public:
             if not conditions:

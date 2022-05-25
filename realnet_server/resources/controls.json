@@ -10,32 +10,28 @@
             }
         },
         {
-            "name": "FormCtrl",
-            "base": "Ctrl",
-            "attributes": {
-                "icon": "ballot",
-                "creatable": "true",
-                "types": ["FormCtrl"]
-            }
-        },
-        {
             "name": "LocationCtrl",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "creatable": "true"
         },
         {
             "name": "DateCtrl",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "creatable": "true"
         },
         {
             "name": "EditCtrl",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "creatable": "true"
         },
         {
             "name": "SelectCtrl",
-            "base": "FormCtrl",
+            "base": "Ctrl",
+            "creatable": "true"
+        },
+        {
+            "name": "AccordionCtrl",
+            "base": "Ctrl",
             "creatable": "true"
         },
         {
@@ -50,24 +46,12 @@
         },
         {
             "name": "CalendarCtrl",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "creatable": "true"
         },
         {
-            "name": "ButtonCtrl",
-            "base": "FormCtrl",
-            "attributes": {
-                "icon": "radio_button_checked",
-                "is_ok_button": "false",
-                "is_cancel_button": "false",
-                "color": "primary",
-                "disabled": "false",
-                "creatable": "true"
-            }
-        },
-        {
             "name": "LabelCtrl",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "attributes": {
                 "icon": "label",
                 "creatable": "true"
@@ -75,94 +59,76 @@
         },
         {
             "name": "LinkCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "ListCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "CardCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "CodeCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "TagsCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "TypesCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "BarCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "ViewCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "ColCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "TreeCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "TabsCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "TabCtrl",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "creatable": "true"
         },
         {
             "name": "ItemCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "AttrsCtrl",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "creatable": "true"
         },
         {
             "name": "FuncCtrl",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "creatable": "true"
         },
         {
             "name": "UploadCtrl",
-            "base": "FormCtrl"
+            "base": "Ctrl"
         },
         {
             "name": "Dialog",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "attributes": {
                 "icon": "call_to_action"
-            }
-        },
-        {
-            "name": "CtrlApp",
-            "base": "App",
-            "attributes": {
-                "types": ["Ctrl"],
-                "icon": "functions",
-                "query": {
-                    "my_items": "true",
-                    "types": ["Ctrl"]
-                },
-                "views": [
-                    {
-                        "name": "All",
-                        "type": "ListView"
-                    }
-                ]
             }
         }
     ]

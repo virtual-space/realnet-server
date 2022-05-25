@@ -82,6 +82,39 @@
             }
         },
         {
+            "name": "Command",
+            "base": "Item"
+        },
+        {
+            "name": "Find",
+            "base": "Command"
+        },
+        {
+            "name": "Save",
+            "base": "Command"
+        },
+        {
+            "name": "Reset",
+            "base": "Command"
+        },
+        {
+            "name": "Delete",
+            "base": "Command"
+        },
+        {
+            "name": "ButtonCtrl",
+            "base": "Ctrl",
+            "attributes": {
+                "icon": "radio_button_checked",
+                "is_ok_button": "false",
+                "is_cancel_button": "false",
+                "color": "primary",
+                "disabled": "false",
+                "creatable": "true",
+                "types": ["Command"]
+            }
+        },
+        {
             "name": "SaveButton",
             "base": "ButtonCtrl",
             "attributes": {
@@ -90,7 +123,7 @@
             "instances": [
                 {
                     "name": "Save",
-                    "type": "SaveItem"
+                    "type": "Save"
                 }
             ]
         },
@@ -102,6 +135,16 @@
             }
         },
         {
+            "name": "ResetButton",
+            "base": "ButtonCtrl",
+            "instances": [
+                {
+                    "name": "Reset",
+                    "type": "Reset"
+                }
+            ]
+        },
+        {
             "name": "DeleteButton",
             "base": "ButtonCtrl",
             "attributes": {
@@ -110,7 +153,7 @@
             "instances": [
                 {
                     "name": "Delete",
-                    "type": "DeleteItem"
+                    "type": "Delete"
                 }
             ]
         },
@@ -120,12 +163,21 @@
             "attributes": {
                 "controls": [
                     {
+                        "name": "Parent",
+                        "type": "ItemSelectCtrl",
+                        "attributes": {
+                            "order": "1",
+                            "target": "parent_id",
+                            "field_name": "parent_id"
+                        }
+                    },
+                    {
                         "name": "Name",
                         "type": "EditCtrl",
                         "attributes": {
                             "target": "name",
                             "field_name": "name",
-                            "order": "1"
+                            "order": "2"
                         }
                     },
                     {
@@ -135,14 +187,14 @@
                             "target": "status",
                             "field_name": "status",
                             "values": ["To Do", "In Progress", "Done"],
-                            "order": "2"
+                            "order": "3"
                         }
                     },
                     {
                         "name": "Types",
                         "type": "TypesCtrl",
                         "attributes": {
-                            "order": "3",
+                            "order": "4",
                             "target": "types",
                             "field_name": "types"
                         }
@@ -151,7 +203,7 @@
                         "name": "Tags",
                         "type": "TagsCtrl",
                         "attributes": {
-                            "order": "4",
+                            "order": "5",
                             "target": "tags",
                             "field_name": "tags"
                         }
@@ -269,7 +321,7 @@
         },
         {
             "name": "ItemCreateForm",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "attributes": {
                 "value": "something",
                 "controls": [
@@ -315,7 +367,7 @@
         },
         {
             "name": "ItemEditForm",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "attributes": {
                 "value": "something",
                 "controls": [
@@ -354,7 +406,7 @@
         },
         {
             "name": "ItemLinkForm",
-            "base": "FormCtrl",
+            "base": "Ctrl",
             "attributes": {
                 "value": "something",
                 "controls": [
@@ -417,53 +469,60 @@
             
         },
         {
-            "name": "QueryForm",
-            "base": "FormCtrl",
+            "name": "SearchButton",
+            "base": "ButtonCtrl",
             "attributes": {
-                "layout": {
-
-                },
+                "default": "true"
+            },
+            "instances": [
+                {
+                    "name": "Find",
+                    "type": "Find"
+                }
+            ]
+        },
+        {
+            "name": "QueryCtrl",
+            "base": "AccordionCtrl",
+            "attributes": {
+                "icon": "search",
+                "layout": "row",
                 "controls": [
                     {
-                        "name": "AppsMenu",
-                        "type": "MenuCtrl",
+                        "name": "Tabs",
+                        "type": "ItemDialogTabs",
+                        "namespace": "attributes.query"
+                    },
+                    {
+                        "name": "Reset",
+                        "type": "ResetButton",
+                        "namespace": "attributes.query"
+                    },
+                    {
+                        "name": "Search",
+                        "type": "SearchButton",
+                        "namespace": "attributes.query"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "QueryView",
+            "base": "View",
+            "attributes": {
+                "icon": "search",
+                "layout": "column",
+                "controls": [
+                    {
+                        "name": "Query",
+                        "type": "QueryCtrl",
                         "attributes": {
-                            "order": "1",
-                            "query": {
-                                "my_items": "true",
-                                "types": ["App"]
-                            },
-                            "controls": [
-                                {
-                                    "name": "Brand",
-                                    "type": "ButtonCtrl"
-                                }
-                            ]
+                            "layout": "row"
                         }
                     },
                     {
-                        "name": "Icon",
-                        "type": "IconCtrl",
-                        "attributes": {
-                            "order": 2
-                        }
-                    },
-                    {
-                        "name": "Name",
-                        "type": "EditCtrl",
-                        "attributes": {
-                            "order": "3"
-                        }
-                    },
-                    {
-                        "name": "Menu",
-                        "type": "MenuCtrl",
-                        "attributes": {
-                            "order": "2",
-                            "query": {
-                                "children" : "true"
-                            }
-                        }
+                        "name": "All",
+                        "type": "ListView"
                     }
                 ]
             }
@@ -474,13 +533,20 @@
             "attributes": {}
         },
         {
-            "name": "QueryCtrl",
-            "base": "Control",
+            "name": "JsonView",
+            "base": "View",
             "attributes": {
-                "form": {
-                    "name": "Query",
-                    "type": "QueryForm" 
-                }
+                "icon": "code",
+                "layout": "column",
+                "controls": [
+                    {
+                        "name": "JSON",
+                        "type": "CodeCtrl",
+                        "attributes": {
+                            "mode": { "name": "javascript", "json": "true"}
+                        }
+                    }
+                ]
             }
         }
     ]

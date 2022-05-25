@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2 import Geometry
 from geoalchemy2.elements import WKBElement
 from geoalchemy2.shape import to_shape
+# from sqlalchemy.dialects.postgresql import ARRAY
 from werkzeug.security import generate_password_hash, check_password_hash, gen_salt
 from sqlalchemy_serializer import SerializerMixin
 import shapely
@@ -200,7 +201,7 @@ class Item(db.Model, SerializerMixin):
     valid_to = db.Column(db.DateTime(timezone=True))
     status = db.Column(db.String(128))
     visibility = db.Column(db.Enum(VisibilityType))
-    tags = db.Column(db.ARRAY(db.String()))
+    # tags = db.Column(ARRAY(db.String()))
     type = db.relationship('Type')
     acls = db.relationship('Acl', passive_deletes=True)
     items = db.relationship('Item', primaryjoin='Item.parent_id==Item.id')
@@ -258,7 +259,7 @@ def build_item( item_id,
                     valid_from=valid_from,
                     valid_to=valid_to,
                     status=status,
-                    tags=tags,
+                    # tags=tags,
                     owner_id=owner_id,
                     group_id=group_id,
                     type_id=instance.type.id,
@@ -271,7 +272,7 @@ def build_item( item_id,
                     valid_from=valid_from,
                     valid_to=valid_to,
                     status=status,
-                    tags=tags,
+                    # tags=tags,
                     owner_id=owner_id,
                     group_id=group_id,
                     location=location,

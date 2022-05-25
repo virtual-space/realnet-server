@@ -1,8 +1,102 @@
 {
     "types": [
         {
+            "name": "Resource",
+            "base": "Item",
+            "attributes": {
+                "icon": "memory",
+                "types": ["Config"]
+            }
+        },
+        {
             "name": "Provider",
-            "base": "Module",
+            "base": "Resource"
+        },
+        {
+            "name": "Config",
+            "base": "Provider"
+        },
+        {
+            "name": "Runtime",
+            "base": "Provider"
+        },
+        {
+            "name": "Context",
+            "base": "Provider",
+            "attributes": {
+                "types": ["Provider"]
+            },
+            "instances": [
+                {
+                    "name": "Config",
+                    "type": "Config"
+                },
+                {
+                    "name": "Runtime",
+                    "type": "Runtime"
+                },
+                {
+                    "name": "Org",
+                    "type": "Org"
+                }
+            ]
+        },
+        {
+            "name": "GitFile",
+            "base": "File",
+            "attributes": {
+                "icon": "integration_instructions"
+            }
+        },
+        {
+            "name": "GitFolder",
+            "base": "GitFile",
+            "attributes": {
+                "icon": "integration_instructions"
+            }
+        },
+        {
+            "name": "GitApp",
+            "base": "App",
+            "attributes": {
+                "icon": "integration_instructions",
+                "types": ["GitItem"],
+                "query": {
+                    "types": ["GitFile"]
+                },
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView",
+                        "attributes": {}
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Datastore",
+            "base": "Provider",
+            "attributes": {
+                "icon": "database"
+            }
+        },
+        {
+            "name": "Itemstore",
+            "base": "Provider",
+            "attributes": {
+                "icon": "archive"
+            }
+        },
+        {
+            "name": "Webhost",
+            "base": "Provider",
+            "attributes": {
+                "icon": "trending_up"
+            }
+        },
+        {
+            "name": "MessageBus",
+            "base": "Resource",
             "attributes": {
                 "icon": "trending_up"
             }
@@ -40,39 +134,9 @@
             }
         },
         {
-            "name": "Resource",
-            "base": "Item",
+            "name": "Config",
             "attributes": {
-                "icon": "trending_up",
-                "types": ["Provider"]
-            }
-        },
-        {
-            "name": "Datastore",
-            "base": "Resource",
-            "attributes": {
-                "icon": "trending_up"
-            }
-        },
-        {
-            "name": "Itemstore",
-            "base": "Resource",
-            "attributes": {
-                "icon": "trending_up"
-            }
-        },
-        {
-            "name": "Webhost",
-            "base": "Resource",
-            "attributes": {
-                "icon": "trending_up"
-            }
-        },
-        {
-            "name": "MessageBus",
-            "base": "Resource",
-            "attributes": {
-                "icon": "trending_up"
+                "icon": "settings"
             }
         },
         {
