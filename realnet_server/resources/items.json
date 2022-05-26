@@ -163,21 +163,12 @@
             "attributes": {
                 "controls": [
                     {
-                        "name": "Parent",
-                        "type": "ItemSelectCtrl",
-                        "attributes": {
-                            "order": "1",
-                            "target": "parent_id",
-                            "field_name": "parent_id"
-                        }
-                    },
-                    {
                         "name": "Name",
                         "type": "EditCtrl",
                         "attributes": {
                             "target": "name",
                             "field_name": "name",
-                            "order": "2"
+                            "order": "1"
                         }
                     },
                     {
@@ -187,23 +178,24 @@
                             "target": "status",
                             "field_name": "status",
                             "values": ["To Do", "In Progress", "Done"],
-                            "order": "3"
+                            "order": "2"
                         }
                     },
                     {
                         "name": "Types",
                         "type": "TypesCtrl",
                         "attributes": {
-                            "order": "4",
+                            "order": "3",
                             "target": "types",
-                            "field_name": "types"
+                            "field_name": "types",
+                            "namespace": "attributes"
                         }
                     },
                     {
                         "name": "Tags",
                         "type": "TagsCtrl",
                         "attributes": {
-                            "order": "5",
+                            "order": "4",
                             "target": "tags",
                             "field_name": "tags"
                         }
