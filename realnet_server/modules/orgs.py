@@ -603,16 +603,34 @@ class Orgs(Default):
                             target_group.attributes = value
                 elif(item.type.name == "Client"):
                     target_client = Client.query.filter(Client.id == target_id).first()
+                    metadata = target_client.client_metadata
                     for key, value in kwargs.items():
                         # print("%s == %s" % (key, value))
                         if key == 'name':
                             target_client.name = value
-                        elif key == 'client_id':
-                            target_client.client_id = value
-                        elif key == 'client_secret':
-                            target_client.client_secret = value
+                            metadata['client_name'] = value
                         elif key == 'attributes':
-                            target_client.attributes = value
+                            if value.get('client_id'):
+                                target_client.client_id = value.pop('client_id')
+                            if value.get('client_id_issued_at'):
+                                target_client.client_id_issued_at = value.pop('client_id_issued_at')
+                            if value.get('client_secret') is not None:
+                                target_client.client_secret = value.pop('client_secret')
+                            if value.get('client_secret_expires_at'):
+                                target_client.client_secret_expires_at = value.pop('client_secret_expires_at')
+                            if value.get('client_uri'):
+                                metadata['client_uri'] = value.get('client_uri')
+                            if value.get('grant_types'):
+                                metadata['grant_types'] = value.get('grant_types')
+                            if value.get('redirect_uris'):
+                                metadata['redirect_uris'] = value.get('redirect_uris')
+                            if value.get('response_types'):
+                                metadata['response_types'] = value.get('response_types')
+                            if value.get('scope'):
+                                metadata['scope'] = value.get('scope')
+                            if value.get('token_endpoint_auth_method'):
+                                metadata['token_endpoint_auth_method'] = value.get('token_endpoint_auth_method')
+                    target_client.set_client_metadata(metadata)
             elif length == 4:
                 if(item.type.name == "Account"):
                     account = Account.query.filter(Account.id == target_id).first()
