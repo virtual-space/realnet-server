@@ -8,7 +8,7 @@ import importlib
 import json
 import uuid
 import base64
-
+from .util import cleanup_item
 
 from sqlalchemy.sql import func, and_, or_, not_, functions
 try:
@@ -121,9 +121,9 @@ def perform_search(request, account, module, public=False):
     data = extract_search_data(request)
     
     if public:
-        return jsonify([i.to_dict() for i in module.perform_search(None, account, data, public) if module.is_item_public(i)]), 200
+        return jsonify([cleanup_item(i.to_dict()) for i in module.perform_search(None, account, data, public) if module.is_item_public(i)]), 200
     else:
-        return jsonify([i.to_dict() for i in module.perform_search(None, account, data, public) if module.can_account_read_item(account, i)]), 200
+        return jsonify([cleanup_item(i.to_dict()) for i in module.perform_search(None, account, data, public) if module.can_account_read_item(account, i)]), 200
 
 
 
@@ -145,7 +145,7 @@ def public_single_item(id):
                            statusCode=403,
                            data='Account not authorized to read this item'), 403
 
-            return jsonify(item.to_dict()), 200
+            return jsonify(cleanup_item(item.to_dict())), 200
         else:
             return jsonify(isError=True,
                        message="Failure",
@@ -373,9 +373,9 @@ def items():
             results.extend(parent_module.perform_search(parent_id, account, data, public))
 
         if public:
-            return jsonify([i.to_dict() for i in results if parent_module.is_item_public(i)]), 200
+            return jsonify([cleanup_item(i.to_dict()) for i in results if parent_module.is_item_public(i)]), 200
         else:
-            return jsonify([i.to_dict() for i in results if parent_module.can_account_read_item(account, i)]), 200
+            return jsonify([cleanup_item(i.to_dict()) for i in results if parent_module.can_account_read_item(account, i)]), 200
 
 
 
@@ -447,7 +447,7 @@ def single_item(id):
 
             module_instance.update_item(item, **args)
 
-            return jsonify(item.to_dict())
+            return jsonify(cleanup_item(item.to_dict()))
 
         elif request.method == 'DELETE':
 
@@ -470,7 +470,7 @@ def single_item(id):
                                data='Account not authorized to read this item'), 403
             retrieved_item = module_instance.get_item(id)
             if retrieved_item:
-                return jsonify(retrieved_item.to_dict()), 200
+                return jsonify(cleanup_item(retrieved_item.to_dict())), 200
             else:
                 return jsonify(isError=True,
                             message="Failure",

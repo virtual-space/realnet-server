@@ -4,6 +4,8 @@ from realnet_server import app
 from .auth import require_oauth
 from .models import db, Type, Instance, Group, Account, AccountGroup, GroupRoleType
 from sqlalchemy import or_
+from sqlalchemy.orm import load_only
+from .util import cleanup_type
 import uuid
 
 from realnet_server import models
@@ -46,8 +48,6 @@ def can_account_delete_type(account, type):
                 return True
 
     return False
-
-
 
 @app.route('/types', methods=('GET', 'POST'))
 @require_oauth()
@@ -108,14 +108,14 @@ def types():
 
                 return jsonify(created_type.to_dict()), 201
     else:
-        return jsonify([q.to_dict() for q in Type.query.filter(Type.group_id == current_token.account.group_id)])
+        return jsonify([cleanup_type(q.to_dict()) for q in Type.query.filter(Type.group_id == current_token.account.group_id)])
 
 
 @app.route('/public/types', methods=['GET'])
 def public_types():
     if request.method == 'GET':
         #TODO return only public types
-        return jsonify([q.to_dict() for q in Type.query.all()])
+        return jsonify([cleanup_type(q.to_dict()) for q in Type.query.all()])
     return jsonify( isError=True,
                     message="Failure",
                     statusCode=404,

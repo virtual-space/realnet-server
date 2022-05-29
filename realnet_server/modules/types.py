@@ -134,20 +134,12 @@ class Types(Default):
             target_id = ids[-1]
         if target_id != base_id:
             type = Type.query.filter(Type.id == target_id).first()
-            instance_type = Type.query.filter(Type.name == 'Instance').first()
             return Item( id="{}_{}".format(base_id, target_id),
                             name=type.name,
                             attributes=type.attributes,
                             owner_id=type.owner_id,
                             group_id=type.group_id,
                             type_id=type.id,
-                            items=[Item( id="{}_{}".format(type.id, tt.id),
-                                    name=tt.name,
-                                    attributes=self.merge_attributes(instance_type, tt),
-                                    owner_id=instance_type.owner_id,
-                                    group_id=instance_type.group_id,
-                                    type_id=instance_type.id,
-                                    type = instance_type) for tt in Instance.query.filter(Instance.parent_type_id == target_id)],
                             parent_id=base_id,
                             type = type)
         else:
@@ -161,13 +153,6 @@ class Types(Default):
                              owner_id=typeapp_type.owner_id,
                              group_id=typeapp_type.group_id,
                              type_id=typeapp_type.id,
-                             items=[Item( id="{}_{}".format(t.id, tt.id),
-                                    name=tt.name,
-                                    attributes=tt.attributes,
-                                    owner_id=tt.owner_id,
-                                    group_id=tt.group_id,
-                                    type_id=tt.id,
-                                    type = tt) for tt in Type.query.all()],
                              type=typeapp_type)
 
         return None

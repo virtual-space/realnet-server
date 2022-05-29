@@ -169,26 +169,113 @@ class Orgs(Default):
             for kv in zip(keys, values):
                 conditions.append(Org.attributes[kv[0]].astext == kv[1])
 
-        type = Type.query.filter(Type.name == 'Org').first()
+        target_id = id
+        base_id = id
+        ids = id.split("_")
+        if len(ids) > 1:
+            base_id = ids[0]
+            target_id = ids[-1]
+        if target_id != base_id:
+            if len(ids) == 2:
+                # retrieve org children (groups and clients)
+                org_app = Item.query.filter(Item.id == base_id).first()
+                org_type = Type.query.filter(Type.name == 'Org').first()
+                org_app_type = Type.query.filter(Type.name == 'OrgApp').first()
+                if org_app and org_app_type and org_type:
+                    org_group = Group.query.filter(Group.id == org_app.group_id).first()
+                    if org_group:
+                        org = Org.query.filter(Org.id == org_group.org_id).first()
+                        group_type = Type.query.filter(Type.name == 'Group').first()
+                        groups = [Item( id="{}_{}_{}".format(base_id, org.id, tt.id),
+                                            name=tt.name,
+                                            attributes=self.merge_attributes(group_type, tt),
+                                            owner_id=org_type.owner_id,
+                                            group_id=org_type.group_id,
+                                            type_id=org_type.id,
+                                            type = group_type) for tt in Group.query.filter(Group.org_id == org.id)]
+                        client_type = Type.query.filter(Type.name == 'Client').first()
+                        clients = [Item( id="{}_{}_{}".format(base_id, org.id, tt.id),
+                                            name=tt.name,
+                                            attributes=self.get_client_attributes(tt, client_type),
+                                            owner_id=org_type.owner_id,
+                                            group_id=org_type.group_id,
+                                            type_id=org_type.id,
+                                            type = client_type) for tt in Client.query.filter(Client.org_id == org.id)]
+                        return groups + clients
 
-        if type:
-            if not conditions:
-                return [Item( id=t.id,
-                    name=t.name,
-                    attributes=t.attributes,
-                    owner_id=account.id,
-                    group_id=t.id,
-                    type_id=type.id,
-                    type = type) for t in Org.query.all()]
+            elif len(ids) == 3:
+                # retrieve group children (accounts)
+                org_type = Type.query.filter(Type.name == 'Org').first()
+                org = Org.query.filter(Org.id == ids[1]).first()
+                if org and org_type:
+                    group = Group.query.filter(Group.id == target_id, Group.org_id == org.id).first()
+                    if group:
+                        group_type = Type.query.filter(Type.name == 'Group').first()
+                        if group_type:
+                            account_type = Type.query.filter(Type.name == 'Account').first()
+                            return [Item( id="{}_{}_{}_{}".format(base_id, org.id, group.id, tt.id),
+                                                name=tt.username,
+                                                attributes=self.merge_attributes(account_type, tt),
+                                                owner_id=org_type.owner_id,
+                                                group_id=org_type.group_id,
+                                                type_id=org_type.id,
+                                                type = account_type) for tt in Account.query.filter(Account.group_id == group.id)]
+            elif len(ids) == 4:
+                # TODO retrieve account children (roles)
+                return []
             else:
-                return [Item( id=t.id,
+                return []
+        else:
+            type = Type.query.filter(Type.name == 'Org').first()
+
+            if type:
+                if not conditions:
+                    return [Item( id="{}_{}".format(id, t.id),
                         name=t.name,
                         attributes=t.attributes,
                         owner_id=account.id,
                         group_id=t.id,
                         type_id=type.id,
-                        parent_id=id,
-                        type = type) for t in Org.query.filter(*conditions).all()]
+                        type = type) for t in Org.query.all()]
+                else:
+                    return [Item( id="{}_{}".format(id, t.id),
+                            name=t.name,
+                            attributes=t.attributes,
+                            owner_id=account.id,
+                            group_id=t.id,
+                            type_id=type.id,
+                            parent_id=id,
+                            type = type) for t in Org.query.filter(*conditions).all()]
+
+        
+        return []
+
+    
+    def get_items(self, id):
+        target_id = id
+        base_id = id
+        ids = id.split("_")
+        if len(ids) > 1:
+            base_id = ids[0]
+            target_id = ids[-1]
+        if target_id != base_id:
+            pass
+        else:
+            # this is the org app 
+            org_app = Item.query.filter(Item.id == id).first()
+            org_app_type = Type.query.filter(Type.name == 'OrgApp').first()
+            org_type = Type.query.filter(Type.name == 'OrgApp').first()
+            if org_app and org_app_type:
+                group = Group.query.filter(Group.id == org_app.group_id)
+                if group:
+                    return [Item( id="{}_{}".format(id, t.id),
+                                    name=t.name,
+                                    attributes=t.attributes,
+                                    owner_id=t.owner_id,
+                                    group_id=t.group_id,
+                                    type_id=org_type.id,
+                                    type = org_type) for t in Org.query.filter(Org.id == group.org_id)]
+        
         return []
 
     def get_item(self, id):
@@ -199,6 +286,18 @@ class Orgs(Default):
             base_id = ids[0]
             target_id = ids[-1]
         if target_id != base_id:
+            if len(ids) == 2:
+                #this is an org
+                org = Org.query.filter(Org.id == ids[1]).first()
+                org_type = Type.query.filter(Type.name == 'Org').first()
+                if org and org_type:
+                    return Item( id="{}_{}".format(base_id, org.id),
+                                        name=org.name,
+                                        attributes=self.merge_attributes(org_type, org),
+                                        owner_id=org_type.owner_id,
+                                        group_id=org_type.group_id,
+                                        type_id=org_type.id,
+                                        type = org_type)
             if len(ids) == 3:
                 # this is a group or a client
                 org_type = Type.query.filter(Type.name == 'Org').first()
@@ -209,21 +308,12 @@ class Orgs(Default):
                     if group:
                         group_type = Type.query.filter(Type.name == 'Group').first()
                         if group_type:
-                            account_type = Type.query.filter(Type.name == 'Account').first()
-                            accounts = [Item( id="{}_{}_{}_{}".format(base_id, org.id, group.id, tt.id),
-                                                name=tt.username,
-                                                attributes=self.merge_attributes(account_type, tt),
-                                                owner_id=org_type.owner_id,
-                                                group_id=org_type.group_id,
-                                                type_id=org_type.id,
-                                                type = account_type) for tt in Account.query.filter(Account.group_id == group.id)]
                             return Item( id="{}_{}_{}".format(base_id, org.id, group.id),
                                         name=group.name,
                                         attributes=self.merge_attributes(group_type, group),
                                         owner_id=group_type.owner_id,
                                         group_id=group_type.group_id,
                                         type_id=group_type.id,
-                                        items=accounts,
                                         type = group_type)
                     # is this a client?
                     client = Client.query.filter(Client.id == target_id, Client.org_id == org.id).first()
@@ -253,43 +343,17 @@ class Orgs(Default):
 
                     
         else:
-            #this is the query the org
-            org_app = Item.query.filter(Item.id == target_id).first()
-            org_type = Type.query.filter(Type.name == 'Org').first()
-            if org_app and org_type:
-                org_group = Group.query.filter(Group.id == org_app.group_id).first()
-                if org_group:
-                    org = Org.query.filter(Org.id == org_group.org_id).first()
-                    group_type = Type.query.filter(Type.name == 'Group').first()
-                    groups = [Item( id="{}_{}_{}".format(base_id, org.id, tt.id),
-                                        name=tt.name,
-                                        attributes=self.merge_attributes(group_type, tt),
-                                        owner_id=org_type.owner_id,
-                                        group_id=org_type.group_id,
-                                        type_id=org_type.id,
-                                        type = group_type) for tt in Group.query.filter(Group.org_id == org.id)]
-                    client_type = Type.query.filter(Type.name == 'Client').first()
-                    clients = [Item( id="{}_{}_{}".format(base_id, org.id, tt.id),
-                                        name=tt.name,
-                                        attributes=self.get_client_attributes(tt, client_type),
-                                        owner_id=org_type.owner_id,
-                                        group_id=org_type.group_id,
-                                        type_id=org_type.id,
-                                        type = client_type) for tt in Client.query.filter(Client.org_id == org.id)]
-                    return Item( id=id,
-                                name=org.name,
-                                attributes=self.merge_attributes(org_type, org),
-                                owner_id=org_type.owner_id,
-                                group_id=org_type.group_id,
-                                type_id=org_type.id,
-                                items=[Item( id=tt.id,
-                                        name=tt.name,
-                                        attributes=tt.attributes,
-                                        owner_id=tt.owner_id,
-                                        group_id=tt.group_id,
-                                        type_id=tt.type_id,
-                                        type = tt.type) for tt in groups + clients],
-                                type=org_type)
+            #this is the org app
+            org_app = Item.query.filter(Item.id == id).first()
+            org_app_type = Type.query.filter(Type.name == 'OrgApp').first()
+            if org_app and org_app_type:
+                return Item( id=org_app.id,
+                            name=org_app.name,
+                            attributes=self.merge_attributes(org_app_type, org_app),
+                            owner_id=org_app_type.owner_id,
+                            group_id=org_app_type.group_id,
+                            type_id=org_app_type.id,
+                            type=org_app_type)
 
         return None
 

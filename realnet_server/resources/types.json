@@ -16,24 +16,7 @@
             "base": "Args"
         },
         {
-            "name": "Exp",
-            "base": "Args",
-            "module": "types",
-            "attributes": {
-                "icon": "functions",
-                "show_children": "true",
-                "code": "#python code goes here - evaluate this Link to get details, children and data and return the result of the operation i.e. Filter a Query results, perform a function or even a basic operation like Union, Intersection etc..",
-                "views": [
-                    {
-                        "name": "All",
-                        "type": "ListView"
-                    }
-                ]
-            }
-        },
-        {
             "name": "Type",
-            "base": "Exp",
             "module": "types",
             "attributes": {
                 "icon": "approval",
@@ -93,13 +76,189 @@
         },
         {
             "name": "Op",
-            "base": "Link",
+            "base": "Type"
+        },
+        {
+            "name": ",",
+            "base": "Op",
             "attributes": {
-                "icon": "functions",
-                "creatable": "true",
-                "types": ["Arg"]
+                "description": ["(,) or , is a Tuple operation that will add all parsed expressions as it's children"]
             }
-
+        },
+        {
+            "name": ":",
+            "base": "Op",
+            "attributes": {
+                "description": ["[,] or : is a List operation that will add all parsed expressions as it's children"]
+            }
+        },
+        {
+            "name": "|",
+            "base": "Op",
+            "attributes": {
+                "description": ["{,} or | is a Set/Either/Enum operation that will add all parsed expressions as it's children"]
+            }
+        },
+        {
+            "name": "->",
+            "base": "Op",
+            "attributes": {
+                "description": [" -> is a function type constructor"]
+            }
+        },
+        {
+            "name": "Const",
+            "base": "Op",
+            "attributes": {
+                "description": ["Const is a constant - it always has the same value"]
+            }
+        },
+        {
+            "name": "Number",
+            "base": "Const",
+            "attributes": {
+                "description": ["Number is a Const represented by it's value"],
+                "value": "0"
+            }
+        },
+        {
+            "name": "True",
+            "base": "Number",
+            "attributes": {
+                "description": ["Bool True"],
+                "value": "1"
+            }
+        },
+        {
+            "name": "False",
+            "base": "Number",
+            "attributes": {
+                "description": ["Bool False"]
+            }
+        },
+        {
+            "name": "Bool",
+            "base": "True | False",
+            "attributes": {
+                "description": ["A Bool can be either True or False"]
+            }
+        },
+        {
+            "name": ">=",
+            "base": "Number -> Number -> Bool",
+            "attributes": {
+                "description": ["Returns True if the First Number is greater than or equal to the second number"]
+            }
+        },
+        {
+            "name": "<=",
+            "base": "Number -> Number -> Bool",
+            "attributes": {
+                "description": ["Returns True if the First Number is smaller than or equal to the second number"]
+            }
+        },
+        {
+            "name": "==",
+            "base": "Number -> Number -> Bool",
+            "attributes": {
+                "description": ["Returns True if the First Number is equal to the second number"]
+            }
+        },
+        {
+            "name": "!=",
+            "base": "Number -> Number -> Bool",
+            "attributes": {
+                "description": ["Returns True if the First Number is not equal to the second number"]
+            }
+        },
+        {
+            "name": "String",
+            "base": "Number",
+            "attributes": {
+                "description": ["String"]
+            }
+        },
+        {
+            "name": "Void",
+            "base": "False",
+            "attributes": {
+                "description": ["This is the void type"]
+            }
+        },
+        {
+            "name": "Var",
+            "base": "Op",
+            "attributes": {
+                "description": ["This is the variable/symbol whose name is to be resolved in the current env/arguments"]
+            }
+        },
+        {
+            "name": "Return",
+            "base": "Void -> Type",
+            "attributes": {
+                "description": ["This is the void type"]
+            }
+        },
+        {
+            "name": "Pred",
+            "base": "Var -> Bool",
+            "attributes": {
+                "description": ["This is the variable/symbol whose name is to be resolved in the current env/arguments"]
+            }
+        },
+        {
+            "name": "Eq",
+            "type": "Op",
+            "attributes": {
+                "description": ["== is an equality comparison operation that will return True if all its children are equal"]
+            }
+        },
+        {
+            "name": "->",
+            "type": "Op",
+            "attributes": {
+                "description": ["[,] is a List operation that will add all parsed expressions as it's children"]
+            }
+        },
+        {
+            "name": "Cond",
+            "type": "Op",
+            "instances": [
+                {
+                    "name": "Test",
+                    "type": "Item" 
+                },
+                {
+                    "name": "Action",
+                    "type": "Item" 
+                }
+            ]
+        },
+        {
+            "name": "If",
+            "type": "Op",
+            "instances": [
+                {
+                    "name": "Condition",
+                    "type": "Item" 
+                },
+                {
+                    "name": "Then",
+                    "type": "Item" 
+                }
+            ]
+        },
+        {
+            "name": "==",
+            "type": "BinOp"
+        },
+        {
+            "name": "!=",
+            "type": "BinOp"
+        },
+        {
+            "name": "If",
+            "type": "TerOp"
         },
         {
             "name": "Code",

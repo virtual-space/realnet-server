@@ -2,9 +2,9 @@ from flask import request, jsonify
 from authlib.integrations.flask_oauth2 import current_token
 from realnet_server import app
 from .auth import require_oauth
-from .models import db, Item, Type, Acl, AclType
+from .models import db, Item, Type, Acl, AclType, retrieve_item_tree
 import uuid
-
+from .util import cleanup_item
 
 @app.route('/profile', methods=['GET'])
 @require_oauth()
@@ -12,7 +12,7 @@ def profile():
     if request.method == 'GET':
         item = Item.query.filter(Item.id == current_token.account.id).first()
         if item:
-            return jsonify(item.to_dict()), 200
+            return jsonify(retrieve_item_tree(item)), 200
         else:
             return jsonify(isError=True,
                            message="Failure",
@@ -27,7 +27,7 @@ def public_profile():
         if type:
             item = Item.query.filter(Item.type_id == type.id, Item.acls.any(Acl.type == AclType.public)).first()
             if item:
-                return jsonify(item.to_dict()), 200
+                return jsonify(retrieve_item_tree(item)), 200
             
     return jsonify( isError=True,
                     message="Failure",

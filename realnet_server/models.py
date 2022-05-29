@@ -18,6 +18,8 @@ import csv
 import importlib
 import datetime
 
+from .util import cleanup_item
+
 from authlib.integrations.sqla_oauth2 import (
     OAuth2ClientMixin,
     OAuth2AuthorizationCodeMixin,
@@ -204,7 +206,7 @@ class Item(db.Model, SerializerMixin):
     # tags = db.Column(ARRAY(db.String()))
     type = db.relationship('Type')
     acls = db.relationship('Acl', passive_deletes=True)
-    items = db.relationship('Item', primaryjoin='Item.parent_id==Item.id')
+    # items = db.relationship('Item', primaryjoin='Item.parent_id==Item.id')
     linked_item = db.relationship('Item', foreign_keys='[Item.linked_item_id]', remote_side='[Item.id]')
     # linked_item = db.relationship('Item', primaryjoin='Item.id==Item.linked_item_id')
     # parent = db.relationship('Item', primaryjoin='Item.parent_id==Item.id')
@@ -236,6 +238,12 @@ def get_type_instances(type):
     if type.base:
         instances.extend(get_type_instances(type.base))
     return instances
+
+def retrieve_item_tree(item):
+    result = cleanup_item(item.to_dict().copy())
+    result['items'] = [retrieve_item_tree(child) for child in Item.query.filter(Item.parent_id == item.id).all()]
+    return result
+
 
 def build_item( item_id,
                 instance,
@@ -521,7 +529,7 @@ def import_types(db, type_data, owner_id, group_id):
     
     if commit_needed:
         db.session.commit()
-
+    
     return [dv['type'].to_dict() for dv in types.values()]
 
 

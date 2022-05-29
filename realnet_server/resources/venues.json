@@ -113,9 +113,22 @@
                     "my_items": "true",
                     "types": ["Venue"]
                 },
+                "controls": [
+                    {
+                        "name": "Query",
+                        "type": "QueryCtrl",
+                        "attributes": {
+                            "layout": "row"
+                        }
+                    }
+                ],
                 "views": [
                     {
-                        "name": "List",
+                        "name": "Map",
+                        "type": "MapView"
+                    },
+                    {
+                        "name": "All",
                         "type": "ListView"
                     }
                 ]

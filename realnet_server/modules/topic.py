@@ -1,6 +1,8 @@
 from .default import Default
 
 class Topic(Default):
-    pass
+    
+    def perform_search(self, id, account, data, public=False):
+        return []
 
 

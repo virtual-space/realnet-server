@@ -76,8 +76,11 @@
             "base": "App",
             "attributes": {
                 "icon": "home",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Event", "Thing", "Place", "Game", "Task", "Contact", "Product", "Material", "Topic", "Folder"]
+                },
                 "types": ["Event", "Thing", "Place", "Game", "Task", "Contact", "Product", "Material", "Topic", "Folder"],
-                "show_children": "true",
                 "views": [
                     {
                         "name": "List",
@@ -117,21 +120,23 @@
             "base": "App",
             "attributes":{
                 "icon": "local_pizza",
-                "views": [
+                "controls": [
                     {
                         "name": "Query",
                         "type": "QueryCtrl",
                         "attributes": {
                             "layout": "row"
                         }
-                    },
+                    }
+                ],
+                "views": [
                     {
                         "name": "Map",
                         "type": "MapView",
                         "attributes": {}
                     },
                     {
-                        "name": "List",
+                        "name": "All",
                         "type": "ListView",
                         "attributes": {}
                     }
@@ -233,8 +238,9 @@
             "module": "orgs",
             "attributes": {
                 "types": ["Org"],
-                "icon": "corporate_fare",
-                "show_children": "true"
+                "show_children": "true",
+                "show_views_as_items": "true",
+                "icon": "corporate_fare"
             }
         },
         {
@@ -291,16 +297,12 @@
                     "type": "TypeApp"
                 },
                 {
-                    "name": "Org",
+                    "name": "Orgs",
                     "type": "OrgApp"
                 },
                 {
                     "name": "Roles",
                     "type": "RoleApp"
-                },
-                {
-                    "name": "Exp",
-                    "type": "ExpApp"
                 },
                 {
                     "name": "Group",

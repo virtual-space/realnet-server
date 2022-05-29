@@ -511,6 +511,8 @@ class Default(Module):
         
         if parent_id:
             conditions.append(Item.parent_id == parent_id)
+        else:
+            conditions.append(Item.parent_id == None)
 
         if location:
             # range = (0.00001) * float(radius)

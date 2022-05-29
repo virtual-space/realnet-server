@@ -55,27 +55,29 @@
             }
         },
         {
-            "name": "EventsView",
-            "base": "FormView",
-            "attributes": {
-                "controls": [
-                    {
-                    "name": "EventsForm",
-                    "type": "EventsForm"
-                    }
-                ]
-            }
-        },
-        {
             "name": "Event",
             "base": "Item",
             "attributes": {
                 "icon": "event",
-                "types": ["Event", "Thing", "Place", "Game", "Task", "Topic", "Contact", "Material"],
+                "types": ["Event", "Game", "Task", "Topic", "Contact", "Material", "Document"],
                 "views": [
                     {
                         "name": "Timeline",
                         "type": "CalendarView"
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    },
+                    {
+                        "name": "Events",
+                        "type": "ListView",
+                        "query": {"types": ["Event"]}
+                    },
+                    {
+                        "name": "Materials",
+                        "type": "ListView",
+                        "query": {"types": ["Material"]}
                     },
                     {
                         "name": "Contacts",
@@ -96,15 +98,6 @@
                         "name": "Games",
                         "type": "ListView",
                         "query": {"types": ["Game"]}
-                    },
-                    {
-                        "name": "Materials",
-                        "type": "ListView",
-                        "query": {"types": ["Material"]}
-                    },
-                    {
-                        "name": "Map",
-                        "type": "MapView"
                     }
                 ]
                 
@@ -184,6 +177,15 @@
                     "my_items": "true",
                     "types": ["Event"]
                 },
+                "controls": [
+                    {
+                        "name": "Query",
+                        "type": "QueryCtrl",
+                        "attributes": {
+                            "layout": "row"
+                        }
+                    }
+                ],
                 "views": [
                     {
                         "name": "Timeline",
@@ -284,7 +286,7 @@
                     "type": "ProductApp"
                 },
                 {
-                    "name": "Game",
+                    "name": "Games",
                     "type": "GameApp"
                 }
             ]

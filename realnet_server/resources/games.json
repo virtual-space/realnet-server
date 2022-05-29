@@ -1,8 +1,16 @@
 {
     "types": [
         {
+            "name": "GameItem",
+            "base": "Item",
+            "attributes": {
+                "icon": "sports_esports",
+                "value": "0"
+            }
+        },
+        {
             "name": "Trait",
-            "type": "Item",
+            "base": "GameItem",
             "attributes": {
                 "icon": "edit_attributes",
                 "creatable": "true",
@@ -16,125 +24,414 @@
             }
         },
         {
-            "name": "Value",
-            "type": "Trait",
-            "attributes": {
-                "icon": "check_box_outline_blank",
-                "value": "0"
-            }
-        },
-        {
-            "name": "Level",
-            "type": "Value",
-            "attributes": {
-                "icon": "brightness_1",
-                "value": "0"
-            }
-        },
-        {
             "name": "Power",
-            "type": "Level",
+            "base": "Trait",
             "attributes": {
-                "icon": "bolt",
+                "icon": "bolt"
+            }
+        },
+        {
+            "name": "Mana",
+            "base": "Trait",
+            "attributes": {
+                "icon": "bolt"
+            }
+        },
+        {
+            "name": "Attack",
+            "base": "Trait",
+            "attributes": {
+                "icon": "bolt"
+            }
+        },
+        {
+            "name": "Defense",
+            "base": "Trait",
+            "attributes": {
+                "icon": "bolt"
+            }
+        },
+        {
+            "name": "Health",
+            "base": "Trait",
+            "attributes": {
+                "icon": "local_hospital",
                 "types": ["Level"]
             }
         },
         {
-            "name": "Tool",
-            "type": "Level",
+            "name": "Tribe",
+            "base": "Trait",
             "attributes": {
-                "icon": "build",
+                "icon": "local_hospital",
+                "types": ["Level"]
+            }
+        },
+        {
+            "name": "Site",
+            "base": "GameItem",
+            "attributes": {
+                "icon": "local_hospital",
+                "types": ["Dwelling"]
+            },
+            "views": [
+                {
+                    "name": "Play",
+                    "type": "SceneView"
+                },
+                {
+                    "name": "Map",
+                    "type": "MapView"
+                },
+                {
+                    "name": "Inventory",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "Dwelling",
+            "base": "Site",
+            "attributes": {
+                "icon": "smart_toy",
+                "creatable": "true",
+                "types": ["Resource", "Artefact", "Event", "Clip", "Order", "Unit","Hero"],
                 "show_children": "true"
             }
         },
         {
-            "name": "Resource",
-            "type": "Level",
+            "name": "Unit",
+            "base": "GameItem",
             "attributes": {
-                "icon": "diamond"
-            }
+                "icon": "local_police",
+                "types": ["Resource", "Artefact", "Event", "Clip", "Order", "Unit", "Hero", "Tribe"]
+            },
+            "views": [
+                {
+                    "name": "Play",
+                    "type": "SceneView"
+                },
+                {
+                    "name": "Map",
+                    "type": "MapView"
+                },
+                {
+                    "name": "Inventory",
+                    "type": "ListView"
+                }
+            ]
         },
         {
-            "name": "Portal",
-            "type": "Link",
+            "name": "Hero",
+            "base": "Unit",
             "attributes": {
-                "icon": "door_front",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Player",
-            "type": "Link",
-            "attributes": {
-                "icon": "snowshoeing",
-                "types": ["Resource", "Tool", "Task", "Trait", "Clip"],
-                "creatable": "true",
-                "show_children": "true",
-                "views": [
-                    {
-                        "name": "All",
-                        "type": "ListView"
-                    }
-                ]
+                "icon": "directions_walk",
+                "types": ["Resource", "Artefact", "Event", "Clip", "Quest", "Party", "Tribe"]
             }
         },
         {
             "name": "Creature",
-            "type": "Func",
+            "base": "Unit",
             "attributes": {
-                "icon": "smart_toy",
-                "creatable": "true",
-                "types": ["Resource", "Tool", "Event", "Clip", "Task"],
-                "show_children": "true"
+                "icon": "local_police",
+                "types": ["Resource", "Artefact", "Event", "Clip", "Task", "Party", "Tribe"]
             }
         },
         {
-            "name": "Goal",
-            "base": "Func",
+            "name": "Party",
+            "base": "Unit",
             "attributes": {
-                "icon": "flag_circle",
-                "creatable": "true"
+                "icon": "local_police",
+                "types": ["Creature", "Hero", "Resource", "Artefact", "Event", "Clip", "Order", "Unit", "Hero", "Tribe"]
+            }
+        },
+        {
+            "name": "Fort",
+            "base": "Dwelling"
+        },
+        {
+            "name": "Forge",
+            "base": "Dwelling"
+        },
+        {
+            "name": "Tavern",
+            "base": "Dwelling"
+        },
+        {
+            "name": "Temple",
+            "base": "Dwelling"
+        },
+        {
+            "name": "Ant",
+            "base": "Creature"
+        },
+        {
+            "name": "Bat",
+            "base": "Creature"
+        },
+        {
+            "name": "Dragon",
+            "base": "Creature"
+        },
+        {
+            "name": "Guards",
+            "base": "Unit",
+            "instances": [
+                {
+                    "name": "Gongo",
+                    "type": "Ant"
+                },
+                {
+                    "name": "Krokor",
+                    "type": "Bat"
+                },
+                {
+                    "name": "Fenrir",
+                    "type": "Dragon"
+                }
+            ]
+        },
+        {
+            "name": "Town",
+            "base": "Site",
+            "attributes": {
+                "icon": "location_city",
+                "types": ["Dwelling", "Resource", "Artefact", "Event", "Clip", "Order", "Unit","Hero", "Tribe"]
+            },
+            "instances" : [
+                {
+                    "name": "Guards",
+                    "type": "Guards"
+                },
+                {
+                    "name": "Fort",
+                    "type": "Fort"
+                },
+                {
+                    "name": "Forge",
+                    "type": "Forge"
+                },
+                {
+                    "name": "Tavern",
+                    "type": "Tavern"
+                },
+                {
+                    "name": "Temple",
+                    "type": "Temple"
+                },
+                {
+                    "name": "Gold",
+                    "type": "Gold"
+                }
+            ]
+        },
+        {
+            "name": "Country",
+            "base": "Site",
+            "attributes": {
+                "icon": "flag",
+                "types": ["Town", "Clip"]
+            },
+            "instances": [
+                {
+                    "name": "Souton",
+                    "type": "Town"
+                },
+                {
+                    "name": "Easton",
+                    "type": "Town"
+                },
+                {
+                    "name": "Norton",
+                    "type": "Town"
+                },
+                {
+                    "name": "Weston",
+                    "type": "Town"
+                },
+                {
+                    "name": "Centerton",
+                    "type": "Town"
+                },
+                {
+                    "name": "Clip",
+                    "type": "Clip"
+                }
+
+            ]
+        },
+        {
+            "name": "World",
+            "base": "Site",
+            "attributes": {
+                "icon": "public",
+                "types": ["Country", "Clip"]
+            },
+            "instances": [
+                {
+                    "name": "Southia",
+                    "type": "Country"
+                },
+                {
+                    "name": "Eastia",
+                    "type": "Country"
+                },
+                {
+                    "name": "Northia",
+                    "type": "Country"
+                },
+                {
+                    "name": "Westia",
+                    "type": "Country"
+                },
+                {
+                    "name": "Centeria",
+                    "type": "Country"
+                },
+                {
+                    "name": "Clip",
+                    "type": "Clip"
+                }
+            ]
+        },
+        {
+            "name": "Artefact",
+            "base": "GameItem",
+            "attributes": {
+                "icon": "build",
+                "show_children": "true",
+                "types": ["Trait"]
+            },
+            "views": [
+                {
+                    "name": "Play",
+                    "type": "SceneView"
+                },
+                {
+                    "name": "Map",
+                    "type": "MapView"
+                },
+                {
+                    "name": "Inventory",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "Resource",
+            "base": "GameItem",
+            "attributes": {
+                "icon": "diamond"
+            },
+            "views": [
+                {
+                    "name": "Play",
+                    "type": "SceneView"
+                },
+                {
+                    "name": "Map",
+                    "type": "MapView"
+                },
+                {
+                    "name": "Inventory",
+                    "type": "ListView"
+                }
+            ]
+        },
+        {
+            "name": "Gold",
+            "base": "Resource",
+            "attributes": {
+                "icon": "auto_awesome"
+            }
+        },
+        {
+            "name": "Health",
+            "base": "Resource",
+            "attributes": {
+                "icon": "local_hospital"
+            }
+        },
+        {
+            "name": "Research",
+            "base": "Resource",
+            "attributes": {
+                "icon": "auto_awesome"
+            }
+        },
+        {
+            "name": "Portal",
+            "base": "Site",
+            "attributes": {
+                "icon": "door_front",
+                "creatable": "true",
+                "types": ["Site"]
             }
         },
         {
             "name": "Award",
-            "base": "Func",
+            "base": "GameItem",
             "attributes": {
                 "icon": "emoji_events",
-                "creatable": "true"
+                "creatable": "true",
+                "types": ["Resource", "Artefact", "Event", "Clip", "Task", "Creature"]
+            }
+        },
+        {
+            "name": "Objective",
+            "base": "GameItem",
+            "attributes": {
+                "icon": "task",
+                "creatable": "true",
+                "types": ["Award", "Task", "Event", "Clip"]
             }
         },
         {
             "name": "Progress",
-            "base": "Func",
+            "base": "GameItem",
             "attributes": {
                 "icon": "pending",
-                "creatable": "true"
+                "creatable": "true",
+                "types": ["Objective", "Event"]
             }
         },
         {
             "name": "Level",
-            "type": "Func",
+            "base": "GameItem",
             "attributes": {
                 "icon": "smart_toy",
-                "types": ["Creature", "Resource", "Tool", "Player", "Place", "Thing", "Event", "Task", "Goal", "Award", "Progress"],
+                "types": ["Progress", "Trait", "Site"],
                 "creatable": "true",
                 "show_children": "true",
                 "views": [
                     {
-                        "name": "All",
-                        "type": "ListView"
+                        "name": "Play",
+                        "type": "SceneView"
                     },
                     {
                         "name": "Map",
                         "type": "MapView"
+                    },
+                    {
+                        "name": "Inventory",
+                        "type": "ListView"
                     }
                 ]
-            }
+            },
+            "instances": [
+                {
+                    "name": "Progress",
+                    "type": "Progress"
+                },
+                {
+                    "name": "World",
+                    "type": "World"
+                }
+            ]
         },
         {
             "name": "Clip",
-            "type": "Media",
+            "base": "Media",
             "attributes": {
                 "icon": "movie",
                 "types": ["Media"],
@@ -143,7 +440,7 @@
         },
         {
             "name": "Chapter",
-            "type": "Item",
+            "base": "GameItem",
             "attributes": {
                 "icon": "play_circle",
                 "types": ["Clip", "Level"],
@@ -151,16 +448,42 @@
                 "show_children": "true",
                 "views": [
                     {
-                        "name": "All",
+                        "name": "Play",
+                        "type": "SceneView"
+                    },
+                    {
+                        "name": "Levels",
                         "type": "ListView"
                     }
                 ]
 
-            }
+            },
+            "instances": [
+                {
+                    "name": "Intro",
+                    "type": "Clip"
+                },
+                {
+                    "name": "Level",
+                    "type": "Level"
+                },
+                {
+                    "name": "Success",
+                    "type": "Clip"
+                },
+                {
+                    "name": "Failure",
+                    "type": "Clip"
+                },
+                {
+                    "name": "Intro",
+                    "type": "Clip"
+                }
+            ]
         },
         {
             "name": "Story",
-            "type": "Item",
+            "base": "GameItem",
             "attributes": {
                 "icon": "history_edu",
                 "types": ["Chapter"],
@@ -168,60 +491,25 @@
                 "show_children": "true",
                 "views": [
                     {
-                        "name": "All",
+                        "name": "Play",
+                        "type": "SceneView"
+                    },
+                    {
+                        "name": "Chapters",
                         "type": "ListView"
                     }
                 ]
-            }
-        },
-        {
-            "name": "PlayView",
-            "base": "CtrlView",
-            "attributes": {
-                "icon": "task_alt",
-                "layout": "column",
-                "controls": [
-                    {
-                        "name": "Title",
-                        "type": "LabelCtrl",
-                        "attributes": {
-                            "target": "title"
-                        }
-                    },
-                    {
-                        "name": "Description",
-                        "type": "LabelCtrl",
-                        "attributes": {
-                            "target": "description"
-                        }
-                    },
-                    {
-                        "name": "Goal",
-                        "type": "LabelCtrl",
-                        "attributes": {
-                            "value": "This is the goal"
-                        }
-                    },
-                    {
-                        "name": "Award",
-                        "type": "LabelCtrl",
-                        "attributes": {
-                            "value": "This is the award"
-                        }
-                    },
-                    {
-                        "name": "Progress",
-                        "type": "LabelCtrl",
-                        "attributes": {
-                            "value": "This is the progress"
-                        }
-                    }
-                ]
-            }
+            },
+            "instances": [
+                {
+                    "name": "Chapter",
+                    "type": "Chapter"
+                }
+            ]
         },
         {
             "name": "Game",
-            "base": "Item",
+            "base": "GameItem",
             "attributes": {
                 "icon": "sports_esports",
                 "types": ["Story"],
@@ -232,40 +520,24 @@
                 "views": [
                     {
                         "name": "Play",
-                        "type": "PlayView"
-                    },
-                    {
-                        "name": "All",
-                        "type": "ListView"
-                    },
-                    {
-                        "name": "Tasks",
-                        "type": "BoardView"
+                        "type": "SceneView"
                     },
                     {
                         "name": "Map",
                         "type": "MapView"
                     },
                     {
-                        "name": "Timeline",
-                        "type": "CalendarView"
-                    },
-                    {
-                        "name": "Contacts",
-                        "type": "ListView",
-                        "attributes": {
-                            "query": {"types": ["Contact"]}
-                        }
-                    },
-                    {
-                        "name": "Documents",
-                        "type": "ListView",
-                        "attributes": {
-                            "query": {"types": ["Document"]}
-                        }
+                        "name": "Inventory",
+                        "type": "ListView"
                     }
                 ]
-            }
+            },
+            "instances": [
+                {
+                    "name": "Story",
+                    "type": "Story"
+                }
+            ]
         },
         {
             "name": "Quest",
@@ -335,7 +607,7 @@
                     "type": "PublicApp"
                 },
                 {
-                    "name": "Game",
+                    "name": "Games",
                     "type": "GameApp",
                     "attributes": {
                         "initial": "true"
