@@ -224,6 +224,8 @@ class Acl(db.Model, SerializerMixin):
     type = db.Column(db.Enum(AclType))
     name = db.Column(db.String(50))
     permission = db.Column(db.String(50))
+    target_id = db.Column(db.String(36))
+    owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'))
     item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
 
 def traverse_instance(instances, instance, parent_type_name):
