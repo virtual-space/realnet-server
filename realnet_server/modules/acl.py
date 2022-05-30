@@ -60,3 +60,30 @@ class Acl(Default):
         
         db.session.add(acl)
         db.session.commit()
+
+    def delete_item(self, item):
+        ids = item.id.split('_')
+        acl = Acl.query.filter(Acl.id == ids[-1])
+        db.session.delete(acl)
+        db.session.commit()
+
+    def update_item(self, item, **kwargs):
+        ids = item.id.split('_')
+        target_item = Acl.query.filter(Acl.id == ids[-1])
+
+        for key, value in kwargs.items():
+            # print("%s == %s" % (key, value))
+            if key == 'name':
+                target_item.name = value
+            elif key == 'type':
+                target_item.type = value
+            elif key == 'permissions':
+                target_item.permission = value
+            elif key == 'target_id':
+                target_item.target_id = value
+            elif key == 'owner_id':
+                target_item.owner_id = value
+            elif key == 'item_id':
+                target_item.item_id = value
+
+        db.session.commit()
