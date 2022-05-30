@@ -168,42 +168,6 @@
                 "icon": "play",
                 "query": { "show_children": "true", "types": ["Arg", "Func"] }
             }
-        },
-        {
-            "name": "CtrlApp",
-            "base": "App",
-            "attributes": {
-                "types": ["Ctrl"],
-                "icon": "widgets",
-                "query": {
-                    "my_items": "true",
-                    "types": ["Ctrl"]
-                },
-                "views": [
-                    {
-                        "name": "All",
-                        "type": "ListView"
-                    }
-                ]
-            }
-        },
-        {
-            "name": "ViewApp",
-            "base": "App",
-            "attributes": {
-                "types": ["View"],
-                "icon": "fullscreen",
-                "query": {
-                    "my_items": "true",
-                    "types": ["View"]
-                },
-                "views": [
-                    {
-                        "name": "All",
-                        "type": "ListView"
-                    }
-                ]
-            }
         }
 
     ]

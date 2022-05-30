@@ -71,8 +71,8 @@
             "name": "Site",
             "base": "GameItem",
             "attributes": {
-                "icon": "local_hospital",
-                "types": ["Dwelling"]
+                "icon": "pin_drop",
+                "types": ["Resource", "Artefact", "Event", "Clip", "Unit"]
             },
             "views": [
                 {
@@ -93,9 +93,9 @@
             "name": "Dwelling",
             "base": "Site",
             "attributes": {
-                "icon": "smart_toy",
+                "icon": "castle",
                 "creatable": "true",
-                "types": ["Resource", "Artefact", "Event", "Clip", "Order", "Unit","Hero"],
+                "types": ["Resource", "Artefact", "Event", "Clip", "Unit"],
                 "show_children": "true"
             }
         },
@@ -104,7 +104,7 @@
             "base": "GameItem",
             "attributes": {
                 "icon": "local_police",
-                "types": ["Resource", "Artefact", "Event", "Clip", "Order", "Unit", "Hero", "Tribe"]
+                "types": ["Resource", "Artefact", "Event", "Clip"]
             },
             "views": [
                 {
@@ -126,15 +126,14 @@
             "base": "Unit",
             "attributes": {
                 "icon": "directions_walk",
-                "types": ["Resource", "Artefact", "Event", "Clip", "Quest", "Party", "Tribe"]
+                "types": ["Resource", "Artefact", "Event", "Clip", "Unit"]
             }
         },
         {
             "name": "Creature",
             "base": "Unit",
             "attributes": {
-                "icon": "local_police",
-                "types": ["Resource", "Artefact", "Event", "Clip", "Task", "Party", "Tribe"]
+                "icon": "local_police"
             }
         },
         {
@@ -142,7 +141,7 @@
             "base": "Unit",
             "attributes": {
                 "icon": "local_police",
-                "types": ["Creature", "Hero", "Resource", "Artefact", "Event", "Clip", "Order", "Unit", "Hero", "Tribe"]
+                "types": ["Resource", "Artefact", "Event", "Clip", "Unit"]
             }
         },
         {
@@ -196,7 +195,7 @@
             "base": "Site",
             "attributes": {
                 "icon": "location_city",
-                "types": ["Dwelling", "Resource", "Artefact", "Event", "Clip", "Order", "Unit","Hero", "Tribe"]
+                "types": ["Dwelling", "Unit"]
             },
             "instances" : [
                 {
@@ -218,79 +217,6 @@
                 {
                     "name": "Temple",
                     "type": "Temple"
-                },
-                {
-                    "name": "Gold",
-                    "type": "Gold"
-                }
-            ]
-        },
-        {
-            "name": "Country",
-            "base": "Site",
-            "attributes": {
-                "icon": "flag",
-                "types": ["Town", "Clip"]
-            },
-            "instances": [
-                {
-                    "name": "Souton",
-                    "type": "Town"
-                },
-                {
-                    "name": "Easton",
-                    "type": "Town"
-                },
-                {
-                    "name": "Norton",
-                    "type": "Town"
-                },
-                {
-                    "name": "Weston",
-                    "type": "Town"
-                },
-                {
-                    "name": "Centerton",
-                    "type": "Town"
-                },
-                {
-                    "name": "Clip",
-                    "type": "Clip"
-                }
-
-            ]
-        },
-        {
-            "name": "World",
-            "base": "Site",
-            "attributes": {
-                "icon": "public",
-                "types": ["Country", "Clip"]
-            },
-            "instances": [
-                {
-                    "name": "Southia",
-                    "type": "Country"
-                },
-                {
-                    "name": "Eastia",
-                    "type": "Country"
-                },
-                {
-                    "name": "Northia",
-                    "type": "Country"
-                },
-                {
-                    "name": "Westia",
-                    "type": "Country"
-                },
-                {
-                    "name": "Centeria",
-                    "type": "Country"
-                },
-                {
-                    "name": "Clip",
-                    "type": "Clip"
                 }
             ]
         },
@@ -424,8 +350,20 @@
                     "type": "Progress"
                 },
                 {
-                    "name": "World",
-                    "type": "World"
+                    "name": "Bongo",
+                    "type": "Ant"
+                },
+                {
+                    "name": "Brokor",
+                    "type": "Bat"
+                },
+                {
+                    "name": "Benrir",
+                    "type": "Dragon"
+                },
+                {
+                    "name": "Townton",
+                    "type": "Town"
                 }
             ]
         },
@@ -457,7 +395,11 @@
                     }
                 ]
 
-            },
+            }
+        },
+        {
+            "name": "HeroesChapter",
+            "base": "Chapter",
             "instances": [
                 {
                     "name": "Intro",
@@ -499,11 +441,15 @@
                         "type": "ListView"
                     }
                 ]
-            },
+            }
+        },
+        {
+            "name": "HeroesStory",
+            "base": "Story",
             "instances": [
                 {
-                    "name": "Chapter",
-                    "type": "Chapter"
+                    "name": "Chapter of Heroes Story",
+                    "type": "HeroesChapter"
                 }
             ]
         },
@@ -531,11 +477,18 @@
                         "type": "ListView"
                     }
                 ]
+            }
+        },
+        {
+            "name": "Heroes",
+            "base": "Game",
+            "attributes": {
+                "icon": "sports_martial_arts"
             },
             "instances": [
                 {
-                    "name": "Story",
-                    "type": "Story"
+                    "name": "Story of Heroes",
+                    "type": "HeroesStory"
                 }
             ]
         },
@@ -557,16 +510,6 @@
                 "creatable": "true",
                 "title": "My cool race",
                 "description": "Something about the race"
-            }
-        },
-        {
-            "name": "Battle",
-            "base": "Game",
-            "attributes": {
-                "icon": "sports_martial_arts",
-                "creatable": "true",
-                "title": "My cool battle",
-                "description": "Something about the battle"
             }
         },
         {

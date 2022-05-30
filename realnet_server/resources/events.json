@@ -1,60 +1,6 @@
 {
     "types": [
         {
-            "name": "MenuItem",
-            "base": "Item",
-            "attributes": {
-                "icon": "drag_handle",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Menu",
-            "base": "Item",
-            "attributes": {
-                "icon": "restaurant_menu",
-                "types": ["MenuItem"],
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "EventsForm",
-            "base": "FormCtrl",
-            "attributes": {
-                "controls": [
-                    {
-                        "name": "Venue",
-                        "type": "QueryCtrl",
-                        "attributes": {
-                            "order": "1",
-                            "query": {
-                                "my_items" : "true",
-                                "types": ["Venue", "Place"]
-                            }
-                        }
-                    },
-                    {
-                        "name": "Timeline",
-                        "type": "CalendarCtrl",
-                        "attributes": {
-                            "order": "2",
-                            "query": {
-                                "children" : "true"
-                            }
-                        }
-                    },
-                    {
-                        "name": "Results",
-                        "type": "FilterCtrl",
-                        "attributes": {
-                            "close": "true",
-                            "order": "8"
-                        }
-                    }
-                ]
-            }
-        },
-        {
             "name": "Event",
             "base": "Item",
             "attributes": {

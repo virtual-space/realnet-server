@@ -118,14 +118,19 @@
             "name": "SaveButton",
             "base": "ButtonCtrl",
             "attributes": {
-                "default": "true"
-            },
-            "instances": [
-                {
-                    "name": "Save",
-                    "type": "Save"
-                }
-            ]
+                "default": "true",
+                "close": "true",
+                "command": "Save"
+            }
+        },
+        {
+            "name": "CreateButton",
+            "base": "ButtonCtrl",
+            "attributes": {
+                "default": "true",
+                "close": "true",
+                "command": "Create"
+            }
         },
         {
             "name": "CancelButton",
@@ -137,25 +142,17 @@
         {
             "name": "ResetButton",
             "base": "ButtonCtrl",
-            "instances": [
-                {
-                    "name": "Reset",
-                    "type": "Reset"
-                }
-            ]
+            "attributes": {
+                "command": "Reset"
+            }
         },
         {
             "name": "DeleteButton",
             "base": "ButtonCtrl",
             "attributes": {
-                "value": "something"
-            },
-            "instances": [
-                {
-                    "name": "Delete",
-                    "type": "Delete"
-                }
-            ]
+                "value": "something",
+                "command": "Delete"
+            }
         },
         {
             "name": "GeneralTab",
@@ -313,15 +310,24 @@
         },
         {
             "name": "ItemCreateForm",
-            "base": "Ctrl",
+            "base": "FormCtrl",
             "attributes": {
                 "value": "something",
                 "controls": [
                     {
-                        "name": "Type",
+                        "name": "Item Type",
                         "type": "TypeSelectCtrl",
                         "attributes": {
                             "order": "1"
+                        }
+                    },
+                    {
+                        "name": "Parent Item",
+                        "type": "ItemSelectCtrl",
+                        "attributes": {
+                            "order": "2",
+                            "target": "parent_id",
+                            "field_name": "parent_id"
                         }
                     },
                     {
@@ -338,7 +344,7 @@
                     },
                     {
                         "name": "Create",
-                        "type": "SaveButton",
+                        "type": "CreateButton",
                         "order": "9"
                     }
                 ]
@@ -359,7 +365,7 @@
         },
         {
             "name": "ItemEditForm",
-            "base": "Ctrl",
+            "base": "FormCtrl",
             "attributes": {
                 "value": "something",
                 "controls": [
@@ -398,48 +404,26 @@
         },
         {
             "name": "ItemLinkForm",
-            "base": "Ctrl",
+            "base": "FormCtrl",
             "attributes": {
                 "value": "something",
                 "controls": [
                     {
-                        "name": "Item",
+                        "name": "Linked Item",
                         "type": "ItemSelectCtrl",
                         "attributes": {
-                            "order": "1"
+                            "order": "1",
+                            "target": "linked_item_id",
+                            "field_name": "linked_item_id"
                         }
                     },
                     {
-                        "name": "Tabs",
-                        "type": "ItemDialogTabs"
-                    },
-                    {
-                        "name": "Cancel",
-                        "type": "CancelButton",
-                        "attributes": {
-                            "close": "true",
-                            "order": "8"
-                        }
-                    },
-                    {
-                        "name": "Create",
-                        "type": "SaveButton",
-                        "order": "9"
-                    }
-                ]
-            }
-        },
-        {
-            "name": "ItemQueryForm",
-            "base": "Ctrl",
-            "attributes": {
-                "value": "something",
-                "controls": [
-                    {
-                        "name": "Item",
+                        "name": "Parent Item",
                         "type": "ItemSelectCtrl",
                         "attributes": {
-                            "order": "1"
+                            "order": "2",
+                            "target": "parent_id",
+                            "field_name": "parent_id"
                         }
                     },
                     {
@@ -497,14 +481,44 @@
             "name": "SearchButton",
             "base": "ButtonCtrl",
             "attributes": {
-                "default": "true"
-            },
-            "instances": [
-                {
-                    "name": "Find",
-                    "type": "Find"
-                }
-            ]
+                "default": "true",
+                "command": "Find"
+            }
+        },
+        {
+            "name": "ItemQueryForm",
+            "base": "FormCtrl",
+            "attributes": {
+                "value": "something",
+                "query": "true",
+                "controls": [
+                    {
+                        "name": "Parent",
+                        "type": "ItemSelectCtrl",
+                        "attributes": {
+                            "order": "1",
+                            "target": "parent_id",
+                            "field_name": "parent_id"
+                        }
+                    },
+                    {
+                        "name": "Tabs",
+                        "type": "ItemDialogTabs"
+                    },
+                    {
+                        "name": "Reset",
+                        "type": "ResetButton",
+                        "attributes": {
+                            "order": "8"
+                        }
+                    },
+                    {
+                        "name": "Search",
+                        "type": "SearchButton",
+                        "order": "9"
+                    }
+                ]
+            }
         },
         {
             "name": "QueryCtrl",

@@ -125,6 +125,10 @@
             "base": "Ctrl"
         },
         {
+            "name": "FormCtrl",
+            "base": "Ctrl"
+        },
+        {
             "name": "Dialog",
             "base": "Ctrl",
             "attributes": {

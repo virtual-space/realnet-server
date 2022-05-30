@@ -107,10 +107,16 @@
                 "icon": "search",
                 "types": ["Event", "Place", "Thing", "Game", "Task"],
                 "tags": ["demo"],
+                "controls": [
+                    {
+                        "name": "Query",
+                        "type": "QueryCtrl"
+                    }
+                ],
                 "views": [
                     {
-                        "name": "Find",
-                        "type": "QueryView"
+                        "name": "List",
+                        "type": "ListView"
                     }
                 ]
             }
@@ -271,6 +277,60 @@
             }
         },
         {
+            "name": "CtrlApp",
+            "base": "App",
+            "attributes": {
+                "types": ["Ctrl"],
+                "icon": "widgets",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Ctrl"]
+                },
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ViewApp",
+            "base": "App",
+            "attributes": {
+                "types": ["View"],
+                "icon": "fullscreen",
+                "query": {
+                    "my_items": "true",
+                    "types": ["View"]
+                },
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "FormApp",
+            "base": "App",
+            "attributes": {
+                "types": ["FormCtrl"],
+                "icon": "widgets",
+                "query": {
+                    "my_items": "true",
+                    "types": ["FormCtrl"]
+                },
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+        {
             "name": "AdminApps",
             "base": "Apps",
             "attributes": {
@@ -315,6 +375,18 @@
                 {
                     "name": "Server",
                     "type": "ServerApp"
+                },
+                {
+                    "name": "Controls",
+                    "type": "CtrlApp"
+                },
+                {
+                    "name": "Views",
+                    "type": "ViewApp"
+                },
+                {
+                    "name": "Forms",
+                    "type": "FormApp"
                 },
                 {
                     "name": "Login",

@@ -1,10 +1,47 @@
 {
     "types": [
         {
+            "name": "Dish",
+            "base": "Product",
+            "attributes": {
+                "icon": "ramen_dining"
+            }
+        },
+        {
+            "name": "Drink",
+            "base": "Product",
+            "attributes": {
+                "icon": "liquor"
+            }
+        },
+        {
+            "name": "Menu",
+            "base": "Product",
+            "attributes": {
+                "icon": "restaurant_menu",
+                "types": ["Dish", "Drink", "Menu"]
+            }
+        },
+        {
+            "name": "Prop",
+            "base": "Product",
+            "attributes": {
+                "icon": "place_item"
+            }
+        },
+        {
+            "name": "Service",
+            "base": "Product",
+            "attributes": {
+                "icon": "support_agent"
+            }
+        },
+        {
             "name": "Venue",
             "base": "Place",
             "attributes": {
-                "icon": "other_houses"
+                "icon": "other_houses",
+                "types": ["Menu", "Prop", "Service", "Event"]
             }
         },
         {
