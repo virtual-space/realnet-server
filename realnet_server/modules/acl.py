@@ -88,11 +88,11 @@ class Acl(Default):
 
         db.session.commit()
 
-    def get_item(self, id):
-        pass
-
     def get_items(self, id):
-        pass
+        return Acl.query.filter(Acl.owner_id == id).all()
+
+    def get_item(self, id):
+        return Acl.query.filter(Acl.id == id).first()
 
     def perform_search(self, id, account, data, public=False):
         conditions = []
