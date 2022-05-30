@@ -87,3 +87,36 @@ class Acl(Default):
                 target_item.item_id = value
 
         db.session.commit()
+
+    def get_item(self, id):
+        pass
+
+    def get_items(self, id):
+        pass
+
+    def perform_search(self, id, account, data, public=False):
+        conditions = []
+        name = data.get('name')
+        target_id = data.get('target_id')
+        owner_id = data.get('owner_id')
+        item_id = data.get('item_id')
+
+        if name:
+            conditions.append(Acl.name.ilike('{}%'.format(unquote(str(name)))))
+        if target_id:
+            conditions.append(Acl.target_id == target_id)
+        if owner_id:
+            conditions.append(Acl.owner_id == owner_id)
+        if item_id:
+            conditions.append(Acl.item_id == item_id)
+
+        if public:
+            if not conditions:
+                return []
+            else:
+                return Acl.query.filter(*conditions).all()
+        else:
+            if not conditions:
+                conditions.append(Acl.owner_id == account.home_id)
+            
+        return Acl.query.filter(*conditions).all()
