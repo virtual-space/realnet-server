@@ -272,8 +272,7 @@
                     "my_items": "true",
                     "types": ["Contact"]
                 },
-                "icon": "account_circle",
-                "show_children": "true"
+                "icon": "account_circle"
             }
         },
         {

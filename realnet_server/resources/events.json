@@ -121,24 +121,16 @@
                 "icon": "event",
                 "query": {
                     "my_items": "true",
-                    "types": ["Event"]
+                    "types": ["Event"],
+                    "parent_types": ["Venue"]
                 },
-                "controls": [
-                    {
-                        "name": "Query",
-                        "type": "QueryCtrl",
-                        "attributes": {
-                            "layout": "row"
-                        }
-                    }
-                ],
                 "views": [
                     {
                         "name": "Timeline",
                         "type": "CalendarView"
                     },
                     {
-                        "name": "All",
+                        "name": "Events",
                         "type": "ListView"
                     }
                 ]

@@ -55,16 +55,62 @@
             "name": "Health",
             "base": "Trait",
             "attributes": {
-                "icon": "local_hospital",
-                "types": ["Level"]
+                "icon": "local_hospital"
             }
         },
         {
             "name": "Tribe",
             "base": "Trait",
             "attributes": {
-                "icon": "local_hospital",
-                "types": ["Level"]
+                "icon": "flag"
+            }
+        },
+        {
+            "name": "Race",
+            "base": "Trait",
+            "attributes": {
+                "icon": "flag_circle"
+            }
+        },
+        {
+            "name": "Award",
+            "base": "GameItem",
+            "attributes": {
+                "icon": "emoji_events",
+                "creatable": "true",
+                "types": ["Resource", "Artefact", "Clip", "Task", "Unit", "Portal","Trait"]
+            }
+        },
+        {
+            "name": "Objective",
+            "base": "GameItem",
+            "attributes": {
+                "icon": "task",
+                "creatable": "true",
+                "types": ["Award", "Task"]
+            }
+        },
+        {
+            "name": "Quest",
+            "base": "GameItem",
+            "attributes": {
+                "icon": "task_alt",
+                "creatable": "true",
+                "types": ["Objective", "Clip"],
+                "views": [
+                    {
+                        "name": "Play",
+                        "type": "SceneView"
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    },
+                    {
+                        "name": "Items",
+                        "type": "ListView"
+                    }
+                ]
             }
         },
         {
@@ -72,7 +118,8 @@
             "base": "GameItem",
             "attributes": {
                 "icon": "pin_drop",
-                "types": ["Resource", "Artefact", "Event", "Clip", "Unit"]
+                "creatable": "true",
+                "types": ["Resource", "Artefact", "Event", "Clip", "Unit", "Site", "Quest"]
             },
             "views": [
                 {
@@ -84,7 +131,7 @@
                     "type": "MapView"
                 },
                 {
-                    "name": "Inventory",
+                    "name": "Items",
                     "type": "ListView"
                 }
             ]
@@ -104,6 +151,7 @@
             "base": "GameItem",
             "attributes": {
                 "icon": "local_police",
+                "creatable": "true",
                 "types": ["Resource", "Artefact", "Event", "Clip"]
             },
             "views": [
@@ -116,7 +164,7 @@
                     "type": "MapView"
                 },
                 {
-                    "name": "Inventory",
+                    "name": "Items",
                     "type": "ListView"
                 }
             ]
@@ -126,21 +174,21 @@
             "base": "Unit",
             "attributes": {
                 "icon": "directions_walk",
-                "types": ["Resource", "Artefact", "Event", "Clip", "Unit"]
+                "types": ["Trait", "Resource", "Artefact", "Event", "Clip", "Unit", "Quest"]
             }
         },
         {
             "name": "Creature",
             "base": "Unit",
             "attributes": {
-                "icon": "local_police"
+                "icon": "pest_control"
             }
         },
         {
             "name": "Party",
             "base": "Unit",
             "attributes": {
-                "icon": "local_police",
+                "icon": "tour",
                 "types": ["Resource", "Artefact", "Event", "Clip", "Unit"]
             }
         },
@@ -174,7 +222,7 @@
         },
         {
             "name": "Guards",
-            "base": "Unit",
+            "base": "Party",
             "instances": [
                 {
                     "name": "Gongo",
@@ -187,12 +235,24 @@
                 {
                     "name": "Fenrir",
                     "type": "Dragon"
+                },
+                {
+                    "name": "Benrir",
+                    "type": "Dragon"
                 }
             ]
         },
         {
             "name": "Town",
             "base": "Site",
+            "attributes": {
+                "icon": "location_city",
+                "types": ["Dwelling", "Unit"]
+            }
+        },
+        {
+            "name": "FantasyTown",
+            "base": "Town",
             "attributes": {
                 "icon": "location_city",
                 "types": ["Dwelling", "Unit"]
@@ -238,7 +298,7 @@
                     "type": "MapView"
                 },
                 {
-                    "name": "Inventory",
+                    "name": "Items",
                     "type": "ListView"
                 }
             ]
@@ -247,7 +307,8 @@
             "name": "Resource",
             "base": "GameItem",
             "attributes": {
-                "icon": "diamond"
+                "icon": "diamond",
+                "creatable": "true"
             },
             "views": [
                 {
@@ -295,38 +356,11 @@
             }
         },
         {
-            "name": "Award",
-            "base": "GameItem",
-            "attributes": {
-                "icon": "emoji_events",
-                "creatable": "true",
-                "types": ["Resource", "Artefact", "Event", "Clip", "Task", "Creature"]
-            }
-        },
-        {
-            "name": "Objective",
-            "base": "GameItem",
-            "attributes": {
-                "icon": "task",
-                "creatable": "true",
-                "types": ["Award", "Task", "Event", "Clip"]
-            }
-        },
-        {
-            "name": "Progress",
-            "base": "GameItem",
-            "attributes": {
-                "icon": "pending",
-                "creatable": "true",
-                "types": ["Objective", "Event"]
-            }
-        },
-        {
             "name": "Level",
             "base": "GameItem",
             "attributes": {
                 "icon": "smart_toy",
-                "types": ["Progress", "Trait", "Site"],
+                "types": ["Quest", "Unit", "Site"],
                 "creatable": "true",
                 "show_children": "true",
                 "views": [
@@ -339,15 +373,23 @@
                         "type": "MapView"
                     },
                     {
-                        "name": "Inventory",
+                        "name": "Items",
                         "type": "ListView"
                     }
                 ]
+            }
+        },
+        {
+            "name": "FantasyLevel",
+            "base": "Level",
+            "attributes": {
+                "types": ["Quest", "Unit", "Site"],
+                "creatable": "true"
             },
             "instances": [
                 {
-                    "name": "Progress",
-                    "type": "Progress"
+                    "name": "Quest",
+                    "type": "Quest"
                 },
                 {
                     "name": "Bongo",
@@ -358,12 +400,16 @@
                     "type": "Bat"
                 },
                 {
-                    "name": "Benrir",
+                    "name": "Denrir",
                     "type": "Dragon"
                 },
                 {
-                    "name": "Townton",
-                    "type": "Town"
+                    "name": "Eastern Townton",
+                    "type": "FantasyTown"
+                },
+                {
+                    "name": "Western Townton",
+                    "type": "FantasyTown"
                 }
             ]
         },
@@ -373,7 +419,13 @@
             "attributes": {
                 "icon": "movie",
                 "types": ["Media"],
-                "creatable": "true"
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "Play",
+                        "type": "SceneView"
+                    }
+                ]
             }
         },
         {
@@ -406,8 +458,8 @@
                     "type": "Clip"
                 },
                 {
-                    "name": "Level",
-                    "type": "Level"
+                    "name": "HeroesLevel",
+                    "type": "FantasyLevel"
                 },
                 {
                     "name": "Success",
@@ -415,10 +467,6 @@
                 },
                 {
                     "name": "Failure",
-                    "type": "Clip"
-                },
-                {
-                    "name": "Intro",
                     "type": "Clip"
                 }
             ]

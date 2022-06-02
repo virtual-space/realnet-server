@@ -27,7 +27,7 @@ session = boto3.Session(
     region_name=cfg.get_s3_region()
 )
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'md', 'csv', 'txt', 'zip', 'html', 'xml', 'json', 'mov', 'mp4', 'asf', 'avi'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'md', 'csv', 'txt', 'zip', 'html', 'xml', 'json', 'mov', 'mp4', 'asf', 'avi', 'glb'}
 
 class Default(Module):
 
@@ -394,6 +394,8 @@ class Default(Module):
             target_type = Type.query.filter(Type.name == 'File').first()
         elif content_type.startswith('text/csv'):
             target_type = Type.query.filter(Type.name == 'File').first()
+        elif storage.filename.endswith('.glb'):
+            target_type = Type.query.filter(Type.name == 'Scene').first()
         else:
             target_type = Type.query.filter(Type.name == 'File').first()
 

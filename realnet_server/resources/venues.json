@@ -41,7 +41,49 @@
             "base": "Place",
             "attributes": {
                 "icon": "other_houses",
-                "types": ["Menu", "Prop", "Service", "Event"]
+                "types": ["Menu", "Prop", "Service", "Event"],
+                "views": [
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    },
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView",
+                        "attributes": {
+                            "query": {"types": ["Task"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
+                    },
+                    {
+                        "name": "Materials",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Material"]}
+                        }
+                    }
+                ]
             }
         },
         {
@@ -147,26 +189,22 @@
                 "types": ["Venue"],
                 "icon": "other_houses",
                 "query": {
-                    "my_items": "true",
-                    "types": ["Venue"]
+                    "types": ["Venue"],
+                    "children": "true",
+                    "child_types": ["Event"] 
                 },
-                "controls": [
-                    {
-                        "name": "Query",
-                        "type": "QueryCtrl",
-                        "attributes": {
-                            "layout": "row"
-                        }
-                    }
-                ],
                 "views": [
                     {
-                        "name": "Map",
-                        "type": "MapView"
+                        "name": "Timeline",
+                        "type": "CalendarView"
                     },
                     {
                         "name": "All",
                         "type": "ListView"
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
                     }
                 ]
             }
