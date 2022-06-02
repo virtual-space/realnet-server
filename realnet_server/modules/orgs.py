@@ -613,21 +613,12 @@ class Orgs(Default):
             target_id = ids[-1]
             if item.type.name == 'Group':
                 rows_to_delete.append(Group.query.filter(Group.id == target_id).first())
-                for row in Account.query.filter(Account.group_id == target_id):
-                    rows_to_delete.append(row)
-                for row in Item.query.filter(Item.group_id == target_id):
-                    rows_to_delete.append(row)
-                for row in AccountGroup.query.filter(AccountGroup.group_id == target_id):
-                    rows_to_delete.append(row)
             elif item.type.name == 'Client':
                 rows_to_delete.append(Client.query.filter(Client.id == target_id).first())
         elif length == 4:
             if item.type.name == 'Account':
                 account_id = ids[-1]
                 rows_to_delete.append(Account.query.filter(Account.id == account_id).first())
-                rows_to_delete.append(AccountGroup.query.filter(AccountGroup.account_id == account_id).first())
-                for row in Item.query.filter(Item.owner_id == account_id):
-                    rows_to_delete.append(row)
         for row in rows_to_delete:
             if(row is not None):
                 db.session.delete(row)
