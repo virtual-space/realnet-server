@@ -83,38 +83,82 @@ class Types(Default):
             for kv in zip(keys, values):
                 conditions.append(Type.attributes[kv[0]].astext == kv[1])
 
-        # if tags:
-        #    conditions.append(Item.tags.contains(tags))
-
-        if not conditions:
-            return [Item( id="{}_{}".format(id, t.id),
-                    name=t.name,
-                    attributes=t.attributes,
-                    owner_id=t.owner_id,
-                    group_id=t.group_id,
-                    type_id=t.id,
-                    parent_id="{}_{}".format(t.base_id, t.base_id),
-                    type = t) for t in Type.query.all()]
+        target_id = id
+        base_id = id
+        ids = id.split("_")
+        if len(ids) > 1:
+            base_id = ids[0]
+            target_id = ids[-1]
+            if target_id != base_id:
+                if len(ids) == 2:
+                    # retrieve type child instances
+                    instance_type = Type.query.filter(Type.name == 'Instance').first()
+                    return [Item( id="{}_{}_{}".format(ids[0], ids[1], tt.id),
+                                                name=tt.name,
+                                                attributes=self.merge_attributes(instance_type, tt),
+                                                owner_id=instance_type.owner_id,
+                                                group_id=instance_type.group_id,
+                                                type_id=instance_type.id,
+                                                type = instance_type) for tt in Instance.query.filter(Instance.parent_type_id == ids[1])]
+                return []
         else:
-            return [Item( id="{}_{}".format(id, t.id),
-                    name=t.name,
-                    attributes=t.attributes,
-                    owner_id=t.owner_id,
-                    group_id=t.group_id,
-                    type_id=t.id,
-                    parent_id="{}_{}".format(t.base_id, t.base_id),
-                    type = t) for t in Type.query.filter(*conditions).all()]
+
+            # if tags:
+            #    conditions.append(Item.tags.contains(tags))
+
+            if not conditions:
+                return [Item( id="{}_{}".format(id, t.id),
+                        name=t.name,
+                        attributes=t.attributes,
+                        owner_id=t.owner_id,
+                        group_id=t.group_id,
+                        type_id=t.id,
+                        # parent_id=t.base_id,
+                        type = t) for t in Type.query.all()]
+            else:
+                return [Item( id="{}_{}".format(id, t.id),
+                        name=t.name,
+                        attributes=t.attributes,
+                        owner_id=t.owner_id,
+                        group_id=t.group_id,
+                        type_id=t.id,
+                        # parent_id="{}_{}".format(t.base_id, t.base_id),
+                        type = t) for t in Type.query.filter(*conditions).all()]
 
     def update_item(self, item, **kwargs):
-        # print(kwargs.items())
-        for key, value in kwargs.items():
-            print("%s == %s" % (key, value))
-            if key == 'name':
-                item.name = value
-            elif key == 'attributes':
-                item.attributes = value
+        ids = item.id.split('_')
+        length = len(ids)
+        target_id = ids[-1]
+
+        if len(ids) > 1:
+            base_id = ids[0]
+            target_id = ids[-1]
+
+        if target_id != base_id:
+            if length == 2:
+                #edit a type
+                type = Type.query.filter(Type.id == target_id).first()
+                if type:
+                    for key, value in kwargs.items():
+                        # print("%s == %s" % (key, value))
+                        if key == 'name':
+                            type.name = value
+                        elif key == 'attributes':
+                            type.attributes = value
+                    db.session.commit()
+                    return Item( id="{}_{}".format(id, type.id),
+                        name=type.name,
+                        attributes=type.attributes,
+                        owner_id=type.owner_id,
+                        group_id=type.group_id,
+                        type_id=type.id,
+                        parent_id= "{}_{}".format(id, type.base_id),
+                        type = type)
+            elif length == 3:
+                #edit instance of a type
+                pass
         
-        db.session.commit()
+        return None
 
     def get_items(self, id):
         return [Item( id="{}_{}".format(id, t.id),
@@ -143,7 +187,7 @@ class Types(Default):
                             parent_id=base_id,
                             type = type)
         else:
-            #this is the query for all orgs
+            #this is the query for all types
             typeapp_type = Type.query.filter(Type.name == 'TypeApp').first()
             t = Item.query.filter(Item.id == id).first()
             if t and typeapp_type:
@@ -196,32 +240,60 @@ class Types(Default):
             elif key == 'public':
                 item_is_public = (value.lower() == "true")
 
-        target_id = item_parent_id
-        base_id = item_parent_id
-        ids = item_parent_id.split("_")
-        if len(ids) > 1:
-            base_id = ids[0]
-            target_id = ids[-1]
+        if item_parent_id:
+            target_id = item_parent_id
+            base_id = item_parent_id
+            ids = item_parent_id.split("_")
+            if len(ids) > 1:
+                base_id = ids[0]
+                target_id = ids[-1]
+                if target_id != base_id:
+                    if len(ids) == 2:
+                        # create a new instance under this type
+                        target_host_type = Type.query.filter(Type.id == ids[1]).first()
+                        instance_type = Type.query.filter(Type.id == item_type_id).first()
+                        if target_host_type and instance_type:
+                            instance = Instance(id=str(uuid.uuid4()),
+                                                name=item_name,
+                                                icon=item_attributes.get('icon', 'approval'),
+                                                attributes=item_attributes,
+                                                owner_id=item_owner_id,
+                                                group_id=item_group_id,
+                                                type_id = item_type_id,
+                                                parent_type_id = target_host_type.id)
 
-        type = Type(id=str(uuid.uuid4()),
-                           name=item_name,
-                           icon=item_attributes.get('icon', 'approval'),
-                           attributes=item_attributes,
-                           owner_id=item_owner_id,
-                           group_id=item_group_id,
-                           module=item_attributes.get('module', 'default'))
-        
-        db.session.add(type)
-        
-        db.session.commit()
+                    
+                            db.session.add(instance)
+                            db.session.commit()
+
+                            return Item(id="{}_{}_{}".format(base_id, target_id, instance.id),
+                                        name=instance.name,
+                                        attributes=instance.attributes,
+                                        owner_id=instance.owner_id,
+                                        group_id=instance.group_id,
+                                        type_id=instance_type.id,
+                                        type = instance_type)
+                return None
+        else:
+            # create a new type
+            type = Type(id=str(uuid.uuid4()),
+                            name=item_name,
+                            icon=item_attributes.get('icon', 'approval'),
+                            attributes=item_attributes,
+                            owner_id=item_owner_id,
+                            group_id=item_group_id,
+                            module=item_attributes.get('module', 'default'))
             
-        return Item( id="{}_{}".format(id, type.id),
-                     name=type.name,
-                     attributes=type.attributes,
-                     owner_id=type.owner_id,
-                     group_id=type.group_id,
-                     type_id=type.id,
-                     parent_id= "{}_{}".format(id, type.base_id),
-                     type = type)
+            db.session.add(type)
+            db.session.commit()
+                
+            return Item( id="{}_{}".format(id, type.id),
+                        name=type.name,
+                        attributes=type.attributes,
+                        owner_id=type.owner_id,
+                        group_id=type.group_id,
+                        type_id=type.id,
+                        parent_id= "{}_{}".format(id, type.base_id),
+                        type = type)
 
 

@@ -140,7 +140,7 @@
             "base": "App",
             "module": "types",
             "attributes": {
-                "types": ["Type", "Link"],
+                "types": ["Type"],
                 "icon": "approval",
                 "show_children": "true",
                 "show_views_as_items": "true"

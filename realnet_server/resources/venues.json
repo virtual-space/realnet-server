@@ -195,12 +195,12 @@
                 },
                 "views": [
                     {
-                        "name": "Timeline",
-                        "type": "CalendarView"
-                    },
-                    {
                         "name": "All",
                         "type": "ListView"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
                     },
                     {
                         "name": "Map",

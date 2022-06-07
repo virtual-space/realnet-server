@@ -148,12 +148,11 @@
                     "type": "EventApp"
                 },
                 {
-                    "name": "Venues",
-                    "type": "VenueApp"
-                },
-                {
-                    "name": "Orders",
-                    "type": "OrderApp"
+                    "name": "Home",
+                    "type": "HomeApp",
+                    "attributes": {
+                        "initial": "true"
+                    }
                 },
                 {
                     "name": "Tasks",
@@ -162,13 +161,6 @@
                 {
                     "name": "Find",
                     "type": "FindApp"
-                },
-                {
-                    "name": "Home",
-                    "type": "HomeApp",
-                    "attributes": {
-                        "initial": "true"
-                    }
                 },
                 {
                     "name": "Topics",
@@ -241,14 +233,6 @@
                     "type": "EventApp"
                 },
                 {
-                    "name": "Games",
-                    "type": "GameApp"
-                },
-                {
-                    "name": "Find",
-                    "type": "FindApp"
-                },
-                {
                     "name": "Home",
                     "type": "HomeApp",
                     "attributes": {
@@ -256,8 +240,20 @@
                     }
                 },
                 {
+                    "name": "Games",
+                    "type": "GameApp"
+                },
+                {
+                    "name": "Orders",
+                    "type": "OrderApp"
+                },
+                {
                     "name": "Topics",
                     "type": "TopicApp"
+                },
+                {
+                    "name": "Find",
+                    "type": "FindApp"
                 },
                 {
                     "name": "Contacts",

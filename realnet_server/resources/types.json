@@ -274,7 +274,7 @@
                 "types": ["Arg", "Code"],
                 "args": [
                     {
-                        "name": "Args",
+                        "name": "Arg1",
                         "type": "Arg"
                     }
                 ],

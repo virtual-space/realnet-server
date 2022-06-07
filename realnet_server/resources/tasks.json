@@ -7,7 +7,7 @@
                 "icon": "assignment_turned_in",
                 "types": ["Event", "Thing", "Place", "Game", "Task", "Topic", "Media"],
                 "creatable": "true",
-                "values": ["To Do", "In Progress", "Done"],
+                "values": ["To Do", "In Progress", "Done", "On Hold"],
                 "views": [
                     {
                         "name": "All",
@@ -46,10 +46,19 @@
             }
         },
         {
+            "name": "Procedure",
+            "base": "Task",
+            "attributes": {
+                "icon": "checklist",
+                "types": ["Task"],
+                "values": ["To Do", "In Progress", "Done", "On Hold"]
+            }
+        },
+        {
             "name": "TaskApp",
             "base": "App",
             "attributes": {
-                "types": ["Task"],
+                "types": ["Task", "Procedure"],
                 "icon": "assignment_turned_in",
                 "query": {
                     "my_items": "true",
