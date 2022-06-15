@@ -10,6 +10,7 @@
         },
         {
             "name": "Trait",
+            "description":"Stats/Characteristics of our units/heroes/creatures..."
             "base": "GameItem",
             "attributes": {
                 "icon": "edit_attributes",
