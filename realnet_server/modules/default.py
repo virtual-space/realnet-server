@@ -209,6 +209,8 @@ class Default(Module):
                 item_tags = value
             elif key == 'location':
                 data = json.loads(value)
+                if isinstance(data,str):
+                    data = json.loads(data)
                 if data['type'] == 'Point':
                     item_location = 'SRID=4326;POINT({0} {1})'.format(data['coordinates'][0], data['coordinates'][1])
                 else:
@@ -451,7 +453,6 @@ class Default(Module):
 
 
     def perform_search(self, id, account, data, public=False):
-        
         type_names = data.get('type_names')
         if type_names:
             data['type_names'] = type_names
@@ -517,9 +518,19 @@ class Default(Module):
             conditions.append(Item.parent_id == None)
 
         if location:
-            # range = (0.00001) * float(radius)
-            # ST_AsText(ST_GeomFromGeoJSON('{"type":"Point","coordinates":[-48.23456,20.12345]}'))
-            conditions.append(func.ST_DWithin(Item.location, 'SRID=4326;{}'.format(func.ST_AsText(func.ST_GeomFromGeoJSON(location))), range))
+            loc_data = json.loads(location)
+            if isinstance(loc_data,str):
+                    loc_data = json.loads(loc_data)
+            if loc_data['type'] == 'Point':
+                item_location = 'SRID=4326;POINT({0} {1})'.format(loc_data['coordinates'][0], loc_data['coordinates'][1])
+                range = (0.00001) * float(500) #converting from meters to lng/lat scale
+                conditions.append(func.ST_DWithin(Item.location, item_location, range))
+            else:
+                item_location = 'SRID=4326;POLYGON(('
+                for ii in loc_data['coordinates'][0]:
+                    item_location = item_location + '{0} {1},'.format(ii[0], ii[1])
+                item_location = item_location[0:-1] + '))'
+                conditions.append(func.ST_Within(Item.location, item_location))
 
         if valid_from:
             conditions.append(Item.valid_from >= valid_from)
