@@ -82,7 +82,7 @@ def extract_search_data(request):
 
         status = request.args.getlist('status')
         if status:
-            data['status'] = status
+            data['status'] = status[0]
 
         name = request.args.get('name')
         if name:
