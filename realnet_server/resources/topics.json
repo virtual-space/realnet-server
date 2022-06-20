@@ -1,0 +1,33 @@
+{
+    "types": [
+        {
+            "name": "Topic",
+            "base": "Item",
+            "module": "topic",
+            "attributes": {
+                "icon": "forum",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "TopicApp",
+            "base": "App",
+            "attributes": {
+                "types": ["Topic"],
+                "creatable": "true",
+                "icon": "forum",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Topic"]
+                },
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        }
+
+    ]
+}

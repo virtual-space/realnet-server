@@ -1,0 +1,581 @@
+{
+    "types": [
+        {
+            "name": "Actuator",
+            "attributes": {
+                "icon": "rocket_launch",
+                "comment": ["The Actuator will be triggered along any of it's actuator children "]
+            }
+        },
+        {
+            "name": "SetItemProperty",
+            "base": "Actuator",
+            "attributes": {
+                "icon": "tune",
+                "target": "name",
+                "creatable": "true",
+                "module": "set_item_property",
+                "value": "",
+                "comment": ["The SetItemProperty actuator will set the item property designated by its target attribute to the value specified by its value attribute"]
+            }
+        },
+        {
+            "name": "CreateItem",
+            "base": "Actuator",
+            "attributes": {
+                "icon": "add_circle",
+                "target": "name",
+                "creatable": "true",
+                "target_type": "Folder",
+                "module": "create_item",
+                "value": "MyFolder",
+                "comment": ["The CreateItem actuator will create a new item of type designated by its target_type attribute to the parent item specified by its target attribute"]
+            }
+        },
+        {
+            "name": "SaveItem",
+            "base": "Actuator",
+            "attributes": {
+                "icon": "save",
+                "item": {
+                    "id": "The id of the existing item to be updated. If there is no id a new item will be created",
+                    "name": "The name of the item to be saved",
+                    "attributes": {
+                        "icon": "send_and_archive"
+                    }
+                },
+                "creatable": "true",
+                "module": "save_item",
+                "comment": ["The SaveItem actuator will save the item passed in under its 'item' attribute"]
+            }
+        },
+        {
+            "name": "DeleteItem",
+            "base": "Actuator",
+            "attributes": {
+                "icon": "remove_circle",
+                "id": "The ID of the item to be deleted",
+                "creatable": "true",
+                "module": "delete_item",
+                "value": "",
+                "comment": ["The DeleteItem actuator will the item specified by its target attribute"]
+            }
+        },
+        {
+            "name": "Sensor",
+            "attributes": {
+                "icon": "sensors",
+                "types": ["Sensor", "Actuator"]
+            }
+        },
+        {
+            "name": "WhenItemProperty",
+            "base": "Sensor",
+            "attributes": {
+                "icon": "sensors",
+                "target": "name",
+                "creatable": "true",
+                "expression": "False",
+                "module": "when_item_property",
+                "comment": ["The WhenItemProperty sensor will evaluate its python expression on the item property designated by its target attribute",
+                            "and if that expression evaluates to true it will invoke all its actuator children"]
+            }
+        },
+        {
+            "name": "Command",
+            "base": "Item"
+        },
+        {
+            "name": "Find",
+            "base": "Command"
+        },
+        {
+            "name": "Save",
+            "base": "Command"
+        },
+        {
+            "name": "Reset",
+            "base": "Command"
+        },
+        {
+            "name": "Delete",
+            "base": "Command"
+        },
+        {
+            "name": "ButtonCtrl",
+            "base": "Ctrl",
+            "attributes": {
+                "icon": "radio_button_checked",
+                "is_ok_button": "false",
+                "is_cancel_button": "false",
+                "color": "primary",
+                "disabled": "false",
+                "creatable": "true",
+                "types": ["Command"]
+            }
+        },
+        {
+            "name": "SaveButton",
+            "base": "ButtonCtrl",
+            "attributes": {
+                "default": "true",
+                "close": "true",
+                "command": "Save"
+            }
+        },
+        {
+            "name": "CreateButton",
+            "base": "ButtonCtrl",
+            "attributes": {
+                "default": "true",
+                "close": "true",
+                "command": "Create"
+            }
+        },
+        {
+            "name": "CancelButton",
+            "base": "ButtonCtrl",
+            "attributes": {
+                "close": "true"
+            }
+        },
+        {
+            "name": "ResetButton",
+            "base": "ButtonCtrl",
+            "attributes": {
+                "command": "Reset"
+            }
+        },
+        {
+            "name": "DeleteButton",
+            "base": "ButtonCtrl",
+            "attributes": {
+                "value": "something",
+                "command": "Delete"
+            }
+        },
+        {
+            "name": "GeneralTab",
+            "base": "TabCtrl",
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "Name",
+                        "type": "EditCtrl",
+                        "attributes": {
+                            "target": "name",
+                            "field_name": "name",
+                            "order": "1"
+                        }
+                    },
+                    {
+                        "name": "Status",
+                        "type": "SelectCtrl",
+                        "attributes": {
+                            "target": "status",
+                            "field_name": "status",
+                            "values": ["To Do", "In Progress", "Done"],
+                            "order": "2"
+                        }
+                    },
+                    {
+                        "name": "Types",
+                        "type": "TypesCtrl",
+                        "attributes": {
+                            "order": "3",
+                            "target": "types",
+                            "field_name": "types",
+                            "namespace": "attributes"
+                        }
+                    },
+                    {
+                        "name": "Tags",
+                        "type": "TagsCtrl",
+                        "attributes": {
+                            "order": "4",
+                            "target": "tags",
+                            "field_name": "tags"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "AttributesTab",
+            "base": "TabCtrl",
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "Attributes",
+                        "type": "AttrsCtrl",
+                        "attributes": {
+                            "order": "1"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "LocationTab",
+            "base": "TabCtrl",
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "Location",
+                        "type": "LocationCtrl",
+                        "attributes": {
+                            "target": "location",
+                            "field_name": "location",
+                            "order": "1"
+                        }
+                        
+                    }
+                ]
+            }
+            
+        },
+        {
+            "name": "AccessTab",
+            "base": "TabCtrl",
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "ACLs",
+                        "type": "ListCtrl",
+                        "attributes": {
+                            "target": "acls",
+                            "field_name": "acls",
+                            "order": "1"
+                        }
+                        
+                    }
+                ]
+            }
+            
+        },
+        {
+            "name": "SchedulingTab",
+            "base": "TabCtrl",
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "Valid from",
+                        "type": "DateCtrl",
+                        "attributes": {
+                            "target": "valid_from",
+                            "field_name": "valid_from",
+                            "order": "1"
+                        }
+                    },
+                    {
+                        "name": "Valid to",
+                        "type": "DateCtrl",
+                        "attributes": {
+                            "target": "valid_to",
+                            "field_name": "valid_to",
+                            "order": "2"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ItemDialogTabs",
+            "base": "TabsCtrl",
+            "attributes": {
+                "controls": [
+                    {
+                        "name": "General",
+                        "type": "GeneralTab"
+                    },
+                    {
+                        "name": "Attributes",
+                        "type": "AttributesTab"
+                    },
+                    {
+                        "name": "Location",
+                        "type": "LocationTab"
+                    },
+                    {
+                        "name": "Scheduling",
+                        "type": "SchedulingTab"
+                    },
+                    {
+                        "name": "Access",
+                        "type": "AccessTab"
+                    }
+                ]
+            }
+            
+        },
+        {
+            "name": "ItemCreateForm",
+            "base": "FormCtrl",
+            "attributes": {
+                "value": "something",
+                "controls": [
+                    {
+                        "name": "Item Type",
+                        "type": "TypeSelectCtrl",
+                        "attributes": {
+                            "order": "1"
+                        }
+                    },
+                    {
+                        "name": "Parent Item",
+                        "type": "ItemSelectCtrl",
+                        "attributes": {
+                            "order": "2",
+                            "target": "parent_id",
+                            "field_name": "parent_id"
+                        }
+                    },
+                    {
+                        "name": "Tabs",
+                        "type": "ItemDialogTabs"
+                    },
+                    {
+                        "name": "Cancel",
+                        "type": "CancelButton",
+                        "attributes": {
+                            "close": "true",
+                            "order": "8"
+                        }
+                    },
+                    {
+                        "name": "Create",
+                        "type": "CreateButton",
+                        "order": "9"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ItemCreateDialog",
+            "base": "Dialog",
+            "attributes": {
+                "value": "something"
+            },
+            "instances": [
+                {
+                    "name": "Create",
+                    "type": "ItemCreateForm"
+                }
+            ]
+        },
+        {
+            "name": "ItemEditForm",
+            "base": "FormCtrl",
+            "attributes": {
+                "value": "something",
+                "controls": [
+                    {
+                        "name": "Tabs",
+                        "type": "ItemDialogTabs"
+                    },
+                    {
+                        "name": "Cancel",
+                        "type": "CancelButton",
+                        "attributes": {
+                            "close": "true",
+                            "order": "8"
+                        }
+                    },
+                    {
+                        "name": "Save",
+                        "type": "SaveButton",
+                        "order": "9"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ItemEditDialog",
+            "base": "Dialog",
+            "attributes": {
+                "value": "something"
+            },
+            "instances": [
+                {
+                    "name": "Edit",
+                    "type": "ItemEditForm"
+                }
+            ]
+        },
+        {
+            "name": "ItemLinkForm",
+            "base": "FormCtrl",
+            "attributes": {
+                "value": "something",
+                "controls": [
+                    {
+                        "name": "Linked Item",
+                        "type": "ItemSelectCtrl",
+                        "attributes": {
+                            "order": "1",
+                            "target": "linked_item_id",
+                            "field_name": "linked_item_id"
+                        }
+                    },
+                    {
+                        "name": "Parent Item",
+                        "type": "ItemSelectCtrl",
+                        "attributes": {
+                            "order": "2",
+                            "target": "parent_id",
+                            "field_name": "parent_id"
+                        }
+                    },
+                    {
+                        "name": "Tabs",
+                        "type": "ItemDialogTabs"
+                    },
+                    {
+                        "name": "Cancel",
+                        "type": "CancelButton",
+                        "attributes": {
+                            "close": "true",
+                            "order": "8"
+                        }
+                    },
+                    {
+                        "name": "Create",
+                        "type": "SaveButton",
+                        "order": "9"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ItemLinkDialog",
+            "base": "Dialog",
+            "attributes": {
+                "value": "something"
+            },
+            "instances": [
+                {
+                    "name": "Link",
+                    "type": "ItemLinkForm"
+                }
+            ]
+        },
+        {
+            "name": "Dialogs",
+            "instances": [
+                {
+                    "name": "Create",
+                    "type": "ItemCreateDialog"
+                },
+                {
+                    "name": "Edit",
+                    "type": "ItemEditDialog"
+                },
+                {
+                    "name": "Link",
+                    "type": "ItemLinkDialog"
+                }
+            ]
+            
+        },
+        {
+            "name": "SearchButton",
+            "base": "ButtonCtrl",
+            "attributes": {
+                "default": "true",
+                "command": "Find"
+            }
+        },
+        {
+            "name": "ItemQueryForm",
+            "base": "FormCtrl",
+            "attributes": {
+                "value": "something",
+                "query": "true",
+                "controls": [
+                    {
+                        "name": "Parent",
+                        "type": "ItemSelectCtrl",
+                        "attributes": {
+                            "order": "1",
+                            "target": "parent_id",
+                            "field_name": "parent_id"
+                        }
+                    },
+                    {
+                        "name": "Tabs",
+                        "type": "ItemDialogTabs"
+                    },
+                    {
+                        "name": "Reset",
+                        "type": "ResetButton",
+                        "attributes": {
+                            "order": "8"
+                        }
+                    },
+                    {
+                        "name": "Search",
+                        "type": "SearchButton",
+                        "order": "9"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "QueryCtrl",
+            "base": "AccordionCtrl",
+            "attributes": {
+                "icon": "search",
+                "layout": "row",
+                "controls": [
+                    {
+                        "name": "Query",
+                        "type": "ItemQueryForm"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "QueryView",
+            "base": "View",
+            "attributes": {
+                "icon": "search",
+                "layout": "column",
+                "controls": [
+                    {
+                        "name": "Query",
+                        "type": "QueryCtrl",
+                        "attributes": {
+                            "layout": "row"
+                        }
+                    },
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "FilterForm",
+            "base": "FilterCtrl",
+            "attributes": {}
+        },
+        {
+            "name": "JsonView",
+            "base": "View",
+            "attributes": {
+                "icon": "code",
+                "layout": "column",
+                "controls": [
+                    {
+                        "name": "JSON",
+                        "type": "CodeCtrl",
+                        "attributes": {
+                            "mode": { "name": "javascript", "json": "true"}
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -1,243 +1,329 @@
 {
     "types": [
         {
-            "name": "Type",
+            "name": "Arg"
+        },
+        {
+            "name": "Args",
+            "base": "Arg",
             "attributes": {
-                "name": "Type",
-                "type": "Type",
-                "base": "Type",
-                "attributes": {
-                    "icon": "",
-                    "module": ""
-                },
-                "instances": []
+                "creatable": "false",
+                "types": ["Arg"]
+            }
+        },
+        {
+            "name": "Env",
+            "base": "Args"
+        },
+        {
+            "name": "Type",
+            "module": "types",
+            "attributes": {
+                "icon": "approval",
+                "creatable": "true",
+                "types": ["Instance"],
+                "show_children": "true",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
             }
         },
         {
             "name": "Instance",
-            "attributes" : {
-                "icon": "approval"
+            "base": "Type",
+            "module": "types",
+            "attributes": {
+                "icon": "approval",
+                "creatable": "true",
+                "types": ["Type"],
+                "show_children": "true",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
             }
         },
         {
-            "name": "List",
+            "name": "Item",
+            "base": "Instance",
             "attributes": {
-                "icon": "list",
-                "module": "list",
-                "creatable": "true"
+                "icon": "square",
+                "creatable": "false"
             }
-        },
-        {
-            "name": "ListView",
-            "attributes": {
-                "icon": "view_list"
-            }
-        },
-        {
-            "name": "CardsView",
-            "attributes": {
-                "icon": "view_module"
-            }
-        },
-        {
-            "name": "MapView",
-            "attributes": {
-                "icon": "map"
-            }
-        },
-        {
-            "name": "CalendarView",
-            "attributes": {
-                "icon": "calendar_today"
-            }
-        },
-        {
-            "name": "BoardView",
-            "attributes": {
-                "icon": "assignment"
-            }
-        },
-        {
-            "name": "PanelView",
-            "attributes": {
-                "icon": "dashboard"
-            }
-        },
-        {
-            "name": "SceneView",
-            "attributes": {
-                "icon": "nature_people"
-            }
-        },
-        {
-            "name": "ImageView",
-            "attributes": {
-                "icon": "preview"
-            }
-        },
-        {
-            "name": "VideoView",
-            "attributes": {
-                "icon": "preview"
-            }
-        },
-        {
-            "name": "DocumentView",
-            "attributes": {
-                "icon": "preview"
-            }
-        },
-        {
-            "name": "PropertiesView",
-            "attributes": {
-                "icon": "ballot"
-            }
-        },
-        {
-            "name": "TreeView",
-            "attributes": {
-                "icon": "account_tree"
-            }
-        },
-        {
-            "name": "Document",
-            "attributes": {
-                "icon": "description",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "DocumentView"
-                }
-            ]
         },
         {
             "name": "Link",
+            "base": "Item",
             "attributes": {
                 "icon": "link",
-                "creatable": "true"
+                "creatable": "true",
+                "item_id": "item_id",
+                "url": "url",
+                "redirect": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "LinkView"
+                    }
+                ]
             }
 
         },
         {
-            "name": "Page",
+            "name": "Op",
+            "base": "Type"
+        },
+        {
+            "name": ",",
+            "base": "Op",
             "attributes": {
-                "icon": "web_asset",
-                "creatable": "true"
-            },
+                "description": ["(,) or , is a Tuple operation that will add all parsed expressions as it's children"]
+            }
+        },
+        {
+            "name": ":",
+            "base": "Op",
+            "attributes": {
+                "description": ["[,] or : is a List operation that will add all parsed expressions as it's children"]
+            }
+        },
+        {
+            "name": "|",
+            "base": "Op",
+            "attributes": {
+                "description": ["{,} or | is a Set/Either/Enum operation that will add all parsed expressions as it's children"]
+            }
+        },
+        {
+            "name": "->",
+            "base": "Op",
+            "attributes": {
+                "description": [" -> is a function type constructor"]
+            }
+        },
+        {
+            "name": "Const",
+            "base": "Op",
+            "attributes": {
+                "description": ["Const is a constant - it always has the same value"]
+            }
+        },
+        {
+            "name": "Number",
+            "base": "Const",
+            "attributes": {
+                "description": ["Number is a Const represented by it's value"],
+                "value": "0"
+            }
+        },
+        {
+            "name": "True",
+            "base": "Number",
+            "attributes": {
+                "description": ["Bool True"],
+                "value": "1"
+            }
+        },
+        {
+            "name": "False",
+            "base": "Number",
+            "attributes": {
+                "description": ["Bool False"]
+            }
+        },
+        {
+            "name": "Bool",
+            "base": "True | False",
+            "attributes": {
+                "description": ["A Bool can be either True or False"]
+            }
+        },
+        {
+            "name": ">=",
+            "base": "Number -> Number -> Bool",
+            "attributes": {
+                "description": ["Returns True if the First Number is greater than or equal to the second number"]
+            }
+        },
+        {
+            "name": "<=",
+            "base": "Number -> Number -> Bool",
+            "attributes": {
+                "description": ["Returns True if the First Number is smaller than or equal to the second number"]
+            }
+        },
+        {
+            "name": "==",
+            "base": "Number -> Number -> Bool",
+            "attributes": {
+                "description": ["Returns True if the First Number is equal to the second number"]
+            }
+        },
+        {
+            "name": "!=",
+            "base": "Number -> Number -> Bool",
+            "attributes": {
+                "description": ["Returns True if the First Number is not equal to the second number"]
+            }
+        },
+        {
+            "name": "String",
+            "base": "Number",
+            "attributes": {
+                "description": ["String"]
+            }
+        },
+        {
+            "name": "Void",
+            "base": "False",
+            "attributes": {
+                "description": ["This is the void type"]
+            }
+        },
+        {
+            "name": "Var",
+            "base": "Op",
+            "attributes": {
+                "description": ["This is the variable/symbol whose name is to be resolved in the current env/arguments"]
+            }
+        },
+        {
+            "name": "Return",
+            "base": "Void -> Type",
+            "attributes": {
+                "description": ["This is the void type"]
+            }
+        },
+        {
+            "name": "Pred",
+            "base": "Var -> Bool",
+            "attributes": {
+                "description": ["This is the variable/symbol whose name is to be resolved in the current env/arguments"]
+            }
+        },
+        {
+            "name": "Eq",
+            "type": "Op",
+            "attributes": {
+                "description": ["== is an equality comparison operation that will return True if all its children are equal"]
+            }
+        },
+        {
+            "name": "->",
+            "type": "Op",
+            "attributes": {
+                "description": ["[,] is a List operation that will add all parsed expressions as it's children"]
+            }
+        },
+        {
+            "name": "Cond",
+            "type": "Op",
             "instances": [
                 {
-                    "name": "View",
-                    "type": "PageView"
+                    "name": "Test",
+                    "type": "Item" 
+                },
+                {
+                    "name": "Action",
+                    "type": "Item" 
                 }
             ]
         },
         {
-            "name": "Image",
-            "attributes": {
-                "icon": "image",
-                "creatable": "true"
-            },
+            "name": "If",
+            "type": "Op",
             "instances": [
                 {
-                    "name": "View",
-                    "type": "ImageView"
+                    "name": "Condition",
+                    "type": "Item" 
+                },
+                {
+                    "name": "Then",
+                    "type": "Item" 
                 }
             ]
         },
         {
-            "name": "Video",
-            "attributes": {
-                "icon": "ondemand_video",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "VideoView"
-                }
-            ]
+            "name": "==",
+            "type": "BinOp"
         },
         {
-            "name": "Drawing",
-            "attributes": {
-                "icon": "gesture",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "DrawingView"
-                }
-            ]
+            "name": "!=",
+            "type": "BinOp"
         },
         {
-            "name": "Scene",
-            "attributes": {
-                "icon": "view_in_ar",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "View",
-                    "type": "SceneView"
-                }
-            ]
+            "name": "If",
+            "type": "TerOp"
         },
         {
-            "name": "Thing",
+            "name": "Code",
+            "base": "Link"
+        },
+        {
+            "name": "Func",
+            "base": "Link",
+            "module": "func",
             "attributes": {
-                "icon": "graphic_eq"
+                "icon": "functions",
+                "creatable": "true",
+                "types": ["Arg", "Code"],
+                "args": [
+                    {
+                        "name": "Arg1",
+                        "type": "Arg"
+                    }
+                ],
+                "func": [
+                    {
+                        "name": "Code",
+                        "type": "Code"
+                    }
+                ],
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "RunView"
+                    },
+                    {
+                        "name": "Run",
+                        "type": "RunView"
+                    },
+                    {
+                        "name": "Hierarchy",
+                        "type": "TreeView"
+                    }
+                ]
             }
         },
         {
-            "name": "Place",
+            "name": "FuncLink",
+            "base": "Link",
             "attributes": {
-                "icon": "other_houses"
+                "icon": "functions",
+                "creatable": "true",
+                "types": ["Func"]
             }
+
         },
         {
-            "name": "Event",
+            "name": "Const",
+            "base": "Link",
             "attributes": {
-                "icon": "event"
-            }
-        },
-        {
-            "name": "Task",
-            "attributes": {
-                "icon": "assignment_turned_in"
-            }
-        },
-        {
-            "name": "Job",
-            "attributes": {
-                "icon": "trending_up"
-            }
-        },
-        {
-            "name": "Topic",
-            "attributes": {
-                "icon": "forum"
-            }
-        },
-        {
-            "name": "Runner",
-            "attributes": {
-                "icon": "memory"
-            }
-        },
-        {
-            "name": "Folder",
-            "attributes": {
-                "icon": "folder",
-                "creatable": "true"
+                "icon": "functions",
+                "code": "return self.name"
             }
         },
         {
             "name": "Query",
+            "base": "Link",
             "attributes": {
                 "icon": "search",
+                "show_children": "true",
                 "parent_id": "",
                 "name": "",
                 "my_items": "",
@@ -245,482 +331,31 @@
                 "types": [],
                 "tags": [],
                 "location": {},
-                "visibility": ""
-            }
-        },
-        
-        {
-            "name": "Button",
-            "attributes": {
-                "icon": "radio_button_checked"
+                "visibility": "",
+                "home": ""
             }
         },
         {
-            "name": "Label",
+            "name": "Expression",
+            "base": "Link",
+            "module": "types",
             "attributes": {
-                "icon": "label"
-            }
-        },
-        {
-            "name": "App",
-            "attributes": {
-                "icon": "apps"
-            }
-        },
-        {
-            "name": "FindApp",
-            "base": "App",
-            "attributes": {
-                "icon": "search"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {}
-                },
-                {
-                    "name": "List",
-                    "type": "ListView"
-                }
-                
-            ]
-        },
-        {
-            "name": "AroundApp",
-            "base": "App",
-            "attributes":{
-                "icon": "local_pizza"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {}
-                },
-                {
-                    "name": "Map",
-                    "type": "MapView",
-                    "attributes": {}
-                },
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-                
-            ]
-        },
-        {
-            "name": "HomeApp",
-            "attributes": {
-                "initial": "true",
-                "icon": "home"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true"
+                "icon": "approval",
+                "creatable": "true",
+                "types": ["Exp"],
+                "show_children": "true",
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
                     }
-                },
-                {
-                    "name": "List",
-                    "type": "ListView"
-                }
-            ]
-        },
-        {
-            "name": "EventApp",
-            "attributes": {
-                "creatable_types": ["Event"],
-                "icon": "event"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Event"]
-                    }
-                },
-                {
-                    "name": "Timeline",
-                    "type": "CalendarView",
-                    "attributes": {}
-                }
-            ]
-        },
-        {
-            "name": "VenueApp",
-            "attributes": {
-                "creatable_types": ["Venue"],
-                "icon": "other_houses"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Venue"]
-                    }
-                },
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
-        },
-        {
-            "name": "GameApp",
-            "attributes": {
-                "creatable_types": ["Game"],
-                "icon": "sports_esports"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "my_items": "true",
-                        "types": ["Game"]
-                    }
-                },
-                {
-                    "name": "List",
-                    "type": "ListView",
-                    "attributes": {}
-                }
-            ]
-        },
-        {
-            "name": "LoginApp",
-            "attributes": {
-                "icon": "key",
-                "api": "https://api.realnet.io",
-                "client_id": "IEmf5XYQJXIHvWcQtZ5FXbLM",
-                "authenticator_name": "password",
-                "authenticator_type": "password"
+                ]
             }
         },
         {
-            "name": "PublicApp",
-            "attributes": {
-                "icon": "public"
-            },
-            "instances": [
-                {
-                    "name": "Query",
-                    "type": "Query",
-                    "attributes": {
-                        "public": "true"
-                    }
-                },
-                {
-                    "name": "Items",
-                    "type": "ListView",
-                    "attributes": {
-                        "public": "true"
-                    }
-                }
-            ]
-        },
-        {
-            "name": "Apps",
-            "attributes": {
-                "icon": "apps"
-            },
-            "instances": [
-                {
-                    "name": "Find",
-                    "type": "FindApp"
-                },
-                {
-                    "name": "Home",
-                    "type": "HomeApp"
-                },
-                {
-                    "name": "Events",
-                    "type": "EventApp"
-                },
-                {
-                    "name": "Venues",
-                    "type": "VenueApp"
-                },
-                {
-                    "name": "Games",
-                    "type": "GameApp"
-                },
-                {
-                    "name": "Public",
-                    "public": "true",
-                    "type": "PublicApp"
-                },
-                {
-                    "name": "Around",
-                    "public": "true",
-                    "type": "AroundApp"
-                },
-                {
-                    "name": "Login",
-                    "public": "true",
-                    "type": "LoginApp"
-                }
-            ]
-        },
-        {
-            "name": "Person",
-            "attributes": {
-                "icon": "person"
-            },
-            "instances": [
-                {
-                    "name": "Home",
-                    "type": "Folder"
-                },
-                {
-                    "name": "Apps",
-                    "public": "true",
-                    "type": "Apps"
-                }
-            ]
-        },
-        {
-            "name": "MenuItem",
-            "attributes": {
-                "icon": "drag_handle",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Menu",
-            "attributes": {
-                "icon": "restaurant_menu",
-                "creatable_types": ["MenuItem"],
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Conference",
-            "base": "Event",
-            "attributes": {
-                "icon": "reduce_capacity",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Tradeshow",
-            "base": "Event",
-            "attributes": {
-                "icon": "hail",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Fair",
-            "base": "Event",
-            "attributes": {
-                "icon": "storefront",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Meeting",
-            "base": "Event",
-            "attributes": {
-                "icon": "groups",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Promotion",
-            "base": "Event",
-            "attributes": {
-                "icon": "add_shopping_cart",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Wedding",
-            "base": "Event",
-            "attributes": {
-                "icon": "celebration",
-                "creatable": "true"
-            },
-            "instances": [
-                {
-                    "name": "Menu",
-                    "type": "Menu"
-                },
-                {
-                    "name": "Contract",
-                    "type": "Document"
-                },
-                {
-                    "name": "List",
-                    "type": "ListView"
-                }
-            ]
-        },
-        {
-            "name": "Festival",
-            "base": "Event",
-            "attributes": {
-                "icon": "festival",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Concert",
-            "base": "Event",
-            "attributes": {
-                "icon": "music_video",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Venue",
-            "attributes": {
-                "icon": "other_houses"
-            },
-            "instances": [
-                {
-                    "name": "Timeline",
-                    "type": "CalendarView",
-                    "attributes": {}
-                }
-            ]
-        },
-        {
-            "name": "Club",
-            "base": "Venue",
-            "attributes": {
-                "icon": "nightlife",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Theatre",
-            "base": "Venue",
-            "attributes": {
-                "icon": "theater_comedy",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Restaurant",
-            "base": "Venue",
-            "attributes": {
-                "icon": "restaurant",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Hotel",
-            "base": "Venue",
-            "attributes": {
-                "icon": "hotel",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "ConferenceCentre",
-            "base": "Venue",
-            "attributes": {
-                "icon": "festival",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "BusinessCentre",
-            "base": "Venue",
-            "attributes": {
-                "icon": "buysiness_center",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "CommunityCentre",
-            "base": "Venue",
-            "attributes": {
-                "icon": "local_library",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "SportsClub",
-            "base": "Venue",
-            "attributes": {
-                "icon": "sports_kabaddi",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "ArtGallery",
-            "base": "Venue",
-            "attributes": {
-                "icon": "collections",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Villa",
-            "base": "Venue",
-            "attributes": {
-                "icon": "villa",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Stadium",
-            "base": "Venue",
-            "attributes": {
-                "icon": "stadium",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Park",
-            "base": "Venue",
-            "attributes": {
-                "icon": "park",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Game",
-            "attributes": {
-                "icon": "sports_esports"
-            }
-        },
-        {
-            "name": "Quest",
-            "base": "Game",
-            "attributes": {
-                "icon": "task_alt",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Race",
-            "base": "Game",
-            "attributes": {
-                "icon": "timer",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Battle",
-            "base": "Game",
-            "attributes": {
-                "icon": "sports_martial_arts",
-                "creatable": "true"
-            }
+            "name": "Const",
+            "base": "Link"
         }
-       
+
     ]
 }

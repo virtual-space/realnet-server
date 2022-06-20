@@ -1,0 +1,153 @@
+{
+    "types": [
+        {
+            "name": "Document",
+            "base": "Media",
+            "attributes": {
+                "icon": "description",
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "DocumentView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Page",
+            "base": "Media",
+            "attributes": {
+                "icon": "web_asset",
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "PageView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Image",
+            "base": "Media",
+            "attributes": {
+                "icon": "image",
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "ImageView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Video",
+            "base": "Media",
+            "attributes": {
+                "icon": "ondemand_video",
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "VideoView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Drawing",
+            "base": "Media",
+            "attributes": {
+                "icon": "gesture",
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "DrawingView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Folder",
+            "base": "Media",
+            "attributes": {
+                "icon": "folder",
+                "creatable": "true",
+                "views": [
+                    {
+                        "name": "Children",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Scene",
+            "base": "Media",
+            "attributes": {
+                "icon": "view_in_ar",
+                "creatable": "true",
+                "types": ["Layer", "Query"],
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "SceneView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Node",
+            "base": "Scene",
+            "attributes": {
+                "icon": "radio_button_unchecked",
+                "creatable": "true",
+                "matrix": "",
+                "matrix_description": "2D or 3D transformation matrix to be applied by the renderer",
+                "types": ["Node", "Media", "Query", "Ctrl"],
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "SceneView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Layer",
+            "base": "Scene",
+            "attributes": {
+                "icon": "radio_button_unchecked",
+                "creatable": "true",
+                "types": ["Layer", "Query", "Node"],
+                "views": [
+                    {
+                        "name": "View",
+                        "type": "SceneView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "MediaApp",
+            "base": "App",
+            "attributes": {
+                "types": ["Media"],
+                "icon": "perm_media",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Media"]
+                },
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        }
+    ]
+}

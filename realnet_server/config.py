@@ -1,8 +1,6 @@
 import os
 from dotenv import *
 
-from .models import BlobType
-
 path = os.path.join(os.getcwd(), ".env")
 if os.path.exists(path):
     load_dotenv(dotenv_path=path)
@@ -10,11 +8,19 @@ if os.path.exists(path):
 class Config:
 
     def get_database_url(self):
-        return 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(os.getenv('REALNET_DB_USER'),
+        if(os.getenv('REALNET_DB_TYPE') == 'sqlite'):
+            return '{0}:///{1}.db'.format(os.getenv('REALNET_DB_TYPE'),
+                                                         os.getenv('REALNET_DB_NAME'))
+        else:
+            return '{0}://{1}:{2}@{3}:{4}/{5}'.format(os.getenv('REALNET_DB_TYPE'),
+                                                         os.getenv('REALNET_DB_USER'),
                                                          os.getenv('REALNET_DB_PASS'),
                                                          os.getenv('REALNET_DB_HOST'),
                                                          os.getenv('REALNET_DB_PORT'),
                                                          os.getenv('REALNET_DB_NAME'))
+
+    def get_db_type(self):
+        return os.getenv('REALNET_DB_TYPE')
 
     def get_server_host(self):
         return os.getenv('REALNET_SERVER_HOST')
@@ -23,7 +29,7 @@ class Config:
         return os.getenv('REALNET_SERVER_PORT')
 
     def get_storage_type(self):
-        return BlobType[os.getenv('REALNET_STORAGE_TYPE')]
+        return os.getenv('REALNET_STORAGE_TYPE')
 
     def get_storage_path(self):
         return os.getenv('REALNET_STORAGE_PATH')
@@ -48,3 +54,6 @@ class Config:
 
     def get_jwt_issuer(self):
         return os.getenv('REALNET_JWT_ISSUER')
+
+    def get_base64_encode_data(self):
+        return os.getenv('REALNET_BASE64_ENCODE_DATA', False)

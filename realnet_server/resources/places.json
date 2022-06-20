@@ -1,0 +1,109 @@
+{
+    "types": [
+        {
+            "name": "Place",
+            "base": "Item",
+            "attributes": {
+                "icon": "other_houses",
+                "types": ["Event", "Thing", "Place", "Game", "Task", "Topic", "Contact"],
+                "views": [
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    },
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView",
+                        "attributes": {
+                            "query": {"types": ["Task"]}
+                        }
+                    },
+                    {
+                        "name": "Materials",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Material"]}
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Area",
+            "base": "Place",
+            "attributes": {
+                "icon": "zoom_out_map",
+                "types": ["Area", "Building"],
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Building",
+            "base": "Place",
+            "attributes": {
+                "icon": "home_work",
+                "types": ["Floor", "Room"],
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Floor",
+            "base": "Place",
+            "attributes": {
+                "icon": "layers",
+                "types": ["Room"],
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Room",
+            "base": "Place",
+            "attributes": {
+                "icon": "meeting_room",
+                "types": ["Thing"],
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "PlaceApp",
+            "base": "App",
+            "attributes": {
+                "types": ["Place"],
+                "icon": "place",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Place"]
+                },
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        }
+
+    ]
+}

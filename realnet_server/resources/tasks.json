@@ -1,0 +1,80 @@
+{
+    "types": [
+        {
+            "name": "Task",
+            "base": "Item",
+            "attributes": {
+                "icon": "assignment_turned_in",
+                "types": ["Event", "Thing", "Place", "Game", "Task", "Topic", "Media"],
+                "creatable": "true",
+                "values": ["To Do", "In Progress", "Done", "On Hold"],
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView",
+                        "attributes": {
+                            "query": {"types": ["Task"]}
+                        }
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Procedure",
+            "base": "Task",
+            "attributes": {
+                "icon": "checklist",
+                "types": ["Task"],
+                "values": ["To Do", "In Progress", "Done", "On Hold"]
+            }
+        },
+        {
+            "name": "TaskApp",
+            "base": "App",
+            "attributes": {
+                "types": ["Task", "Procedure"],
+                "icon": "assignment_turned_in",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Task"]
+                },
+                "views": [
+                    {
+                        "name": "Board",
+                        "type": "BoardView"
+                    },
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        }
+    ]
+}

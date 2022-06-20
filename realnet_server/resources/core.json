@@ -1,0 +1,151 @@
+{
+    "types": [
+        
+        {
+            "name": "Eval",
+            "base": "Link",
+            "module": "func",
+            "attriubtes": {
+                "creatable": "true",
+                "types": ["Func"],
+                "code": "# Python 3 code that in the context of the environment Env classifies the expression Exp by type and then evaluates any of the child functions matching by name....\nfor arg in args:\n\tpass",
+                "args": [
+                    {
+                        "name": "Exp",
+                        "type": "Exp"
+                    },
+                    {
+                        "name": "Env",
+                        "type": "Env"
+                    }
+                ],
+                "linked_item": {
+                    "name": "Result",
+                    "type": "Link"
+                }
+            }
+        },
+        {
+            "name": "Apply",
+            "base": "Link",
+            "module": "func",
+            "attriubtes": {
+                "creatable": "true",
+                "code": "# Python 3 code that applies the Func code to Args arguments in the context of environment Env and returns that as its children, details and data...\nfor arg in args:\n\tpass",
+                "args": [
+                    {
+                        "name": "Func",
+                        "type": "Func"
+                    },
+                    {
+                        "name": "Args",
+                        "type": "Args"
+                    },
+                    {
+                        "name": "Env",
+                        "type": "Env"
+                    }
+                ],
+                "linked_item": {
+                    "name": "Result",
+                    "type": "Link"
+                }
+            }
+        },
+        {
+            "name": "PyFunc",
+            "base": "Func",
+            "attributes": {
+                "icon": "functions",
+                "creatable": "true",
+                "func": [
+                    {
+                        "name": "Apply",
+                        "type": "Apply"
+                    }
+                ]
+            }
+
+        },
+        {
+            "name": "App",
+            "base": "Link",
+            "attributes": {
+                "icon": "apps"
+            }
+        },
+        {
+            "name": "File",
+            "base": "Link"
+        },
+        {
+            "name": "Media",
+            "base": "File",
+            "attributes": {
+                "icon": "collections"
+            }
+        },
+        {
+            "name": "Folder",
+            "base": "Media",
+            "attributes": {
+                "icon": "folder",
+                "creatable": "true",
+                "types": ["File"],
+                "show_children": "true",
+                "views": [
+                    {
+                        "name": "Functions and Modules",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+       {
+            "name": "Module",
+            "base": "Folder",
+            "attributes": {
+                "icon": "functions",
+                "creatable": "true",
+                "types": ["Func", "Module"],
+                "code": "# Python 3 code for your class goes here...\nfrom .default import Default\nclass MyModuleName(Default):\n\tpass",
+                "views": [
+                    {
+                        "name": "Functions and Modules",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ExpApp",
+            "base": "App",
+            "attributes": {
+                "types": ["Exp"],
+                "icon": "functions",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Exp"]
+                },
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "TypeApp",
+            "base": "App",
+            "module": "types",
+            "attributes": {
+                "types": ["Type"],
+                "icon": "approval",
+                "show_children": "true",
+                "show_views_as_items": "true"
+             }
+        }
+
+    ]
+}

@@ -109,13 +109,13 @@ def authenticators():
                            message="Failure",
                            statusCode=403,
                            data='Account not authorized to read authenticators'), 403
-        return jsonify([q.to_dict() for q in Authenticator.query.filter(Authenticator.group_id == current_token.account.group_id)])
+        return jsonify([q.to_dict() for q in Authenticator.query.filter(Authenticator.org_id == current_token.account.group.org_id)])
 
 @app.route('/authenticators/<id>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def single_authenticator(id):
     # 1. get the authenticator
-    auth = Authenticator.query.filter(or_(Authenticator.id == id, Authenticator.name == id), Authenticator.group_id == current_token.account.group_id).first()
+    auth = Authenticator.query.filter(or_(Authenticator.id == id, Authenticator.name == id), Authenticator.org_id == current_token.account.group.org_id).first()
     if auth:
         
         if request.method == 'PUT':

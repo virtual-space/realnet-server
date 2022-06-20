@@ -1,0 +1,139 @@
+{
+    "types": [
+        {
+            "name": "Ctrl",
+            "base": "Link",
+            "attributes": {
+                "icon": "widgets",
+                "creatable": "false",
+                "types": ["Ctrl"]
+            }
+        },
+        {
+            "name": "LocationCtrl",
+            "base": "Ctrl",
+            "creatable": "true"
+        },
+        {
+            "name": "DateCtrl",
+            "base": "Ctrl",
+            "creatable": "true"
+        },
+        {
+            "name": "EditCtrl",
+            "base": "Ctrl",
+            "creatable": "true"
+        },
+        {
+            "name": "SelectCtrl",
+            "base": "Ctrl",
+            "creatable": "true"
+        },
+        {
+            "name": "AccordionCtrl",
+            "base": "Ctrl",
+            "creatable": "true"
+        },
+        {
+            "name": "ItemSelectCtrl",
+            "base": "SelectCtrl",
+            "creatable": "true"
+        },
+        {
+            "name": "TypeSelectCtrl",
+            "base": "SelectCtrl",
+            "creatable": "true"
+        },
+        {
+            "name": "CalendarCtrl",
+            "base": "Ctrl",
+            "creatable": "true"
+        },
+        {
+            "name": "LabelCtrl",
+            "base": "Ctrl",
+            "attributes": {
+                "icon": "label",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "LinkCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "ListCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "CardCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "CodeCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "TagsCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "TypesCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "BarCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "ViewCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "ColCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "TreeCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "TabsCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "TabCtrl",
+            "base": "Ctrl",
+            "creatable": "true"
+        },
+        {
+            "name": "ItemCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "AttrsCtrl",
+            "base": "Ctrl",
+            "creatable": "true"
+        },
+        {
+            "name": "FuncCtrl",
+            "base": "Ctrl",
+            "creatable": "true"
+        },
+        {
+            "name": "UploadCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "FormCtrl",
+            "base": "Ctrl"
+        },
+        {
+            "name": "Dialog",
+            "base": "Ctrl",
+            "attributes": {
+                "icon": "call_to_action"
+            }
+        }
+    ]
+}

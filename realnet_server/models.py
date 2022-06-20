@@ -1,6 +1,7 @@
 import enum
 from unicodedata import name
 import uuid
+import logging
 import time
 import os
 import sys
@@ -8,11 +9,16 @@ from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2 import Geometry
 from geoalchemy2.elements import WKBElement
 from geoalchemy2.shape import to_shape
+# from sqlalchemy.dialects.postgresql import ARRAY
 from werkzeug.security import generate_password_hash, check_password_hash, gen_salt
 from sqlalchemy_serializer import SerializerMixin
 import shapely
 import json
 import csv
+import importlib
+import datetime
+
+from .util import cleanup_item
 
 from authlib.integrations.sqla_oauth2 import (
     OAuth2ClientMixin,
@@ -25,6 +31,13 @@ db = SQLAlchemy()
 # https://stackoverflow.com/questions/52723239/spatialite-backend-for-geoalchemy2-in-python
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/
 
+def load_module(module_name):  
+    target_name = 'default'
+    if module_name:
+        target_name = module_name   
+    module = importlib.import_module('realnet_server.modules.{}'.format(target_name))
+    module_class = getattr(module, target_name.capitalize())
+    return module_class()
 
 class Authenticator(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
@@ -39,7 +52,7 @@ class Authenticator(db.Model, SerializerMixin):
     userinfo_endpoint = db.Column(db.String(128))
     server_metadata_url = db.Column(db.String(128))
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
-    group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
+    org_id = db.Column(db.String(36), db.ForeignKey('org.id', ondelete='CASCADE'), nullable=False)
 
 
 class AccountType(enum.Enum):
@@ -53,11 +66,12 @@ class Account(db.Model, SerializerMixin):
     username = db.Column(db.String(40))
     email = db.Column(db.String(254))
     password_hash = db.Column(db.String(128))
-    data = db.Column(db.JSON)
+    attributes = db.Column(db.JSON)
     external_id = db.Column(db.String(254))
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
     home_id = db.Column(db.String(36), db.ForeignKey('item.id'))
     parent_id = db.Column(db.String(36), db.ForeignKey('account.id'))
+    group = db.relationship('Group', foreign_keys='[Account.group_id]')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -82,11 +96,18 @@ class GroupRoleType(enum.Enum):
 
 
 # Define the Group data-model
+class Org(db.Model, SerializerMixin):
+    id = db.Column(db.String(36), primary_key=True)
+    name = db.Column(db.String(50), unique=True)
+    attributes = db.Column(db.JSON)
+
+# Define the Group data-model
 class Group(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(50), unique=True)
-    parent_id = db.Column(db.String(36), db.ForeignKey('group.id'))
-
+    org_id = db.Column(db.String(36), db.ForeignKey('org.id'), nullable=False)
+    attributes = db.Column(db.JSON)
+    org = db.relationship('Org', foreign_keys='[Group.org_id]')
 
 # Define the AccountGroup association table
 class AccountGroup(db.Model, SerializerMixin):
@@ -110,12 +131,13 @@ class AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
     account = db.relationship('Account')
 
 
-class App(db.Model, OAuth2ClientMixin, SerializerMixin):
+class Client(db.Model, OAuth2ClientMixin, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(42))
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
-    group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
-    data = db.Column(db.JSON)
+    org_id = db.Column(db.String(36), db.ForeignKey('org.id', ondelete='CASCADE'), nullable=False)
+    attributes = db.Column(db.JSON)
+    org = db.relationship('Org', foreign_keys='[Client.org_id]')
 
     def get_allowed_scope(self, scope):
         if not scope:
@@ -126,7 +148,7 @@ class App(db.Model, OAuth2ClientMixin, SerializerMixin):
 
 
 class Type(db.Model, SerializerMixin):
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.String(36), primary_key=True, index=True)
     name = db.Column(db.String(128))
     icon = db.Column(db.String(128))
     attributes = db.Column(db.JSON)
@@ -134,7 +156,7 @@ class Type(db.Model, SerializerMixin):
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
     base_id = db.Column(db.String(36), db.ForeignKey('type.id', ondelete='CASCADE'))
     module = db.Column(db.String(128))
-    base = db.relationship('Type')
+    base = db.relationship('Type', remote_side='[Type.id]')
     instances = db.relationship('Instance', foreign_keys='[Instance.parent_type_id]')
 
 class VisibilityType(enum.Enum):
@@ -143,7 +165,7 @@ class VisibilityType(enum.Enum):
     restricted = 3
 
 class Instance(db.Model, SerializerMixin):
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.String(36), primary_key=True, index=True)
     name = db.Column(db.String(128))
     icon = db.Column(db.String(128))
     attributes = db.Column(db.JSON)
@@ -168,46 +190,27 @@ class Item(db.Model, SerializerMixin):
     serialize_types = (
         (WKBElement, lambda x: jsonize_geometry(x)),
     )
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.String(36), primary_key=True, index=True)
     name = db.Column(db.String(128))
     attributes = db.Column(db.JSON)
     owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
     group_id = db.Column(db.String(36), db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)
     type_id = db.Column(db.String(36), db.ForeignKey('type.id', ondelete='CASCADE'), nullable=False)
     parent_id = db.Column(db.String(36), db.ForeignKey('item.id'))
+    linked_item_id = db.Column(db.String(36), db.ForeignKey('item.id'))
     location = db.Column(Geometry(geometry_type='GEOMETRY', srid=4326))
+    valid_from = db.Column(db.DateTime(timezone=True))
+    valid_to = db.Column(db.DateTime(timezone=True))
+    status = db.Column(db.String(128))
     visibility = db.Column(db.Enum(VisibilityType))
-    tags = db.Column(db.ARRAY(db.String()))
+    # tags = db.Column(ARRAY(db.String()))
     type = db.relationship('Type')
     acls = db.relationship('Acl', passive_deletes=True)
-    # parent = db.relationship('Item')
+    # items = db.relationship('Item', primaryjoin='Item.parent_id==Item.id')
+    linked_item = db.relationship('Item', foreign_keys='[Item.linked_item_id]', remote_side='[Item.id]')
+    # linked_item = db.relationship('Item', primaryjoin='Item.id==Item.linked_item_id')
+    # parent = db.relationship('Item', primaryjoin='Item.parent_id==Item.id')
 
-
-class Function(db.Model, SerializerMixin):
-    id = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(128))
-    code = db.Column(db.Text)
-    data = db.Column(db.JSON)
-    item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
-
-
-class Topic(db.Model, SerializerMixin):
-    id = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(128))
-    data = db.Column(db.JSON)
-    item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
-
-class TopicFunction(db.Model, SerializerMixin):
-    id = db.Column(db.String(36), primary_key=True)
-    topic_id = db.Column(db.String(36), db.ForeignKey('topic.id', ondelete='CASCADE'), nullable=False)
-    function_id = db.Column(db.String(36), db.ForeignKey('function.id', ondelete='CASCADE'), nullable=False)
-    function = db.relationship('Function')
-
-
-class Message(db.Model, SerializerMixin):
-    id = db.Column(db.String(36), primary_key=True)
-    data = db.Column(db.JSON)
-    topic_id = db.Column(db.String(36), db.ForeignKey('topic.id', ondelete='CASCADE'), nullable=False)
 
 class AclType(enum.Enum):
     public = 1
@@ -221,23 +224,8 @@ class Acl(db.Model, SerializerMixin):
     type = db.Column(db.Enum(AclType))
     name = db.Column(db.String(50))
     permission = db.Column(db.String(50))
-    item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
-
-
-class BlobType(enum.Enum):
-    local = 1
-    s3 = 2
-
-
-# Define the Acl data-model
-class Blob(db.Model):
-    id = db.Column(db.String(36), primary_key=True)
-    type = db.Column(db.Enum(BlobType))
-    data = db.Column(db.JSON)
-    content_length = db.Column(db.Integer, nullable=False)
-    content_type = db.Column(db.String(36), nullable=False)
-    filename = db.Column(db.String(250), nullable=False)
-    mime_type = db.Column(db.String(36), nullable=False)
+    target_id = db.Column(db.String(36))
+    owner_id = db.Column(db.String(36), db.ForeignKey('account.id', ondelete='CASCADE'))
     item_id = db.Column(db.String(36), db.ForeignKey('item.id', ondelete='CASCADE'), nullable=False)
 
 def traverse_instance(instances, instance, parent_type_name):
@@ -245,20 +233,62 @@ def traverse_instance(instances, instance, parent_type_name):
         instances.append({ "instance": inst, "parent_type_name": parent_type_name})
         traverse_instance(instances, inst, inst.get('type'))
 
-def build_item( instance,
+def get_type_instances(type):
+    instances = []
+    if type.instances:
+        instances.extend(type.instances)
+    if type.base:
+        instances.extend(get_type_instances(type.base))
+    return instances
+
+def retrieve_item_tree(item):
+    result = cleanup_item(item.to_dict().copy())
+    result['items'] = [retrieve_item_tree(child) for child in Item.query.filter(Item.parent_id == item.id).all()]
+    return result
+
+
+def build_item( item_id,
+                instance,
                 attributes,
                 item_data,
                 owner_id,
                 group_id,
                 parent_item_id=None):
 
-    item = Item( id=instance.id,
-                 name=instance.name,
-                 attributes=attributes,
-                 owner_id=owner_id,
-                 group_id=group_id,
-                 type_id=instance.type.id,
-                 parent_id=parent_item_id)
+    location = item_data.get('item_location')
+    valid_from = item_data.get('item_valid_from')
+    valid_to = item_data.get('item_valid_to')
+    status = item_data.get('item_status')
+    tags = item_data.get('item_tags')
+    linked_item_id = item_data.get('item_linked_item_id')
+
+    if not location:
+        item = Item( id=item_id,
+                    name=instance.name,
+                    attributes=attributes,
+                    valid_from=valid_from,
+                    valid_to=valid_to,
+                    status=status,
+                    # tags=tags,
+                    owner_id=owner_id,
+                    group_id=group_id,
+                    type_id=instance.type.id,
+                    parent_id=parent_item_id,
+                    linked_item_id=linked_item_id)
+    else:
+        item = Item( id=item_id,
+                    name=instance.name,
+                    attributes=attributes,
+                    valid_from=valid_from,
+                    valid_to=valid_to,
+                    status=status,
+                    # tags=tags,
+                    owner_id=owner_id,
+                    group_id=group_id,
+                    location=location,
+                    type_id=instance.type.id,
+                    parent_id=parent_item_id,
+                    linked_item_id=linked_item_id)
     
     db.session.add(item)
     db.session.commit()
@@ -270,19 +300,21 @@ def build_item( instance,
             create_public_acl = True
 
     if create_public_acl:
-        acl = Acl(id=str(uuid.uuid4()),type=AclType.public,item_id=instance.id)
+        acl = Acl(id=str(uuid.uuid4()),type=AclType.public,item_id=item_id)
         db.session.add(acl)
         db.session.commit()
     
-    for child_instance in instance.type.instances:
-        attributes = child_instance.type.attributes
+    instances = get_type_instances(instance.type)
+    for child_instance in instances:
+        attributes = get_type_attributes(child_instance.type)
         if attributes:
             if child_instance.attributes:
                 attributes =  attributes | child_instance.attributes
         elif child_instance.attributes:
             attributes = child_instance.attributes
         
-        child_item = build_item(  child_instance,
+        child_item = build_item(  str(uuid.uuid4()),
+                                  child_instance,
                                   attributes,
                                   {},
                                   owner_id,
@@ -290,6 +322,16 @@ def build_item( instance,
                                   item.id)
 
     return item
+
+def get_type_attributes(item_type):
+    attributes = item_type.attributes
+    if item_type.base_id:
+        base_attributes = get_type_attributes(item_type.base)
+        if base_attributes and attributes:
+            attributes = base_attributes | attributes
+        elif base_attributes:
+            attributes = base_attributes
+    return attributes
 
 def create_item(db,
                 item_id,
@@ -302,7 +344,11 @@ def create_item(db,
                 item_is_public,
                 owner_id,
                 group_id,
-                parent_item_id=None):
+                parent_item_id=None,
+                item_valid_from=None,
+                item_valid_to=None,
+                item_status=None,
+                item_linked_item_id=None):
 
     item = None
     item_type = Type.query.filter(Type.name == item_type_name).first()
@@ -316,7 +362,7 @@ def create_item(db,
 
     if item_type:
         # attributes = item_attributes | item_type.attributes
-        attributes = item_type.attributes
+        attributes = get_type_attributes(item_type)
         if attributes:
             if item_attributes:
                 attributes =  attributes | item_attributes
@@ -325,7 +371,7 @@ def create_item(db,
 
         instance = Instance(id=item_id,
                             name=item_name,
-                            public=item_is_public == "true",
+                            public=item_is_public.lower() == 'true' if isinstance(item_is_public, str) else item_is_public,
                             owner_id=owner_id,
                             group_id=group_id,
                             type_id=item_type.id)
@@ -336,25 +382,67 @@ def create_item(db,
         item_data = {"item_location": item_location, 
                      "item_visibility": item_visibility,
                      "item_tags": item_tags,
-                     "item_is_public": item_is_public}
+                     "item_is_public": item_is_public,
+                     "item_valid_from": item_valid_from,
+                     "item_valid_to": item_valid_to,
+                     "item_status": item_status,
+                     "item_linked_item_id": item_linked_item_id}
         
-        item = build_item(instance, attributes, item_data, owner_id, group_id, parent_item_id)
+        item = build_item(item_id, instance, attributes, item_data, owner_id, group_id, parent_item_id)
     
     return item
+
+def collect_inheritance_hierarchy(children, td, instances):
+    name = td.get('name')
+    derived_types = children.get(name)
+    if derived_types:
+        for derived_type in derived_types:
+            for instance in td.get('instances', []):
+                instances.append({ "instance": instance, "parent_type_name": derived_type['name']})
+                logging.getLogger().info('*** {} is derived from {} ***'.format(derived_type['name'], name))
+            collect_inheritance_hierarchy(children, derived_type, instances)
+
 
 def import_types(db, type_data, owner_id, group_id):
     types = dict()
     instances = []
     commit_needed = False
+    
+    primitive_types = []
+    derived = dict()
+    children = dict()
+    base_types = dict()
+
+
+    for td in type_data['types']:
+        name = td.get('name')
+        if name:
+            base_types[name] = td
+
+        base_name = td.get('base')
+        if base_name:
+            if base_name in derived:
+                derived[base_name].append(td)
+            else:
+                derived[base_name] = [td]
+        else:
+            primitive_types.append(td)
+
+    
+#    for (name,td) in derived_types.items():
+
+
     for td in type_data['types']:
         existing_type = Type.query.filter(Type.name == td['name']).first()
         if not existing_type:
             base_id = None
+            base_instances = []
             base_name = td.get('base')
             if base_name:
                 base_type = Type.query.filter(Type.name == base_name).first()
                 if base_type:
                     base_id = base_type.id
+
             attributes = td.get('attributes', dict())
             existing_type = Type(id=str(uuid.uuid4()),
                                         name=td['name'],
@@ -364,8 +452,12 @@ def import_types(db, type_data, owner_id, group_id):
                                         group_id=group_id,
                                         module=td.get('module'),
                                         base_id=base_id)
+            
             for instance in td.get('instances', []):
                 instances.append({ "instance": instance, "parent_type_name": existing_type.name})
+            for base_instance in base_instances:
+                instances.append({ "instance": base_instance, "parent_type_name": existing_type.name})
+
             db.session.add(existing_type)     
             commit_needed = True                       
         
@@ -402,7 +494,10 @@ def import_types(db, type_data, owner_id, group_id):
         parent_type_name = ie['parent_type_name']
         traverse_instance(subinstances, instance, parent_type_name)
 
-    instances.extend(subinstances)    
+    instances.extend(subinstances)   
+
+    for pt in primitive_types:
+        collect_inheritance_hierarchy(derived, pt, instances) 
 
     for ie in instances:
         instance = ie['instance']
@@ -415,6 +510,8 @@ def import_types(db, type_data, owner_id, group_id):
             if is_public:
                 is_public = is_public.lower() in ['true', 'True', '1']
             
+            type_id = target.id if isinstance(target, Type) else target['type'].id 
+            parent_type_id = parent.id if isinstance(parent, Type) else parent['type'].id  
             created_instance = Instance(id=str(uuid.uuid4()),
                                         name=instance['name'],
                                         icon=attributes.get('icon'),
@@ -422,15 +519,19 @@ def import_types(db, type_data, owner_id, group_id):
                                         public=is_public,
                                         owner_id=owner_id,
                                         group_id=group_id,
-                                        type_id=target['type'].id,
-                                        parent_type_id=parent['type'].id)
+                                        type_id= type_id,
+                                        parent_type_id=parent_type_id)
             db.session.add(created_instance)
             commit_needed = True
+
+    # connect base class instances to derived types
+
+
             
     
     if commit_needed:
         db.session.commit()
-
+    
     return [dv['type'].to_dict() for dv in types.values()]
 
 
@@ -528,16 +629,44 @@ def import_items(db, items, owner_id, group_id):
 def import_items_from_file(db, file):
     pass
 
-def create_basic_types(owner_id, group_id):
+def load_types(resource, owner_id, group_id):
     with open(os.path.join(os.path.dirname(sys.modules[__name__].__file__),
-                           "resources/types.json"), 'r') as f:
+                           resource), 'r') as f:
         data = json.load(f)
         if data:
             type_data = data.get('types')
             if type_data:
                 import_types(db, data,owner_id, group_id)
 
+def create_basic_types(owner_id, group_id):
+    load_types("resources/types.json", owner_id, group_id)
+    load_types("resources/core.json", owner_id, group_id)
+    load_types("resources/controls.json", owner_id, group_id)
+    load_types("resources/views.json", owner_id, group_id)
+    load_types("resources/items.json", owner_id, group_id)
+    load_types("resources/orgs.json", owner_id, group_id)
+    load_types("resources/media.json", owner_id, group_id)
+    load_types("resources/topics.json", owner_id, group_id)
+    load_types("resources/places.json", owner_id, group_id)
+    load_types("resources/things.json", owner_id, group_id)
+    load_types("resources/tasks.json", owner_id, group_id)
+    load_types("resources/jobs.json", owner_id, group_id)
+    load_types("resources/events.json", owner_id, group_id)
+
 def create_basic_items(owner_id, group_id):
+    item = create_item(db,
+                        item_type_name='PublicApps',
+                        item_id=str(uuid.uuid4()),
+                        item_name='PublicApps',
+                        item_attributes=dict(),
+                        item_location=None,
+                        item_visibility=None,
+                        item_tags=None,
+                        item_is_public=True,
+                        owner_id=owner_id,
+                        group_id=group_id)
+    db.session.add(item)
+    db.session.commit()
     with open(os.path.join(os.path.dirname(sys.modules[__name__].__file__),
                            "resources/items.csv"), 'r') as f:
         items = []
@@ -563,19 +692,20 @@ def create_account(tenant_name,
                            username=account_username,
                            email=account_email,
                            group_id=group.id)
-    account.set_password(account_password)
+    if account_password:
+        account.set_password(account_password)
 
     db.session.add(account)
 
-    group = AccountGroup(id=str(uuid.uuid4()),
+    account_group = AccountGroup(id=str(uuid.uuid4()),
                                 account_id=account.id,
                                 group_id=group.id,
-                                role_type=GroupRoleType[account_role])
-    db.session.add(group)
+                                role_type=GroupRoleType.contributor)
+    db.session.add(account_group)
 
     db.session.commit()
 
-    create_account_dt(account, group)
+    create_account_dt(db, account, group, account_role)
 
     return account
 
@@ -607,18 +737,18 @@ def get_or_create_delegated_account(tenant_name,
     group = AccountGroup(id=str(uuid.uuid4()),
                                 account_id=account.id,
                                 group_id=group.id,
-                                role_type=GroupRoleType[account_role])
+                                role_type=GroupRoleType.contributor)
     db.session.add(group)
 
     db.session.commit()
 
-    create_account_dt(account, group)
+    create_account_dt(db, account, group, account_role)
     
     db.session.commit()
 
     return account
 
-def create_app(name,
+def create_client(name,
                uri,
                grant_types,
                redirect_uris,
@@ -626,19 +756,18 @@ def create_app(name,
                scope,
                auth_method,
                account_id,
-               group_id,
+               org_id,
                client_id=gen_salt(24),
-               client_secret=gen_salt(48)
-               ):
+               client_secret=gen_salt(48)):
     client_id_issued_at = int(time.time())
     app_id = str(uuid.uuid4())
-    client = App(
+    client = Client(
         id=app_id,
         name=name,
         client_id=client_id,
         client_id_issued_at=client_id_issued_at,
         owner_id=account_id,
-        group_id=group_id
+        org_id=org_id
     )
 
     client_metadata = {
@@ -662,49 +791,92 @@ def create_app(name,
 
     return client
 
-def create_account_dt(db, account, group):
+
+def create_account_dt(db, account, group, role):
     item = None
-    if account.type == AccountType.person:
-        person_type = db.session.query(Type).filter(Type.name == 'Person').first()
-        if not person_type:
-            return None
-        item = create_item(db,
-                            item_type_name=person_type.name,
-                            item_id=account.id,
-                            item_name=account.username,
-                            item_attributes=dict(),
-                            item_location=None,
-                            item_visibility=None,
-                            item_tags=None,
-                            item_is_public=None,
-                            owner_id=account.id,
-                            group_id=group.id
-                            )
-        db.session.add(item)
-        db.session.commit()
-    else:
-        thing_type = db.session.query(Type).filter(Type.name == 'Thing').first()
-        if not thing_type:
-            return None
-        item = create_item(db,
-                            item_type_name=thing_type.name,
-                            item_id=account.id,
-                            item_name=account.username,
-                            item_attributes=dict(),
-                            item_location=None,
-                            item_visibility=None,
-                            item_tags=None,
-                            item_is_public=None,
-                            owner_id=account.id,
-                            group_id=group.id)
-        db.session.add(item)
-        db.session.commit()
+    role_type = db.session.query(Type).filter(Type.name == role).first()
+    if not role_type:
+        return None
+
+    item = create_item(db,
+                        item_type_name=account.type.name,
+                        item_id=account.id,
+                        item_name=account.username,
+                        item_attributes=dict(),
+                        item_location=None,
+                        item_visibility=None,
+                        item_tags=None,
+                        item_is_public=None,
+                        owner_id=account.id,
+                        group_id=group.id
+                        )
+    db.session.add(item)
+    db.session.commit()
+    role = create_item(db,
+                        item_type_name=role_type.name,
+                        item_id=str(uuid.uuid4()),
+                        item_name=role_type.name,
+                        item_attributes=role_type.attributes,
+                        item_location=None,
+                        item_visibility=None,
+                        item_tags=None,
+                        item_is_public=None,
+                        parent_item_id=item.id,
+                        owner_id=account.id,
+                        group_id=group.id
+                        )
+    db.session.add(role)
+    db.session.commit()
     return item
 
-def create_tenant(tenant_name, root_username, root_email, root_password, uri, web_redirect_uri):
-    
+def create_tenant(tenant_name, 
+                  tenant_type, 
+                  root_username, 
+                  root_email, 
+                  root_password, 
+                  uri, 
+                  web_redirect_uri):
+    '''
+    cli_client = create_client(name=tenant_name + '_cli',
+                        client_id='Vk6Swe7GyqJIKKfa3SiXYJbv',
+                        uri=uri,
+                        grant_types=['password'],
+                        redirect_uris=[],
+                        response_types=['token'],
+                        scope='',
+                        auth_method='client_secret_basic',
+                        account_id=root_account_id,
+                        org_id=root_org_id)
+
+    web_client = create_client(name=tenant_name + '_realscape_web',
+                        client_id='IEmf5XYQJXIHvWcQtZ5FXbLM',
+                        uri=uri,
+                        grant_types=['password'],
+                        redirect_uris=[web_redirect_uri],
+                        response_types=['token'],
+                        scope='',
+                        auth_method='none',
+                        account_id=root_account_id,
+                        org_id=root_org_id)
+
+    mobile_client = create_client(name=tenant_name + '_realscape_mob',
+                            client_id='MPpG679mTwfpkwzVfK1flaPa',
+                            client_secret='2CNYMgCEVoOsqgSQGipwDN5bo8AsxQktU1KegT7jrQl3Arjq',
+                            uri=uri,
+                            grant_types=['authorization_code','password'],
+                            redirect_uris=["io.realnet.api-dev:/callback"],
+                            response_types=['code'],
+                            scope='',
+                            auth_method='client_secret_basic',
+                            account_id=root_account_id,
+                            org_id=root_org_id)
+    '''
+    org = Org(id=str(uuid.uuid4()), name=tenant_name)
+    db.session.add(org)
+    db.session.commit()
+
     root_group_id = str(uuid.uuid4())
-    root_group = Group(id=root_group_id, name=tenant_name)
+    root_group = Group(id=root_group_id, name="Everyone", org_id=org.id)
     db.session.add(root_group)
 
     db.session.commit()
@@ -724,62 +896,32 @@ def create_tenant(tenant_name, root_username, root_email, root_password, uri, we
                                 group_id=root_group_id,
                                 role_type=GroupRoleType.root))
 
-    cli_client = create_app(name=tenant_name + '_cli',
-                        client_id='Vk6Swe7GyqJIKKfa3SiXYJbv',
-                        uri=uri,
-                        grant_types=['password'],
-                        redirect_uris=[],
-                        response_types=['token'],
-                        scope='',
-                        auth_method='client_secret_basic',
-                        account_id=root_account_id,
-                        group_id=root_group_id)
-
-    web_client = create_app(name=tenant_name + '_realscape_web',
-                        client_id='IEmf5XYQJXIHvWcQtZ5FXbLM',
-                        uri=uri,
-                        grant_types=['password'],
-                        redirect_uris=[web_redirect_uri],
-                        response_types=['token'],
-                        scope='',
-                        auth_method='none',
-                        account_id=root_account_id,
-                        group_id=root_group_id)
-
-    mobile_client = create_app(name=tenant_name + '_realscape_mob',
-                            client_id='MPpG679mTwfpkwzVfK1flaPa',
-                            client_secret='2CNYMgCEVoOsqgSQGipwDN5bo8AsxQktU1KegT7jrQl3Arjq',
-                            uri=uri,
-                            grant_types=['authorization_code','password'],
-                            redirect_uris=["io.realnet.api-dev:/callback"],
-                            response_types=['code'],
-                            scope='',
-                            auth_method='client_secret_basic',
-                            account_id=root_account_id,
-                            group_id=root_group_id)
-
-    print('{} tenant id: {}'.format(tenant_name, root_group_id))
-    print('{} tenant cli client id: {}'.format(tenant_name, cli_client.client_id))
-    print('{} tenant cli client secret: {}'.format(tenant_name, cli_client.client_secret))
-    print('{} tenant web client id: {}'.format(tenant_name, web_client.client_id))
-    print('{} tenant mob client id: {}'.format(tenant_name, mobile_client.client_id))
-    print('{} tenant mob client secret: {}'.format(tenant_name, mobile_client.client_secret))
-    print('{} tenant root id: {}'.format(tenant_name, root_account_id))
-    print('{} tenant root email: {}'.format(tenant_name, root_email))
-    print('{} tenant root username: {}'.format(tenant_name, root_username))
-    print('{} tenant root password: {}'.format(tenant_name, root_password))
-
     create_basic_types(root_account_id, root_group_id)
     create_basic_items(root_account_id, root_group_id)
-    account_dt = create_account_dt(db, root_account, root_group)
 
-    result = root_group.to_dict()
-    result['client_id'] = cli_client.client_id
-    result['client_secret'] = cli_client.client_secret
-    result['root_username'] = root_username
-    result['root_password'] = root_password
-    result['root_email'] = root_email
-    return result
+    account_item = create_account_dt(db, root_account, root_group, 'Admin')
+
+    orgs = load_module('orgs')
+    org_type = Type.query.filter(Type.name == tenant_type).first()
+    orgapp_item = Item.query.filter(Item.type.has(Type.name == 'OrgApp')).first()
+    '''
+    orgapp_item = create_item(item_id=str(uuid.uuid4()),
+                              item_type_name='OrgApp',
+                              item_name='Org',
+                              item_attributes={},
+                              item_location=None,
+                              item_visibility=None,
+                              item_tags=[],
+                              item_is_public=False,
+                              owner_id=root_account_id,
+                              group_id=root_group_id)
+    '''
+    if orgs and org_type and orgapp_item:
+        orgs.create_item(None, **{"name": tenant_name, 
+                                "parent_id": orgapp_item.id, 
+                                "type_id": org_type.id,
+                                "owner_id": root_account_id,
+                                "group_id": root_group_id})
 
 def get_or_create_type(name, icon, owner_id, group_id, module=None):
     res = db.session.query(Type).filter(Type.name == name).first()
@@ -792,12 +934,13 @@ def get_or_create_type(name, icon, owner_id, group_id, module=None):
     return res
 
 def initialize_server(root_tenant_name,
+               root_tenant_type,
                root_username,
                root_email, 
                root_password,
                uri,
                web_redirect_uri):
-    create_tenant(root_tenant_name, root_username, root_email, root_password, uri, web_redirect_uri)
+    create_tenant(root_tenant_name, root_tenant_type, root_username, root_email, root_password, uri, web_redirect_uri)
 
     
 

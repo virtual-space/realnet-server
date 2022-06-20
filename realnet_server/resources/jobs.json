@@ -1,0 +1,49 @@
+{
+    "types": [
+        {
+            "name": "Runner",
+            "base": "Item",
+            "module": "runner",
+            "attributes": {
+                "createable": "true",
+                "icon": "settings_applications",
+                "types": ["Job"],
+                "views": [
+                    {
+                        "name": "List",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Job",
+            "base": "Folder",
+            "module": "job",
+            "attributes": {
+                "icon": "trending_up",
+                "creatable": "true",
+                "types": ["Task"]
+            }
+        },
+        {
+            "name": "JobsApp",
+            "base": "App",
+            "attributes": {
+                "types": ["Runner", "Job"],
+                "icon": "trending_up",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Runner", "Job"]
+                },
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        }
+
+    ]
+}

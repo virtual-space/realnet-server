@@ -256,3 +256,4 @@ realnet-server.db
 
 # temp
 storage/
+realnet_server/postgres.db

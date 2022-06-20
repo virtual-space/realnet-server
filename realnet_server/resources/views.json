@@ -1,0 +1,174 @@
+{
+    "types": [
+        {
+            "name": "View",
+            "Base": "Ctrl",
+            "attributes": {
+                "icon": "fullscreen"
+            }
+        },
+        {
+            "name": "ListView",
+            "base": "View",
+            "attributes": {
+                "icon": "view_list",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "CardsView",
+            "base": "View",
+            "attributes": {
+                "icon": "view_module",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "MapView",
+            "base": "View",
+            "attributes": {
+                "icon": "map",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "CalendarView",
+            "base": "View",
+            "attributes": {
+                "icon": "calendar_today",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "BoardView",
+            "base": "View",
+            "attributes": {
+                "icon": "assignment",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "PanelView",
+            "base": "View",
+            "attributes": {
+                "icon": "dashboard"
+            }
+        },
+        {
+            "name": "SceneView",
+            "base": "View",
+            "attributes": {
+                "icon": "nature_people"
+            }
+        },
+        {
+            "name": "ImageView",
+            "base": "View",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "VideoView",
+            "base": "View",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "DocumentView",
+            "base": "View",
+            "attributes": {
+                "icon": "preview"
+            }
+        },
+        {
+            "name": "PropertiesView",
+            "base": "View",
+            "attributes": {
+                "icon": "ballot"
+            }
+        },
+        
+        {
+            "name": "TreeView",
+            "base": "View",
+            "attributes": {
+                "icon": "account_tree",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "TypeView",
+            "base": "View",
+            "attributes": {
+                "icon": "account_tree",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "ItemView",
+            "base": "View",
+            "attributes": {
+                "icon": "view_array"
+            }
+        },
+        {
+            "name": "DialogView",
+            "base": "View",
+            "attributes": {
+                "icon": "web_asset"
+            }
+        },
+        {
+            "name": "EditView",
+            "base": "View",
+            "attributes": {
+                "icon": "edit"
+            }
+        },
+        {
+            "name": "CreateView",
+            "base": "View",
+            "attributes": {
+                "icon": "add_circle_outline"
+            }
+        },
+        {
+            "name": "DeleteView",
+            "base": "View",
+            "attributes": {
+                "icon": "remove_circle_outline"
+            }
+        },
+        {
+            "name": "ContentView",
+            "base": "View",
+            "attributes": {
+                "icon": "center_focus_weak"
+            }
+        },
+        {
+            "name": "FuncView",
+            "base": "View",
+            "attributes": {
+                "icon": "functions",
+                "controls": [
+                    {
+                        "name": "FuncCtrl",
+                        "type": "FormCtrl"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "RunView",
+            "base": "View",
+            "attributes": {
+                "icon": "play",
+                "query": { "show_children": "true", "types": ["Arg", "Func"] }
+            }
+        }
+
+    ]
+}

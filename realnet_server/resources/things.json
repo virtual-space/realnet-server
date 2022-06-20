@@ -1,0 +1,98 @@
+{
+    "types": [
+        {
+            "name": "Thing",
+            "base": "Item",
+            "attributes": {
+                "icon": "graphic_eq",
+                "types": ["Event", "Thing", "Place", "Game", "Task", "Topic", "Media"],
+                "views": [
+                    {
+                        "name": "All",
+                        "type": "ListView"
+                    },
+                    {
+                        "name": "Timeline",
+                        "type": "CalendarView"
+                    },
+                    {
+                        "name": "Contacts",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Contact"]}
+                        }
+                    },
+                    {
+                        "name": "Documents",
+                        "type": "ListView",
+                        "attributes": {
+                            "query": {"types": ["Document"]}
+                        }
+                    },
+                    {
+                        "name": "Tasks",
+                        "type": "BoardView",
+                        "attributes": {
+                            "query": {"types": ["Task"]}
+                        }
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Chair",
+            "base": "Thing",
+            "attributes": {
+                "icon": "event_seat",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Table",
+            "base": "Thing",
+            "attributes": {
+                "icon": "deck",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "TV",
+            "base": "Thing",
+            "attributes": {
+                "icon": "desktop_windows",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "Fridge",
+            "base": "Thing",
+            "attributes": {
+                "icon": "kitchen",
+                "creatable": "true"
+            }
+        },
+        {
+            "name": "ThingApp",
+            "base": "App",
+            "attributes": {
+                "types": ["Thing"],
+                "icon": "graphic_eq",
+                "query": {
+                    "my_items": "true",
+                    "types": ["Thing"]
+                },
+                "views": [
+                    {
+                        "name": "List",
+                        "type": "ListView",
+                        "attributes": {}
+                    }
+                ]
+            }
+        }
+    ]
+}

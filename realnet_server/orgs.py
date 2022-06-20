@@ -5,7 +5,7 @@ from authlib.integrations.requests_client import OAuth2Session
 from authlib.common.encoding import to_unicode, to_bytes
 from realnet_server import app
 from .auth import authorization, require_oauth
-from .models import db, Group, Account, AccountGroup, GroupRoleType, Token, App, create_tenant, Authenticator, get_or_create_delegated_account
+from .models import db, Org, Group, Account, AccountGroup, GroupRoleType, Client, create_tenant, Authenticator, get_or_create_delegated_account
 from sqlalchemy import or_
 from password_generator import PasswordGenerator
 
@@ -18,13 +18,13 @@ except ImportError:
 from authlib.common.urls import url_encode
 
 
-def can_account_create_tenant(account):
+def can_account_create_org(account):
     for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
                                                   AccountGroup.account_id == account.id):
         if accountGroup.role_type == GroupRoleType.root:
             return True
 
-def can_account_read_tenant(account, tenant):
+def can_account_read_org(account, tenant):
     if account.group_id == tenant.id:
         for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
                                                       AccountGroup.account_id == account.id):
@@ -33,7 +33,7 @@ def can_account_read_tenant(account, tenant):
 
     return False
 
-def can_account_write_tenant(account, tenant):
+def can_account_write_org(account, tenant):
     if account.group_id == tenant.id:
         for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
                                                       AccountGroup.account_id == account.id):
@@ -42,7 +42,7 @@ def can_account_write_tenant(account, tenant):
 
     return False
 
-def can_account_delete_tenant(account, tenant):
+def can_account_delete_org(account, tenant):
     if account.group_id == tenant.id:
         for accountGroup in AccountGroup.query.filter(AccountGroup.group_id == account.group_id,
                                                       AccountGroup.account_id == account.id):
@@ -51,7 +51,7 @@ def can_account_delete_tenant(account, tenant):
 
     return False
 
-@app.route('/tenants', methods=('GET', 'POST'))
+@app.route('/orgs', methods=('GET', 'POST'))
 @require_oauth()
 def tenants():
     if request.method == 'POST':
@@ -60,7 +60,7 @@ def tenants():
         if input_data:
             input_name = input_data['name']
             account = Account.query.filter(Account.id == current_token.account.id).first()
-            if not can_account_create_tenant(account=account):
+            if not can_account_create_org(account=account):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=403,
@@ -85,83 +85,83 @@ def tenants():
                 created = create_tenant(input_name, root_username, root_email, root_password)
                 return jsonify(created), 201
     else:
-        if not can_account_create_tenant(account=current_token.account):
+        if not can_account_create_org(account=current_token.account):
             return jsonify(isError=True,
                            message="Failure",
                            statusCode=403,
                            data='Account not authorized to read tenants'), 403
         return jsonify([q.to_dict() for q in Group.query.filter(Group.parent_id == None)])
 
-@app.route('/tenants/<id>', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/orgs/<id>', methods=['GET', 'PUT', 'DELETE'])
 @require_oauth()
 def single_tenant(id):
-    # 1. get the group
-    group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
-    if group:
+    # 1. get the org
+    org = Group.query.filter(or_(Org.id == id, Org.name == id)).first()
+    if org:
         
         if request.method == 'PUT':
 
             account = Account.query.filter(Account.id == current_token.account.id).first()
 
-            if not can_account_write_tenant(account=account, tenant=group):
+            if not can_account_write_org(account=account, tenant=org):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=403,
-                               data='Account not authorized to write to tenant'), 403
+                               data='Account not authorized to write to org'), 403
 
             input_data = request.get_json(force=True, silent=False)
 
             args = dict()
 
             if 'name' in input_data:
-                group.name = input_data['name']
+                org.name = input_data['name']
             
             db.session.commit()
             
-            return jsonify(group.to_dict())
+            return jsonify(org.to_dict())
 
         elif request.method == 'DELETE':
 
             account = Account.query.filter(Account.id == current_token.account.id).first()
 
-            if not can_account_delete_tenant(account=account, tenant=group):
+            if not can_account_delete_org(account=account, tenant=org):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=403,
-                               data='Account not authorized to delete this tenant'), 403
+                               data='Account not authorized to delete this org'), 403
 
-            db.session.delete(group)
+            db.session.delete(org)
             db.session.commit()
 
             return jsonify(isError=False,
                            message="Success",
                            statusCode=200,
-                           data='deleted item {0}'.format(id)), 200
+                           data='deleted org {0}'.format(id)), 200
         else:
             account = Account.query.filter(Account.id == current_token.account.id).first()
 
-            if not can_account_read_tenant(account=account, tenant=group):
+            if not can_account_read_org(account=account, tenant=org):
                 return jsonify(isError=True,
                                message="Failure",
                                statusCode=403,
                                data='Account not authorized to read this tenant'), 403
-            return jsonify(group.to_dict())
+            return jsonify(org.to_dict())
 
     return jsonify(isError=True,
                        message="Failure",
                        statusCode=404,
-                       data='Tenant {0} not found'.format(id)), 404
+                       data='Org {0} not found'.format(id)), 404
 
 @app.route('/<id>/login', defaults={'name': None}, methods=['GET', 'POST'] )
 @app.route('/<id>/login/<name>',methods=['GET', 'POST'] )
 def tenant_login(id, name):
-    # 1. get the group
+    # 1. get the org
     print(request.url)
-    group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
-    if group:
+    org = Org.query.filter(or_(Org.id == id, Org.name == id)).first()
+    if org:
         client_id = request.args.get('client_id')
         response_type = request.args.get('response_type')
-        client = App.query.filter(or_(App.client_id == client_id, App.name == client_id, App.group_id == group.id)).first()
+        client = Client.query.filter(or_(Client.client_id == client_id, Client.name == client_id)).first()
         if client:
             if request.method == 'POST':
                 username = request.form.get('username')
@@ -173,12 +173,12 @@ def tenant_login(id, name):
                 if name == None:
                     oauths = [{'name': n['name'],
                                'url': '/{0}/login/{1}?client_id={2}&response_type={3}'.format(id, n['name'], client_id, response_type)} for n in
-                              [q.to_dict() for q in Authenticator.query.filter(Authenticator.group_id == group.id)]]
+                              [q.to_dict() for q in Authenticator.query.filter(Authenticator.org_id == org.id)]]
 
                     return render_template('login.html', authenticators=oauths, client_id=client_id)
                 else:
                     auth = Authenticator.query.filter(Authenticator.name == name,
-                                                      Authenticator.group_id == group.id).first()
+                                                      Authenticator.org_id == org.id).first()
                     if auth:
                         print(auth)
                         oauth = OAuth(app)
@@ -252,13 +252,13 @@ def tenant_register(id, client_id):
 def tenant_auth(id, client_id, name):
     # 1. get the
     print(request.url)
-    group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
-    if group:
+    org = Org.query.filter(or_(Org.id == id, Org.name == id)).first()
+    if org:
         if client_id is None:
             client_id = request.args.get('client_id')
-        client = App.query.filter(or_(App.client_id == client_id, App.name == client_id), App.group_id == group.id).first()
+        client = Org.query.filter(or_(Client.client_id == client_id, Client.name == client_id), Client.org_id == org.id).first()
         if client:
-            auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.group_id == group.id).first()
+            auth = Authenticator.query.filter(Authenticator.name == name, Authenticator.org_id == org.id).first()
             if auth:
                     data = auth.to_dict()
                     del data['name']
@@ -326,9 +326,9 @@ def tenant_auth(id, client_id, name):
 
 @app.route('/<id>/auth', methods=['GET'])
 def tenant_auths(id):
-    group = Group.query.filter(or_(Group.id == id, Group.name == id), Group.parent_id == None).first()
-    if group:
-        oauths = [{ 'name': n['name'], 'type': 'oauth'} for n in [q.to_dict() for q in Authenticator.query.filter(Authenticator.group_id == group.id)]]
+    org = Org.query.filter(or_(Org.id == id, Org.name == id)).first()
+    if org:
+        oauths = [{ 'name': n['name'], 'type': 'oauth'} for n in [q.to_dict() for q in Authenticator.query.filter(Authenticator.org_id == org.id)]]
         oauths.append({'name': 'password', 'type': 'password'})
         return jsonify(oauths)
     else:
