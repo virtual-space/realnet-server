@@ -646,21 +646,12 @@ def create_basic_types(owner_id, group_id):
     load_types("resources/items.json", owner_id, group_id)
     load_types("resources/orgs.json", owner_id, group_id)
     load_types("resources/media.json", owner_id, group_id)
-    '''
-    '''
-    
     load_types("resources/topics.json", owner_id, group_id)
-    load_types("resources/logic.json", owner_id, group_id)
     load_types("resources/places.json", owner_id, group_id)
     load_types("resources/things.json", owner_id, group_id)
-    load_types("resources/products.json", owner_id, group_id)
-    load_types("resources/materials.json", owner_id, group_id)
-    load_types("resources/venues.json", owner_id, group_id)
     load_types("resources/tasks.json", owner_id, group_id)
     load_types("resources/jobs.json", owner_id, group_id)
-    load_types("resources/games.json", owner_id, group_id)
     load_types("resources/events.json", owner_id, group_id)
-    load_types("resources/server.json", owner_id, group_id)
 
 def create_basic_items(owner_id, group_id):
     item = create_item(db,

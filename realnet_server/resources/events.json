@@ -22,11 +22,6 @@
                         "query": {"types": ["Event"]}
                     },
                     {
-                        "name": "Materials",
-                        "type": "ListView",
-                        "query": {"types": ["Material"]}
-                    },
-                    {
                         "name": "Contacts",
                         "type": "ListView",
                         "query": {"types": ["Contact"]}
@@ -40,78 +35,9 @@
                         "name": "Tasks",
                         "type": "BoardView",
                         "query": {"types": ["Task"]}
-                    },
-                    {
-                        "name": "Games",
-                        "type": "ListView",
-                        "query": {"types": ["Game"]}
                     }
                 ]
                 
-            }
-        },
-        {
-            "name": "Conference",
-            "base": "Event",
-            "attributes": {
-                "icon": "reduce_capacity",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Tradeshow",
-            "base": "Event",
-            "attributes": {
-                "icon": "hail",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Fair",
-            "base": "Event",
-            "attributes": {
-                "icon": "storefront",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Meeting",
-            "base": "Event",
-            "attributes": {
-                "icon": "groups",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Promotion",
-            "base": "Event",
-            "attributes": {
-                "icon": "add_shopping_cart",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Wedding",
-            "base": "Event",
-            "attributes": {
-                "icon": "celebration",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Festival",
-            "base": "Event",
-            "attributes": {
-                "icon": "festival",
-                "creatable": "true"
-            }
-        },
-        {
-            "name": "Concert",
-            "base": "Event",
-            "attributes": {
-                "icon": "music_video",
-                "creatable": "true"
             }
         },
         {
@@ -193,32 +119,8 @@
                     "type": "EventApp"
                 },
                 {
-                    "name": "Venues",
-                    "type": "VenueApp"
-                },
-                {
-                    "name": "Materials",
-                    "type": "MaterialApp"
-                },
-                {
-                    "name": "Suppliers",
-                    "type": "SupplierApp"
-                },
-                {
-                    "name": "Orders",
-                    "type": "OrderApp"
-                },
-                {
                     "name": "Tasks",
                     "type": "TaskApp"
-                },
-                {
-                    "name": "Products",
-                    "type": "ProductApp"
-                },
-                {
-                    "name": "Games",
-                    "type": "GameApp"
                 }
             ]
         },
@@ -239,14 +141,6 @@
                     "attributes": {
                         "initial": "true"
                     }
-                },
-                {
-                    "name": "Games",
-                    "type": "GameApp"
-                },
-                {
-                    "name": "Orders",
-                    "type": "OrderApp"
                 },
                 {
                     "name": "Topics",
