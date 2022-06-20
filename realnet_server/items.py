@@ -80,6 +80,10 @@ def extract_search_data(request):
         if tags:
             data['tags'] = tags
 
+        status = request.args.getlist('status')
+        if status:
+            data['status'] = status[0]
+
         name = request.args.get('name')
         if name:
             data['name'] = name
