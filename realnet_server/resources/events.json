@@ -5,6 +5,7 @@
             "base": "Item",
             "attributes": {
                 "icon": "event",
+                "creatable": "true",
                 "types": ["Event", "Game", "Task", "Topic", "Contact", "Material", "Document"],
                 "views": [
                     {

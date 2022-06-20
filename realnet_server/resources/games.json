@@ -34,21 +34,7 @@
             "name": "Mana",
             "base": "Trait",
             "attributes": {
-                "icon": "bolt"
-            }
-        },
-        {
-            "name": "Attack",
-            "base": "Trait",
-            "attributes": {
-                "icon": "bolt"
-            }
-        },
-        {
-            "name": "Defense",
-            "base": "Trait",
-            "attributes": {
-                "icon": "bolt"
+                "icon": "auto_graph"
             }
         },
         {
@@ -56,6 +42,20 @@
             "base": "Trait",
             "attributes": {
                 "icon": "local_hospital"
+            }
+        },
+        {
+            "name": "Attack",
+            "base": "Trait",
+            "attributes": {
+                "icon": "sports_martial_arts"
+            }
+        },
+        {
+            "name": "Defence",
+            "base": "Trait",
+            "attributes": {
+                "icon": "local_police"
             }
         },
         {
@@ -119,22 +119,22 @@
             "attributes": {
                 "icon": "pin_drop",
                 "creatable": "true",
-                "types": ["Resource", "Artefact", "Event", "Clip", "Unit", "Site", "Quest"]
-            },
-            "views": [
-                {
-                    "name": "Play",
-                    "type": "SceneView"
-                },
-                {
-                    "name": "Map",
-                    "type": "MapView"
-                },
-                {
-                    "name": "Items",
-                    "type": "ListView"
-                }
-            ]
+                "types": ["Resource", "Artefact", "Event", "Clip", "Unit", "Site", "Quest"],
+                "views": [
+                    {
+                        "name": "Play",
+                        "type": "SceneView"
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    },
+                    {
+                        "name": "Items",
+                        "type": "ListView"
+                    }
+                ]
+            }
         },
         {
             "name": "Dwelling",
@@ -147,35 +147,77 @@
             }
         },
         {
+            "name": "Realm",
+            "base": "Site",
+            "attributes": {
+                "icon": "castle",
+                "creatable": "true",
+                "types": ["Site"],
+                "show_children": "true"
+            }
+        },
+        {
+            "name": "World",
+            "base": "Site",
+            "attributes": {
+                "icon": "language",
+                "creatable": "true",
+                "types": ["Realm"],
+                "show_children": "true"
+            }
+        },
+        {
             "name": "Unit",
             "base": "GameItem",
             "attributes": {
                 "icon": "local_police",
                 "creatable": "true",
-                "types": ["Resource", "Artefact", "Event", "Clip"]
-            },
-            "views": [
-                {
-                    "name": "Play",
-                    "type": "SceneView"
-                },
-                {
-                    "name": "Map",
-                    "type": "MapView"
-                },
-                {
-                    "name": "Items",
-                    "type": "ListView"
-                }
-            ]
+                "types": ["Resource", "Artefact", "Event", "Clip"],
+                "views": [
+                    {
+                        "name": "Play",
+                        "type": "SceneView"
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    },
+                    {
+                        "name": "Items",
+                        "type": "ListView"
+                    }
+                ]
+            }
         },
         {
-            "name": "Hero",
-            "base": "Unit",
-            "attributes": {
-                "icon": "directions_walk",
-                "types": ["Trait", "Resource", "Artefact", "Event", "Clip", "Unit", "Quest"]
-            }
+            "name": "HeroTraits",
+            "base": "Trait",
+            "instances": [
+                {
+                    "name": "10",
+                    "type": "Power"
+                },
+                {
+                    "name": "10",
+                    "type": "Mana"
+                },
+                {
+                    "name": "20",
+                    "type": "Health"
+                },
+                {
+                    "name": "10",
+                    "type": "Attack"
+                },
+                {
+                    "name": "10",
+                    "type": "Defence"
+                },
+                {
+                    "name": "24",
+                    "type": "Turns"
+                }
+            ]
         },
         {
             "name": "Creature",
@@ -185,11 +227,219 @@
             }
         },
         {
+            "name": "Wolf",
+            "base": "Creature",
+            "attributes": {
+                "icon": "pest_control"
+            },
+            "instances": [
+                {
+                    "name": "2",
+                    "type": "Attack"
+                },
+                {
+                    "name": "1",
+                    "type": "Defence"
+                }
+            ]
+        },
+        {
+            "name": "Bear",
+            "base": "Creature",
+            "attributes": {
+                "icon": "pest_control"
+            },
+            "instances": [
+                {
+                    "name": "3",
+                    "type": "Attack"
+                },
+                {
+                    "name": "2",
+                    "type": "Defence"
+                }
+            ]
+        },
+        {
+            "name": "Mummy",
+            "base": "Creature",
+            "attributes": {
+                "icon": "pest_control"
+            },
+            "instances": [
+                {
+                    "name": "1",
+                    "type": "Attack"
+                },
+                {
+                    "name": "4",
+                    "type": "Defence"
+                }
+            ]
+        },
+        {
+            "name": "Griffin",
+            "base": "Creature",
+            "attributes": {
+                "icon": "pest_control"
+            },
+            "instances": [
+                {
+                    "name": "6",
+                    "type": "Attack"
+                },
+                {
+                    "name": "2",
+                    "type": "Defence"
+                }
+            ]
+        },
+        {
+            "name": "Giant",
+            "base": "Creature",
+            "attributes": {
+                "icon": "pest_control"
+            },
+            "instances": [
+                {
+                    "name": "2",
+                    "type": "Attack"
+                },
+                {
+                    "name": "6",
+                    "type": "Defence"
+                }
+            ]
+        },
+        {
+            "name": "Dragon",
+            "base": "Creature",
+            "attributes": {
+                "icon": "pest_control"
+            },
+            "instances": [
+                {
+                    "name": "7",
+                    "type": "Attack"
+                },
+                {
+                    "name": "7",
+                    "type": "Defence"
+                }
+            ]
+        },
+        {
             "name": "Party",
             "base": "Unit",
             "attributes": {
                 "icon": "tour",
                 "types": ["Resource", "Artefact", "Event", "Clip", "Unit"]
+            }
+        },
+        {
+            "name": "HeroParty",
+            "base": "Party",
+            "instances": [
+                {
+                    "name": "Wolf",
+                    "type": "Wolf"
+                },
+                {
+                    "name": "Wolf",
+                    "type": "Wolf"
+                },
+                {
+                    "name": "Wolf",
+                    "type": "Wolf"
+                },
+                {
+                    "name": "Wolf",
+                    "type": "Wolf"
+                },
+                {
+                    "name": "Griffin",
+                    "type": "Griffin"
+                },
+                {
+                    "name": "Griffin",
+                    "type": "Griffin"
+                }
+            ]
+        },
+        {
+            "name": "Artefact",
+            "base": "GameItem",
+            "attributes": {
+                "icon": "build",
+                "creatable": "true",
+                "types": ["Trait", "Artefact"],
+                "views": [
+                    {
+                        "name": "Play",
+                        "type": "SceneView"
+                    },
+                    {
+                        "name": "Map",
+                        "type": "MapView"
+                    },
+                    {
+                        "name": "Items",
+                        "type": "ListView"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Weapon",
+            "base": "Artefact",
+            "instances": [
+                {
+                    "name": "2",
+                    "type": "Attack"
+                }
+            ]
+        },
+        {
+            "name": "Armor",
+            "base": "Artefact",
+            "instances": [
+                {
+                    "name": "2",
+                    "type": "Defence"
+                }
+            ]
+        },
+        {
+            "name": "HeroInventory",
+            "base": "Artefact",
+            "instances": [
+                {
+                    "name": "Sword",
+                    "type": "Weapon"
+                },
+                {
+                    "name": "Shield",
+                    "type": "Armor"
+                }
+            ]
+        },
+        {
+            "name": "Quest",
+            "base": "GameItem",
+            "attributes": {
+                "icon": "task_alt",
+                "creatable": "true",
+                "title": "Full Moon Howl",
+                "description": "Collect 36 wolves"
+            }
+        },
+        {
+            "name": "Portal",
+            "base": "Site",
+            "attributes": {
+                "icon": "door_front",
+                "creatable": "true",
+                "types": ["Site"]
             }
         },
         {
@@ -209,36 +459,24 @@
             "base": "Dwelling"
         },
         {
-            "name": "Ant",
-            "base": "Creature"
-        },
-        {
-            "name": "Bat",
-            "base": "Creature"
-        },
-        {
-            "name": "Dragon",
-            "base": "Creature"
-        },
-        {
             "name": "Guards",
             "base": "Party",
             "instances": [
                 {
-                    "name": "Gongo",
-                    "type": "Ant"
+                    "name": "Wolf",
+                    "type": "Wolf"
                 },
                 {
-                    "name": "Krokor",
-                    "type": "Bat"
+                    "name": "Griffin",
+                    "type": "Griffin"
                 },
                 {
-                    "name": "Fenrir",
-                    "type": "Dragon"
+                    "name": "Mummy",
+                    "type": "Mummy"
                 },
                 {
-                    "name": "Benrir",
-                    "type": "Dragon"
+                    "name": "Giant",
+                    "type": "Giant"
                 }
             ]
         },
@@ -281,26 +519,154 @@
             ]
         },
         {
-            "name": "Artefact",
-            "base": "GameItem",
-            "attributes": {
-                "icon": "build",
-                "show_children": "true",
-                "types": ["Trait"]
-            },
-            "views": [
+            "name": "FireRealm",
+            "base": "Realm",
+            "instances": [
                 {
-                    "name": "Play",
-                    "type": "SceneView"
+                    "name": "Fireton",
+                    "type": "FantasyTown"
                 },
                 {
-                    "name": "Map",
-                    "type": "MapView"
+                    "name": "Lava City",
+                    "type": "FantasyTown"
                 },
                 {
-                    "name": "Items",
-                    "type": "ListView"
+                    "name": "Upper Heaton",
+                    "type": "FantasyTown"
+                },
+                {
+                    "name": "Nevercoldtown",
+                    "type": "FantasyTown"
                 }
+            ]
+        },
+        {
+            "name": "WaterRealm",
+            "base": "Realm",
+            "instances": [
+                {
+                    "name": "Waterton",
+                    "type": "FantasyTown"
+                },
+                {
+                    "name": "Liquid City",
+                    "type": "FantasyTown"
+                },
+                {
+                    "name": "Upper Wetton",
+                    "type": "FantasyTown"
+                },
+                {
+                    "name": "Neverdrytown",
+                    "type": "FantasyTown"
+                }
+            ]
+        },
+        {
+            "name": "AirRealm",
+            "base": "Realm",
+            "instances": [
+                {
+                    "name": "Airton",
+                    "type": "FantasyTown"
+                },
+                {
+                    "name": "Gas City",
+                    "type": "FantasyTown"
+                },
+                {
+                    "name": "Upper Vacuum",
+                    "type": "FantasyTown"
+                },
+                {
+                    "name": "Neverliquidtown",
+                    "type": "FantasyTown"
+                }
+            ]
+        },
+        {
+            "name": "EarthRealm",
+            "base": "Realm",
+            "instances": [
+                {
+                    "name": "Dirtton",
+                    "type": "FantasyTown"
+                },
+                {
+                    "name": "Rock City",
+                    "type": "FantasyTown"
+                },
+                {
+                    "name": "Upper Boulder",
+                    "type": "FantasyTown"
+                },
+                {
+                    "name": "Neverlighttown",
+                    "type": "FantasyTown"
+                }
+            ]
+        },
+        {
+            "name": "FantasyWorld",
+            "base": "World",
+            "instances": [
+                {
+                    "name": "Fire",
+                    "type": "FireRealm"
+                },
+                {
+                    "name": "Water",
+                    "type": "WaterRealm"
+                },
+                {
+                    "name": "Air",
+                    "type": "AirRealm"
+                },
+                {
+                    "name": "Earth",
+                    "type": "EarthRealm"
+                }
+            ]
+        },
+        {
+            "name": "HeroPortal",
+            "base": "Portal",
+            "instances": [
+                {
+                    "name": "World",
+                    "type": "FantasyWorld"
+                }
+            ]
+        },
+        {
+            "name": "Hero",
+            "base": "Unit",
+            "attributes": {
+                "icon": "directions_walk",
+                "types": ["Event", "Clip", "Quest"]
+            },
+            "instances": [
+                {
+                    "name": "Traits",
+                    "type": "HeroTraits"
+                },
+                {
+                    "name": "Party",
+                    "type": "HeroParty"
+                },
+                {
+                    "name": "Inventory",
+                    "type": "HeroInventory"
+                },
+                {
+                    "name": "Quest",
+                    "type": "Quest"
+                },
+                {
+                    "name": "Portal",
+                    "type": "HeroPortal"
+                }
+
             ]
         },
         {
@@ -344,15 +710,6 @@
             "base": "Resource",
             "attributes": {
                 "icon": "auto_awesome"
-            }
-        },
-        {
-            "name": "Portal",
-            "base": "Site",
-            "attributes": {
-                "icon": "door_front",
-                "creatable": "true",
-                "types": ["Site"]
             }
         },
         {
@@ -531,34 +888,15 @@
             "name": "Heroes",
             "base": "Game",
             "attributes": {
-                "icon": "sports_martial_arts"
+                "icon": "sports_martial_arts",
+                "title": "Heroes"
             },
             "instances": [
                 {
-                    "name": "Story of Heroes",
-                    "type": "HeroesStory"
+                    "name": "Hero",
+                    "type": "Hero"
                 }
             ]
-        },
-        {
-            "name": "Quest",
-            "base": "Game",
-            "attributes": {
-                "icon": "task_alt",
-                "creatable": "true",
-                "title": "My cool quest",
-                "description": "Something about the quest"
-            }
-        },
-        {
-            "name": "Race",
-            "base": "Game",
-            "attributes": {
-                "icon": "timer",
-                "creatable": "true",
-                "title": "My cool race",
-                "description": "Something about the race"
-            }
         },
         {
             "name": "GameApp",
