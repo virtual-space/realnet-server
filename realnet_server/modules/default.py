@@ -273,6 +273,7 @@ class Default(Module):
 
     def update_item_data(self, item, storage):
         content_type = storage.content_type
+        #TESTING CHANGES, REMOVE OR COMMENT OUT.
         print('----------------------')
         print('item:\n', item)
         print('storage:\n',storage)
