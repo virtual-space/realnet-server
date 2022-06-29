@@ -273,9 +273,6 @@ class Default(Module):
 
     def update_item_data(self, item, storage):
         content_type = storage.content_type
-        print('----------------------')
-        print('item:\n', item)
-        print('storage:\n',storage)
         if storage.filename and content_type is None:
             content_type = mimetypes.guess_type(storage.filename)[0] or 'application/octet-stream'
         if item:
